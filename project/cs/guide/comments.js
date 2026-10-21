@@ -32,13 +32,10 @@
   var KEY = CC.key || "";
   var POLL = Math.max(5000, CC.poll || 15000);
 
-  var ROLES = [
-    { id: "plan", label: "기획", tone: "brand" },
-    { id: "dev", label: "개발", tone: "positive" },
-    { id: "design", label: "디자인", tone: "warning" }
-  ];
+  // 역할(기획·개발·디자인) 구분은 쓰지 않는다 (2026-10-21 사용자 요청으로 삭제) — 예전 데이터의 role 값은 무시
+  var ROLES = [];
   function roleTone(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].tone; return ""; }
-  // 멘션 대상 = 역할 3개 + 이 프로젝트에 코멘트를 남긴 사람들
+  // 멘션 대상 = 이 프로젝트에 코멘트를 남긴 사람들
   function mentionables() {
     var seen = {}, out = [];
     ROLES.forEach(function (r) { seen[r.label] = 1; out.push({ name: r.label, role: true, tone: r.tone }); });
@@ -63,7 +60,7 @@
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); }
   function richText(t) {
     var h = esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-    // @멘션 — 코멘트를 남긴 사람 이름 · 역할(@기획 @개발 @디자인). 긴 이름부터 맞춘다
+    // @멘션 — 코멘트를 남긴 사람 이름. 긴 이름부터 맞춘다
     var names = mentionables().map(function (m) { return m.name; }).sort(function (a, b) { return b.length - a.length; });
     if (names.length) {
       var re = new RegExp("@(" + names.map(function (n) { return esc(n).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?![\\w가-힣])", "g");
@@ -88,7 +85,7 @@
 
   /* ---- 나 (비로그인 — 이 브라우저를 구분하는 임의 id + 이름) -------------- */
   var me = { cid: store("cid"), name: store("name") || "", role: store("role") || "plan" };
-  if (me.role === "etc") me.role = "plan";
+  me.role = "";
   if (!me.cid) { me.cid = uid(); store("cid", me.cid); }
 
   /* ======================================================================
@@ -207,9 +204,6 @@
     "background:var(--c);color:var(--ybm-color-palette-static-white);font-family:var(--ybm-font-family-base);font-size:var(--ybm-font-size-t05);line-height:1;font-weight:var(--ybm-font-weight-semibold);cursor:pointer;" +
     "box-shadow:var(--ybm-elevation-raised);transform-origin:0 100%;transform:translateY(-100%) scale(var(--inv,1));transition:transform var(--ybm-duration-fast) var(--ybm-easing-standard)}" +
     ".pin:hover{transform:translateY(-100%) scale(calc(var(--inv,1)*1.12))}" +
-    ".pin[data-role=dev]{--c:var(--ybm-color-bg-positive-solid)}" +
-    ".pin[data-role=design]{--c:var(--ybm-color-bg-warning-solid)}" +
-    ".pin[data-role=etc]{--c:var(--ybm-color-bg-neutral-solid)}" +
     ".pin[data-status=resolved]{--c:var(--ybm-color-bg-disabled);color:var(--ybm-color-fg-disabled)}" +
     ".pin[aria-current=true]{box-shadow:0 0 0 3px var(--c),var(--ybm-elevation-floating);z-index:2}" +
     ".pin[data-draft]{width:28px;animation:pop var(--ybm-duration-normal) var(--ybm-easing-standard)}" +
@@ -376,7 +370,7 @@
   var titleBtn = panel.querySelector(".gc-panel__title");
 
   var composer = el(
-    // 피그마식 작성창 — 핀 바로 옆 한 줄 입력 + 보내기(↑). 처음 한 번만 이름·역할 카드가 위에 붙는다
+    // 피그마식 작성창 — 핀 바로 옆 한 줄 입력 + 보내기(↑). 처음 한 번만 이름 카드가 위에 붙는다
     '<form class="gc-composer" hidden>' +
       '<div class="ds-card gc-composer__who" data-variant="elevated" data-size="small">' + whoHTML() + "</div>" +
       '<div class="ds-input gc-bubble" data-variant="outline" data-size="medium">' +
@@ -438,13 +432,6 @@
   /* ---- 작성창 ----------------------------------------------------------- */
   var nameInput = composer.querySelector(".gc-name");
   var textInput = composer.querySelector(".gc-text");
-  function paintRole() {
-    Array.prototype.forEach.call(composer.querySelectorAll(".gc-roles [data-role]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-role") === me.role)); });
-  }
-  composer.querySelector(".gc-roles").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-role]"); if (!b) return;
-    me.role = b.getAttribute("data-role"); store("role", me.role); paintRole(); renderPins();
-  });
 
   function startDraft(anchor) {
     if (mode !== "comments") setMode("comments");
@@ -454,7 +441,6 @@
     if (layer) layer.hover.hidden = true;
     nameInput.value = me.name;
     textInput.value = ""; growText(); sendBtn.disabled = true;
-    paintRole();
     paintWho(!me.name);
       composer.hidden = false;
     paintHint();
@@ -466,11 +452,11 @@
   var sendBtn = composer.querySelector(".gc-send");
   var whoBox = composer.querySelector(".gc-composer__who");
   var whoEdit = composer.querySelector(".gc-whoedit");
-  // 이름을 이미 아는 사람은 입력칸만 — 아래 작은 링크로 이름·역할을 바꿀 수 있다
+  // 이름을 이미 아는 사람은 입력칸만 — 아래 작은 링크로 이름을 바꿀 수 있다
   function paintWho(show) {
     whoBox.hidden = !show;
     whoEdit.hidden = show || !me.name;
-    whoEdit.textContent = me.name + " · " + roleLabel(me.role) + " 변경";
+    whoEdit.textContent = me.name + " · 이름 변경";
   }
   whoEdit.addEventListener("click", function () { paintWho(true); nameInput.focus(); placeComposer(); });
   // 내용에 맞춰 입력칸이 늘어난다 (최대 160). 비었거나 숨겨져 있으면 기본 한 줄
@@ -517,6 +503,7 @@
   }
 
   function submit() {
+    if (!draft || composer.hidden) return;                 // 닫힌 작성창에서 Enter 가 들어오는 경우
     var text = textInput.value.trim(), name = nameInput.value.trim();
     if (!name) { nameInput.focus(); say("이름을 입력해 주세요", true); return; }
     if (!text) { textInput.focus(); return; }
@@ -601,12 +588,6 @@
   }
 
   pbody.addEventListener("click", function (e) {
-    var rb = e.target.closest(".gc-roles [data-role]");
-    if (rb) {
-      me.role = rb.getAttribute("data-role"); store("role", me.role);
-      Array.prototype.forEach.call(rb.parentNode.children, function (x) { x.setAttribute("aria-pressed", String(x === rb)); });
-      return;
-    }
     var b = e.target.closest("[data-act]");
     if (b) {
       var id = b.getAttribute("data-id"), act = b.getAttribute("data-act");
@@ -662,13 +643,11 @@
     });
   }
 
-  // 이름이 아직 없을 때(처음 답글) 이름 + 역할을 같이 받는다
+  // 이름이 아직 없을 때(처음 답글) 이름을 같이 받는다
   function whoHTML() {
     return '<div class="gc-who">' +
       '<div class="ds-input" data-variant="outline" data-size="medium"><input class="ds-input__control gc-name" maxlength="20" placeholder="이름" autocomplete="name" aria-label="이름" value="' + esc(me.name) + '"></div>' +
-      '<div class="ds-segmented gc-roles" data-layout="fill" role="group" aria-label="역할">' + ROLES.map(function (r) {
-        return '<button type="button" class="ds-segmented__item" data-role="' + r.id + '" aria-pressed="' + (r.id === me.role) + '">' + r.label + "</button>";
-      }).join("") + "</div></div>";
+      "</div>";
   }
   function threadHTML(c) {
     var rs = repliesOf(c.id), open = c.id === selected, mine = c.cid === me.cid;
@@ -680,7 +659,7 @@
     }
     return '<article class="ds-card gc-thread" data-size="small" data-thread="' + esc(c.id) + '" data-status="' + esc(c.status) + '"' + (open ? ' aria-current="true"' : "") + ">" +
       '<div class="gc-thread__head">' +
-        '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : roleTone(c.role)) + '">' + (c._n || "·") + "</span>" +
+        '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : "brand") + '">' + (c._n || "·") + "</span>" +
         '<span class="gc-author">' + esc(c.author) + "</span>" +
         (roleLabel(c.role) ? '<span class="ds-badge" data-tone="' + roleTone(c.role) + '">' + roleLabel(c.role) + "</span>" : "") +
         '<time class="gc-time" datetime="' + esc(c.at) + '">' + ago(c.at) + "</time>" +
@@ -781,7 +760,7 @@
   }
 
   /* ---- @멘션 자동완성 — DS Menu ------------------------------------------
-     작성창·답글 textarea 에서 @ 를 치면 후보(역할 3개 + 코멘트 남긴 사람)를 띄운다.
+     작성창·답글 textarea 에서 @ 를 치면 후보(코멘트를 남긴 사람)를 띄운다.
      ↑↓ 이동 · Enter/Tab 선택 · Esc 닫기 */
   var mmenu = el('<div class="ds-menu gc-mention-menu" role="listbox" aria-label="멘션" hidden></div>');
   var mstate = null;   // { ta, start, list, idx }
@@ -794,7 +773,7 @@
   function paintMention() {
     mmenu.innerHTML = mstate.list.map(function (m, i) {
       return '<button type="button" class="ds-menu-item" role="option" data-i="' + i + '" aria-selected="' + (i === mstate.idx) + '">' +
-        '<span class="ds-badge" data-variant="solid" data-tone="' + (m.tone || "") + '">' + (m.role ? "역할" : esc(m.name.slice(0, 1))) + "</span>" + esc(m.name) + "</button>";
+        '<span class="ds-badge" data-variant="solid" data-tone="brand">' + esc(m.name.slice(0, 1)) + "</span>" + esc(m.name) + "</button>";
     }).join("");
   }
   function openMention(ta) {
