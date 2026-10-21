@@ -232,7 +232,7 @@
     // 위치 지정 중에는 화면 전체 커서를 십자로 (버튼·링크 위에서도)
     var cur = doc.createElement("style");
     cur.setAttribute("data-guide-comments", "");
-    cur.textContent = "html[data-gc-place], html[data-gc-place] * { cursor: crosshair !important; }";
+    cur.textContent = "html[data-gc-place], html[data-gc-place] * { cursor: " + commentCursor() + " !important; }";
     (doc.head || doc.documentElement).appendChild(cur);
     layer = { doc: doc, win: win, host: host, root: root, pins: root.querySelector(".pins"), hover: root.querySelector(".hover") };
 
@@ -283,6 +283,18 @@
     body.setAttribute("data-gc-frame", "ok");
     paintHint();
     renderAll();
+  }
+
+  /* 위치 지정 커서 — 코멘트 말풍선(핀과 같은 모양·색). 색은 DS 토큰 bg-critical-solid 를 읽어 만든다
+     (cursor url() 안에서는 CSS 변수를 쓸 수 없어서). 꽂히는 점 = 말풍선 왼쪽 아래 */
+  var cursorCache = "";
+  function commentCursor() {
+    if (cursorCache) return cursorCache;
+    var c = getComputedStyle(document.documentElement).getPropertyValue("--ybm-color-bg-critical-solid").trim() || "red";
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">' +
+      '<path d="M12 0a12 12 0 0 1 0 24H2a2 2 0 0 1-2-2V12A12 12 0 0 1 12 0Z" fill="' + c + '"/></svg>';
+    cursorCache = 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '") 1 23, crosshair';
+    return cursorCache;
   }
 
   /* 누른 위치 → 앵커(요소 selector + 요소 안 비율 + 문서 좌표) */
@@ -375,7 +387,7 @@
     '<form class="gc-composer" hidden>' +
       '<div class="ds-card gc-composer__who" data-variant="elevated" data-size="small">' + whoHTML() + "</div>" +
       '<div class="ds-input gc-bubble" data-variant="outline" data-size="medium">' +
-        '<textarea class="ds-input__control gc-text" name="text" rows="1" maxlength="2000" placeholder="코멘트 입력 · @멘션" aria-label="코멘트"></textarea>' +
+        '<textarea class="ds-input__control gc-text" name="text" rows="1" maxlength="2000" placeholder="@로 멘션" aria-label="코멘트"></textarea>' +
         '<button type="submit" class="ds-btn gc-send" data-variant="neutralSolid" data-size="xsmall" data-layout="iconOnly" aria-label="등록" disabled><i class="ds-icon ds-icon--arrow-up" aria-hidden="true"></i></button>' +
       "</div>" +
       '<button type="button" class="ds-link gc-whoedit" hidden></button>' +
@@ -395,6 +407,7 @@
   function setMode(m) {
     mode = m === "comments" ? "comments" : "";
     body.setAttribute("data-gc", mode ? "place" : "view");
+    body.style.setProperty("--gc-cursor", commentCursor());
     addBtn.setAttribute("aria-pressed", String(!!mode));
     addBtn.querySelector("span").textContent = mode ? "취소" : "코멘트 남기기";
     paintHint();
@@ -517,11 +530,13 @@
       author: name, role: me.role, text: text, parent: "", status: "open",
       cid: me.cid, at: new Date().toISOString(), up: ""
     };
-    items.push(c); selected = c.id;
+    // 등록 직후에는 선택하지 않는다 — 목록에 배경 없이 그냥 추가 (2026-10-21)
+    items.push(c); selected = null;
     draft = null; composer.hidden = true;
     body.removeAttribute("data-gc-draft");
     setMode("");
-    scrollToSelected();
+    var added = pbody.querySelector('[data-thread="' + c.id + '"]');
+    if (added && added.scrollIntoView) added.scrollIntoView({ block: "nearest", behavior: "smooth" });
     DB.add(c).then(function () { say("코멘트를 남겼어요"); refresh(); })
       .catch(function (err) { items = items.filter(function (i) { return i !== c; }); renderAll(); say(err.message || "저장하지 못했어요", true); });
   }
@@ -650,6 +665,11 @@
       '<div class="ds-input" data-variant="outline" data-size="medium"><input class="ds-input__control gc-name" maxlength="20" placeholder="이름" autocomplete="name" aria-label="이름" value="' + esc(me.name) + '"></div>' +
       "</div>";
   }
+  // 코멘트 목록 — 당근 댓글식: [번호] 이름 / 역할 · 시간 / 본문 / 회색 텍스트 액션 / 들여쓴 답글 (2026-10-22)
+  function subHTML(x) {
+    var role = roleLabel(x.role);
+    return '<span class="gc-sub">' + (role ? esc(role) + " · " : "") + '<time class="gc-time" datetime="' + esc(x.at) + '">' + ago(x.at) + "</time></span>";
+  }
   function threadHTML(c) {
     var rs = repliesOf(c.id), open = c.id === selected, mine = c.cid === me.cid;
     var mentioned = c.status !== "resolved" && [c].concat(rs).some(function (x) { return x.cid !== me.cid && mentionsMe(x.text); });
@@ -658,34 +678,33 @@
       if (!c.sel && c.x === "") whereNote = '<span class="gc-where">위치 없음</span>';
       else if (!c._placed && layer) whereNote = '<span class="gc-where">이 보기에서 위치 없음 · ' + (c.device === "mo" ? "MO" : "PC") + "에서 작성</span>";
     }
+    var act = function (name, label) { return '<button type="button" class="gc-act" data-act="' + name + '" data-id="' + esc(c.id) + '">' + label + "</button>"; };
     return '<article class="ds-card gc-thread" data-size="small" data-thread="' + esc(c.id) + '" data-status="' + esc(c.status) + '"' + (open ? ' aria-current="true"' : "") + ">" +
-      '<div class="gc-thread__head">' +
-        '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : "critical") + '">' + (c._n || "·") + "</span>" +
-        '<span class="gc-author">' + esc(c.author) + "</span>" +
-        (roleLabel(c.role) ? '<span class="ds-badge" data-tone="' + roleTone(c.role) + '">' + roleLabel(c.role) + "</span>" : "") +
-        '<time class="gc-time" datetime="' + esc(c.at) + '">' + ago(c.at) + "</time>" +
+      '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : "critical") + '">' + (c._n || "·") + "</span>" +
+      '<div class="gc-thread__main">' +
+        '<div class="gc-thread__head"><span class="gc-author">' + esc(c.author) + "</span>" + subHTML(c) + "</div>" +
+        '<div class="gc-text-body">' + richText(c.text) + "</div>" +
+        whereNote +
+        ((rs.length && !open) || mentioned ? '<div class="gc-meta">' +
+          (mentioned ? '<span class="ds-badge" data-tone="brand">나를 언급</span>' : "") +
+          (rs.length && !open ? "<span>답글 " + rs.length + "</span>" : "") + "</div>" : "") +
+        (open ?
+          '<div class="gc-actions">' +
+            (c.status === "resolved" ? act("reopen", "다시 열기") : act("resolve", "해결")) +
+            act("link", "링크 복사") +
+            (mine ? act("delete", "삭제") : "") +
+          "</div>" +
+          '<div class="gc-replies">' + rs.map(function (r) {
+            return '<div class="gc-replyitem"><div class="gc-thread__head"><span class="gc-author">' + esc(r.author) + "</span>" +
+              '<span class="gc-sub-row">' + subHTML(r) +
+              (r.cid === me.cid ? '<button type="button" class="gc-act" data-act="delete" data-id="' + esc(r.id) + '">삭제</button>' : "") + "</span>" +
+              '</div><div class="gc-text-body">' + richText(r.text) + "</div></div>";
+          }).join("") + "</div>" +
+          '<form class="gc-reply" data-id="' + esc(c.id) + '">' + (me.name ? "" : whoHTML()) +
+            '<div class="gc-reply__box"><textarea class="ds-textarea gc-reply__text" data-size="medium" rows="1" maxlength="2000" placeholder="답글 · @로 멘션" aria-label="답글"></textarea>' +
+            '<button type="submit" class="ds-btn" data-variant="neutralWeak" data-size="xsmall">등록</button></div></form>'
+        : "") +
       "</div>" +
-      '<div class="gc-text-body">' + richText(c.text) + "</div>" +
-      whereNote +
-      ((rs.length && !open) || mentioned ? '<div class="gc-meta">' +
-        (mentioned ? '<span class="ds-badge" data-tone="brand">나를 언급</span>' : "") +
-        (rs.length && !open ? "<span>답글 " + rs.length + "개</span>" : "") + "</div>" : "") +
-      (open ?
-        '<div class="gc-replies">' + rs.map(function (r) {
-          return '<div class="gc-replyitem"><div class="gc-thread__head"><span class="gc-author">' + esc(r.author) + '</span>' + (roleLabel(r.role) ? '<span class="ds-badge" data-tone="' + roleTone(r.role) + '">' + roleLabel(r.role) + "</span>" : "") +
-            '<time class="gc-time">' + ago(r.at) + "</time>" +
-            (r.cid === me.cid ? '<button type="button" class="ds-link gc-mini" data-act="delete" data-id="' + esc(r.id) + '">삭제</button>' : "") +
-            '</div><div class="gc-text-body">' + richText(r.text) + "</div></div>";
-        }).join("") + "</div>" +
-        '<form class="gc-reply" data-id="' + esc(c.id) + '">' + (me.name ? "" : whoHTML()) + '<textarea class="ds-textarea" data-size="medium" rows="2" maxlength="2000" placeholder="답글 · @로 멘션 (Ctrl+Enter)"></textarea>' +
-          '<button type="submit" class="ds-btn" data-variant="neutralWeak" data-size="xsmall">답글</button></form>' +
-        '<div class="gc-actions">' +
-          (c.status === "resolved"
-            ? '<button type="button" class="ds-btn" data-variant="neutralOutline" data-size="xsmall" data-act="reopen" data-id="' + esc(c.id) + '">다시 열기</button>'
-            : '<button type="button" class="ds-btn" data-variant="neutralSolid" data-size="xsmall" data-act="resolve" data-id="' + esc(c.id) + '">해결</button>') +
-          '<button type="button" class="ds-btn" data-variant="ghost" data-size="xsmall" data-act="link" data-id="' + esc(c.id) + '">링크 복사</button>' +
-          (mine ? '<button type="button" class="ds-btn" data-variant="ghost" data-size="xsmall" data-act="delete" data-id="' + esc(c.id) + '">삭제</button>' : "") +
-        "</div>" : "") +
     "</article>";
   }
 
