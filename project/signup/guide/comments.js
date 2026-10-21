@@ -199,7 +199,7 @@
   var PIN_CSS =
     ":host{all:initial}" +
     ".pins{position:absolute;left:0;top:0}" +
-    ".pin{--c:var(--ybm-color-bg-brand-solid);position:absolute;display:grid;place-items:center;min-width:28px;height:28px;padding:0 var(--ybm-space-x1_5);box-sizing:border-box;" +
+    ".pin{--c:var(--ybm-color-bg-critical-solid);position:absolute;display:grid;place-items:center;min-width:28px;height:28px;padding:0 var(--ybm-space-x1_5);box-sizing:border-box;" +
     "border:0;border-radius:var(--ybm-shape-pill) var(--ybm-shape-pill) var(--ybm-shape-pill) var(--ybm-radius-r0_5);" +
     "background:var(--c);color:var(--ybm-color-palette-static-white);font-family:var(--ybm-font-family-base);font-size:var(--ybm-font-size-t05);line-height:1;font-weight:var(--ybm-font-weight-semibold);cursor:pointer;" +
     "box-shadow:var(--ybm-elevation-raised);transform-origin:0 100%;transform:translateY(-100%) scale(var(--inv,1));transition:transform var(--ybm-duration-fast) var(--ybm-easing-standard)}" +
@@ -659,7 +659,7 @@
     }
     return '<article class="ds-card gc-thread" data-size="small" data-thread="' + esc(c.id) + '" data-status="' + esc(c.status) + '"' + (open ? ' aria-current="true"' : "") + ">" +
       '<div class="gc-thread__head">' +
-        '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : "brand") + '">' + (c._n || "·") + "</span>" +
+        '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : "critical") + '">' + (c._n || "·") + "</span>" +
         '<span class="gc-author">' + esc(c.author) + "</span>" +
         (roleLabel(c.role) ? '<span class="ds-badge" data-tone="' + roleTone(c.role) + '">' + roleLabel(c.role) + "</span>" : "") +
         '<time class="gc-time" datetime="' + esc(c.at) + '">' + ago(c.at) + "</time>" +

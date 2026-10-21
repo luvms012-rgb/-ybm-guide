@@ -10,7 +10,7 @@
      위치 안내 띠        .ds-badge[solid · large]
      목록 개수          .ds-badge
      텍스트 버튼        .ds-link
-   핀·번호 색은 brand 하나 (역할 구분 없음 — 2026-10-21 삭제)
+   핀(말풍선)·번호 색은 critical(red) 하나 (역할 구분 없음 — 2026-10-21 삭제)
    화면 위 핀은 DS 에 대응 컴포넌트가 없어 comments.js 의 PIN_CSS(토큰만 사용)로 그린다.
    ========================================================================== */
 body.guide { --gc-panel-width: 360px; }
@@ -122,7 +122,7 @@ body.guide { --gc-panel-width: 360px; }
 .guide[data-nav-collapsed="true"] .gc-nav-count {
   position: absolute; top: var(--ybm-space-x0_5); right: var(--ybm-space-x0_5);
   min-height: 0; width: var(--ybm-space-x2); height: var(--ybm-space-x2); padding: 0;
-  border-radius: var(--ybm-shape-pill); background: var(--ybm-color-bg-brand-solid); font-size: 0;
+  border-radius: var(--ybm-shape-pill); background: var(--ybm-color-bg-critical-solid); font-size: 0;
 }
 
 .g-empty a:not(.ds-btn) { color: var(--ybm-color-fg-informative); text-decoration: underline; }
