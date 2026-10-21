@@ -1,0 +1,284 @@
+/* ==========================================================================
+   퍼블리싱 가이드 뷰어 — 왼쪽(프로젝트명 + 보기 설정 + 목록) · 오른쪽(상단바 + 화면)
+   DS 컴포넌트(.ds-segmented · .ds-icon)로 조립하고 .g-* 는 뷰어 배치만 담당한다.
+   --------------------------------------------------------------------------
+   PC     왼쪽 목록을 접고 펼 수 있다. 접으면 번호만 남는 레일 64
+          (DS Side Navigation 의 collapsed 레일과 같은 방식 — 아이콘 자리에 SB 번호)
+   모바일  768 미만에서는 목록을 서랍으로 숨기고 상단바의 ☰ 로 연다
+   공통    상단바 = [이전] 현재 화면(가운데) [다음]
+   퍼블리싱 화면 자체의 브레이크포인트(1024)와는 별개 — 여기는 "뷰어 도구"의 기준이다.
+   ========================================================================== */
+html, body { height: 100%; }
+body.guide {
+  --g-nav-width: 280px;
+  --g-nav-width-rail: 64px;
+  --g-bar-height: 52px;
+  margin: 0;
+  display: grid;
+  grid-template-columns: var(--g-nav-width) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "nav content";
+  background: var(--ybm-color-bg-layer-default);
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  overflow: hidden;
+  transition: grid-template-columns var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+/* 접힘 — 목록은 번호만 남는 레일이 된다 */
+.guide[data-nav-collapsed="true"] { --g-nav-width: var(--g-nav-width-rail); }
+
+/* 아이콘 버튼 — 터치 타깃 40 */
+.g-icon-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ybm-radius-r2);
+  color: var(--ybm-color-fg-neutral);
+}
+.g-icon-btn:hover { background: var(--ybm-color-bg-neutral-muted); }
+.g-icon-btn:disabled { color: var(--ybm-color-fg-disabled); background: none; cursor: not-allowed; }
+
+/* ---- 왼쪽: 프로젝트명 + 보기 설정 + 목록 ------------------------------- */
+.g-nav {
+  grid-area: nav;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--ybm-color-bg-layer-default);
+  border-right: 1px solid var(--ybm-color-stroke-neutral-weak);
+}
+.g-nav__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x4);
+  padding: var(--ybm-space-x4) var(--ybm-space-x3) var(--ybm-space-x4) var(--ybm-space-x5);
+  border-bottom: 1px solid var(--ybm-color-stroke-neutral-weak);
+}
+.g-nav__top { display: flex; align-items: center; justify-content: space-between; gap: var(--ybm-space-x2); min-height: 40px; }
+.g-nav__close { display: none; }                      /* 모바일에서만 */
+.g-title {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--ybm-font-size-t06);
+  line-height: var(--ybm-line-height-t06);
+  font-weight: var(--ybm-font-weight-bold);
+}
+.g-view { display: grid; grid-template-columns: 3fr 2fr; gap: var(--ybm-space-x2); }
+/* 가이드 탭은 500 (사용자 지정, DS 기본 Bold 를 뷰어에서만 조정) */
+.g-view .ds-segmented__item { font-weight: var(--ybm-font-weight-medium); }
+/* 설정이 꺼진 전환은 통째로 감춘다 — 하나만 남으면 한 칸을 다 쓴다 */
+.g-view[data-cols="1"] { grid-template-columns: minmax(0, 1fr); }
+.g-view[hidden] { display: none; }
+
+.g-menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--ybm-space-x3) var(--ybm-space-x2) var(--ybm-space-x6);
+}
+/* 목록 스크롤바 — 얇게(6px) */
+.g-menu::-webkit-scrollbar { width: 6px; }
+.g-menu::-webkit-scrollbar-track { background: transparent; }
+.g-menu::-webkit-scrollbar-thumb { background: var(--ybm-color-stroke-neutral-weak); border-radius: 3px; }
+.g-menu:hover::-webkit-scrollbar-thumb { background: var(--ybm-color-stroke-neutral-subtle); }
+@supports not selector(::-webkit-scrollbar) {
+  .g-menu { scrollbar-width: thin; scrollbar-color: var(--ybm-color-stroke-neutral-subtle) transparent; }
+}
+.g-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ybm-space-x2);
+  padding: var(--ybm-space-x2) var(--ybm-space-x3);
+  border-radius: var(--ybm-radius-r2);
+  color: var(--ybm-color-fg-neutral-muted);
+  text-decoration: none;
+}
+.g-item:hover { background: var(--ybm-color-bg-neutral-muted); }
+.g-item[aria-current="page"] { background: var(--ybm-color-bg-neutral); color: var(--ybm-color-fg-neutral); font-weight: var(--ybm-font-weight-semibold); }
+.g-item[data-status="todo"] { color: var(--ybm-color-fg-disabled); }
+.g-item__sb { flex: none; width: 44px; font-variant-numeric: tabular-nums; }
+.g-item__name { flex: 1 1 auto; min-width: 0; }
+/* 영문 보기: 영문 퍼블리싱이 안 된 화면은 흐리게 */
+.guide[data-lang="en"] .g-item[data-en="false"] { color: var(--ybm-color-fg-disabled); }
+
+/* 접힘 레일 — 번호만. 접기 버튼은 가운데로
+   헤더는 오른쪽 상단바(.g-bar)와 같은 높이 구성(min-height · padding)으로 둔다 —
+   그래야 레일 아래 경계선과 상단바 경계선이 한 줄로 이어지고 아이콘 높이도 맞는다 */
+.guide[data-nav-collapsed="true"] .g-nav__head {
+  justify-content: center;
+  min-height: var(--g-bar-height);
+  padding: var(--ybm-space-x1) var(--ybm-space-x2);
+  padding-top: calc(var(--ybm-space-x1) + env(safe-area-inset-top));
+}
+.guide[data-nav-collapsed="true"] .g-nav__top { justify-content: center; }
+.guide[data-nav-collapsed="true"] .g-title,
+.guide[data-nav-collapsed="true"] .g-view,
+.guide[data-nav-collapsed="true"] .g-item__name { display: none; }
+.guide[data-nav-collapsed="true"] .g-menu { padding-inline: var(--ybm-space-x2); }
+.guide[data-nav-collapsed="true"] .g-item { justify-content: center; padding-inline: 0; }
+.guide[data-nav-collapsed="true"] .g-item__sb { width: auto; }
+.guide[data-nav-collapsed="true"] .g-nav__collapse .ds-icon { transform: scaleX(-1); }   /* 펼치기 방향 */
+
+/* 서랍 뒤 dim — 모바일에서만 보인다 */
+.g-scrim { display: none; }
+
+/* ---- 오른쪽: 상단바 + 화면 -------------------------------------------- */
+.g-content {
+  grid-area: content;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--ybm-color-bg-layer-default);
+}
+
+/* 상단바 — [이전] 현재 화면(가운데) [다음]
+   좌우 슬롯 폭을 1fr 로 같게 두어 타이틀이 폭과 무관하게 정중앙에 온다 */
+.g-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--ybm-space-x2);
+  min-height: var(--g-bar-height);
+  padding: var(--ybm-space-x1) var(--ybm-space-x2);
+  padding-top: calc(var(--ybm-space-x1) + env(safe-area-inset-top));
+  background: var(--ybm-color-bg-layer-default);
+  border-bottom: 1px solid var(--ybm-color-stroke-neutral-weak);
+}
+.g-bar__side { display: flex; align-items: center; gap: var(--ybm-space-x0_5); min-width: 0; }
+.g-bar__side--end { justify-content: flex-end; }
+.g-bar__nav { display: none; }                        /* 모바일에서만 */
+
+/* 현재 화면 이름 — 포인트 컬러 없이, 본문보다 한 단계만 큰 크기 */
+.g-bar__title {
+  display: flex;
+  align-items: center;
+  gap: var(--ybm-space-x1_5);
+  min-width: 0;
+  max-width: 100%;
+  min-height: 40px;
+  padding-inline: var(--ybm-space-x3);
+  border-radius: var(--ybm-radius-r2);
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  font-weight: var(--ybm-font-weight-semibold);
+}
+.g-bar__title:hover { background: var(--ybm-color-bg-neutral-muted); }
+.g-bar__sb {
+  flex: none;
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-weight: var(--ybm-font-weight-regular);
+  font-variant-numeric: tabular-nums;
+}
+.g-bar__name { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* 왼쪽 목록이 펼쳐져 있으면 상단바는 같은 정보를 두 번 보여주는 셈이라 감춘다.
+   접힘(레일) 상태에서만 [이전] 화면명 [다음] 바가 나온다. 모바일은 서랍이라 항상 보인다.
+   화면 이동은 바가 없을 때도 키보드 ← → 와 목록 선택으로 할 수 있다. */
+@media (min-width: 768px) {
+  .guide:not([data-nav-collapsed="true"]) .g-bar { display: none; }
+  /* 바를 빼면 화면(.g-stage)이 그리드 첫 행(auto)으로 밀려 높이가 무너진다.
+     바가 없는 동안에는 행을 하나(1fr)로 둬서 화면이 세로를 다 쓰게 한다. */
+  .guide:not([data-nav-collapsed="true"]) .g-content { grid-template-rows: minmax(0, 1fr); }
+}
+
+/* 화면 */
+.g-stage { position: relative; min-height: 0; overflow: hidden; }
+.g-frame { display: block; width: 100%; height: 100%; margin-inline: auto; border: 0; transform-origin: 0 0; }
+.g-content[data-device="mo"] .g-stage { background: var(--ybm-color-bg-neutral); }
+.g-content[data-device="mo"] .g-frame { width: var(--g-mo-width, 360px); background: var(--ybm-color-bg-layer-default); }
+.g-empty {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  overflow-y: auto;
+  margin: 0;
+  padding: var(--ybm-space-x6) var(--ybm-space-x5);
+  color: var(--ybm-color-fg-neutral-subtle);
+}
+/* 퍼블리싱 전 화면 — 화면명 · 확인 포인트 · 피그마 바로가기 (프로젝트 초기 공유용) */
+.g-empty__box { display: flex; flex-direction: column; align-items: flex-start; gap: var(--ybm-space-x3); width: min(100%, 560px); }
+.g-empty__badge {
+  padding: var(--ybm-space-x0_5) var(--ybm-space-x2);
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ybm-color-bg-neutral);
+  color: var(--ybm-color-fg-neutral-muted);
+  font-size: var(--ybm-font-size-t02); line-height: var(--ybm-line-height-t02); font-weight: var(--ybm-font-weight-medium);
+}
+.g-empty__title { margin: 0; color: var(--ybm-color-fg-neutral); font-size: var(--ybm-font-size-t07); line-height: var(--ybm-line-height-t07); font-weight: var(--ybm-font-weight-bold); }
+.g-empty__notes { margin: 0; padding-left: 1.2em; color: var(--ybm-color-fg-neutral-muted); display: grid; gap: var(--ybm-space-x1_5); }
+.g-empty__links { display: flex; flex-wrap: wrap; gap: var(--ybm-space-x2); margin-top: var(--ybm-space-x1); }
+
+
+/* ==========================================================================
+   모바일 (768 미만) — 목록은 서랍
+   · 상단바 왼쪽에 ☰ 가 더해지고, 접기 버튼은 쓰지 않는다
+   · PC/MO 선택은 감춘다 — 휴대폰에서는 모바일 화면만 본다 (iframe 은 화면 폭 그대로)
+   · 목록에서 화면을 고르면 서랍이 닫힌다 · dim 클릭 · ESC · 닫기 버튼으로도 닫힌다
+   ========================================================================== */
+@media (max-width: 767px) {
+  body.guide {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "content";
+    height: 100dvh;
+  }
+  .g-bar__nav { display: grid; }
+  .g-nav__collapse { display: none; }
+
+  /* 목록 = 왼쪽에서 밀려 나오는 서랍 */
+  .g-nav {
+    position: fixed;
+    z-index: 30;
+    top: 0; bottom: 0; left: 0;
+    width: min(86vw, 320px);
+    padding-top: env(safe-area-inset-top);
+    border-right: 0;
+    box-shadow: 0 0 0 1px var(--ybm-color-stroke-neutral-weak), 12px 0 32px -8px var(--ybm-color-palette-static-black-alpha-500);
+    transform: translateX(-101%);
+    visibility: hidden;
+    transition: transform var(--ybm-duration-slow) var(--ybm-easing-emphasized), visibility 0s linear var(--ybm-duration-slow);
+  }
+  .guide[data-nav="open"] .g-nav { transform: none; visibility: visible; transition-delay: 0s; }
+  .g-nav__head { padding: var(--ybm-space-x4); }
+  .g-nav__close { display: grid; }
+  .g-menu { padding-bottom: calc(var(--ybm-space-x6) + env(safe-area-inset-bottom)); }
+  .g-item { padding: var(--ybm-space-x2_5) var(--ybm-space-x3); }      /* 터치 타깃 */
+
+  /* 접힘 상태는 모바일에 적용하지 않는다 (서랍이 그 역할을 한다) */
+  .guide[data-nav-collapsed="true"] .g-title,
+  .guide[data-nav-collapsed="true"] .g-view,
+  .guide[data-nav-collapsed="true"] .g-item__name { display: revert; }
+  .guide[data-nav-collapsed="true"] .g-item { justify-content: flex-start; padding-inline: var(--ybm-space-x3); }
+  .guide[data-nav-collapsed="true"] .g-item__sb { width: 44px; }
+
+  .g-scrim {
+    display: block;
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    background: var(--ybm-color-bg-overlay);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--ybm-duration-slow) var(--ybm-easing-standard);
+  }
+  .guide[data-nav="open"] .g-scrim { opacity: 1; pointer-events: auto; }
+
+  .g-device { display: none; }
+
+  /* 모바일에서는 화면 폭 그대로 (축소 없음) */
+  .g-content[data-device="mo"] .g-stage { background: var(--ybm-color-bg-layer-default); }
+  .g-content[data-device="mo"] .g-frame { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.guide, .g-nav, .g-scrim { transition: none; }
+}

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>회원정보 고객센터 | YBM Family</title>
+<!--
+  SB.12  고객센터 → 도움말(FAQ) 목록
+  Figma: 2341:3255 (PC 1920×1673) · Mobile 2607:7144 (375×1657)
+         중분류 빈 상태 2744:11279 · Mobile 2744:13341
+         로그인 안내 팝업 2445:4016 · 모바일 전체 메뉴 2746:14642
+  · 헤더 → 히어로(type=Service) → 중분류 칩 + 아코디언 10개 + 문의 유도 배너 → 푸터
+  · 아코디언은 다중 펼침 허용 (기획서 UFAQ-01)
+  바로가기(뷰어·QA용): #sb12 · #sb12-empty · #sb12-login · #sb12-menu
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../cs-components.css">
+<link rel="stylesheet" href="../cs.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/common.js" defer></script>
+<script src="../js/faq.js" defer></script>
+</head>
+<body class="cs">
+
+<div class="cs-page">
+
+  <!-- Top bar — CS/Header -->
+  <header class="cs-header">
+    <div class="cs-header__inner">
+      <div class="cs-header__brand">
+        <a href="main.html"><img class="cs-header__logo" src="../assets/ybm-family-logo.svg" alt="YBM Family" width="127" height="33"></a>
+        <p class="cs-header__service">고객센터</p>
+      </div>
+      <nav class="cs-header__links" aria-label="회원">
+        <a href="#">로그인</a>
+        <span class="cs-divider" aria-hidden="true"></span>
+        <a href="#">회원가입</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cs-page__body cs-page__faq-body">
+
+    <!-- 히어로 — CS/Hero (type=Service) -->
+    <section class="cs-page__section cs-hero" data-type="service" aria-label="회원정보 고객센터 검색">
+      <div class="cs-hero__glow cs-hero__glow--base" aria-hidden="true"></div>
+      <svg class="cs-hero__glow cs-hero__glow--orbit" viewBox="0 0 720 72" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="cs-hero-glow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:var(--cs-gradient-brand-start)"></stop>
+            <stop offset="100%" style="stop-color:var(--cs-gradient-brand-end)"></stop>
+          </linearGradient>
+        </defs>
+        <rect class="cs-hero__glow-line" x="3" y="3" width="714" height="66" rx="33" pathLength="1000"></rect>
+      </svg>
+      <div class="cs-hero__inner">
+        <h1 class="cs-hero__title">회원정보 고객센터</h1>
+
+        <div class="cs-hero__search">
+          <form class="cs-hero__searchbox" id="search-form" action="#" novalidate>
+            <!-- CS/Search Bar (type=Service) — 서비스 셀렉트 없음 -->
+            <div class="cs-search cs-search--service">
+              <div class="cs-search__main">
+                <input class="cs-search__input" type="search" id="search-input"
+                       placeholder="AI가 질문을 분석해 가장 관련 높은 답변을 찾아드립니다." aria-label="검색어">
+              </div>
+              <div class="cs-search__actions">
+                <button type="button" class="cs-search__clear" id="search-clear" hidden>
+                  <i class="ds-icon ds-icon--x" aria-hidden="true"></i><span class="ds-sr-only">검색어 지우기</span>
+                </button>
+                <button type="submit" class="cs-search__submit">
+                  <i class="ds-icon ds-icon--search" aria-hidden="true"></i><span class="ds-sr-only">검색</span>
+                </button>
+              </div>
+            </div>
+            <p class="cs-hero__hint" id="search-hint" hidden>두 글자 이상 입력해 주세요.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <div class="cs-container">
+      <div class="cs-faq-content">
+
+        <div class="cs-faq-area">
+          <!-- 중분류 칩 — DS Chip (PC large / 모바일 medium) -->
+          <div class="cs-category-chips" id="category-chips" role="group" aria-label="중분류">
+            <button type="button" class="ds-chip" data-size="large" aria-pressed="true">자주 찾는 도움말</button>
+            <button type="button" class="ds-chip" data-size="large" data-variant="outlineStrong" aria-pressed="false">문제해결</button>
+            <button type="button" class="ds-chip" data-size="large" data-variant="outlineStrong" aria-pressed="false">회원가입/탈퇴</button>
+            <button type="button" class="ds-chip" data-size="large" data-variant="outlineStrong" aria-pressed="false">아이디/비밀번호 찾기</button>
+            <button type="button" class="ds-chip" data-size="large" data-variant="outlineStrong" aria-pressed="false">회원정보 변경</button>
+          </div>
+
+          <!-- FAQ 목록 — CS/FAQ Accordion Item ×10 (다중 펼침 허용) -->
+          <div class="cs-faq" id="faq-list">
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">탈퇴 후 같은 아이디로 다시 가입할 수 있나요?</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">탈퇴한 아이디는 다시 사용할 수 없습니다.<br>개인정보 보호와 부정 이용을 막기 위해, 한 번 탈퇴한 아이디는 본인이나 다른 사람 모두 재사용할 수 없습니다.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">이미 가입된 아이디라고 나와요.</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">이미 가입된 아이디는 다시 사용할 수 없습니다. 아이디 찾기로 가입 여부를 확인해 주세요.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">로그인 시 비밀번호 오류가 계속 발생해요.</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">비밀번호를 5회 이상 틀리면 로그인이 제한됩니다. 비밀번호 재설정 후 다시 시도해 주세요.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">탈퇴하면 응시 내역과 성적은 어떻게 되나요?</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">탈퇴 시 응시 내역과 성적 정보는 관계 법령에 따라 보관 후 삭제됩니다.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">SNS 계정으로 로그인하려면 어떻게 하나요?</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">로그인 화면에서 간편 로그인 버튼을 눌러 사용 중인 계정을 연결할 수 있습니다.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">휴면 계정을 해제하고 싶어요.</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">1년 이상 로그인하지 않으면 휴면 계정으로 전환됩니다. 본인인증 후 바로 해제할 수 있습니다.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">만 14세 미만도 회원가입이 가능한가요?</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">만 14세 미만은 법정대리인의 동의가 있어야 가입할 수 있습니다.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">이름이 바뀌었는데 어떻게 변경하나요?</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">본인인증을 다시 하면 이름이 자동으로 갱신됩니다. 인증이 어려우면 1:1 문의로 접수해 주세요.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">휴대폰 번호나 이메일을 변경하고 싶어요.</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">로그인 후 회원정보 수정에서 변경할 수 있습니다.</p></div>
+              </div>
+            </div>
+            <div class="cs-faq-item" data-state="closed">
+              <button type="button" class="cs-faq-item__q" aria-expanded="false">
+                <span class="cs-faq-item__text"><span class="cs-faq-item__mark">Q.</span><span class="cs-faq-item__title">휴대폰 본인인증이 되지 않아요.</span></span>
+                <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="cs-faq-item__a">
+                <div class="cs-faq-item__a-inner"><p class="cs-faq-item__answer">명의자와 가입자 정보가 다르면 인증이 제한됩니다. 통신사에 등록된 정보를 확인해 주세요.</p></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 중분류 빈 상태 — CS/Empty State (타이틀만) · Figma 2744:11279 -->
+          <div class="cs-faq cs-faq--empty" id="faq-empty" hidden>
+            <div class="cs-empty">
+              <div class="cs-empty__text">
+                <p class="cs-empty__title">등록된 도움말이 없습니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 문의 유도 배너 — CS/Inquiry Banner -->
+        <div class="cs-inquiry-banner">
+          <p class="cs-inquiry-banner__title">원하는 답변을 찾지 못하셨나요?</p>
+          <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" id="inquiry-btn">
+            문의하기<i class="ds-icon ds-icon--headset" aria-hidden="true"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer — CS/Footer -->
+  <footer class="cs-footer">
+    <div class="cs-footer__inner cs-container">
+      <div class="cs-footer__text">
+        <p class="cs-footer__hours"><b>평일 09:00-18:00</b><span>(점심시간 12:30~13:30 / 주말, 공휴일 휴무)</span></p>
+        <p class="cs-footer__copyright">Copyright © (주)와이비엠넷. All rights reserved.</p>
+      </div>
+      <div class="cs-footer__aside">
+        <nav class="cs-footer__links" aria-label="약관">
+          <a href="#">회사소개</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">개인정보 처리방침</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">이용약관</a>
+        </nav>
+        <div class="cs-family">
+          <button type="button" class="cs-family__button" id="family-site" aria-expanded="false" aria-controls="family-menu">
+            <span>패밀리 사이트</span>
+            <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>
+          </button>
+          <div class="cs-family__menu" id="family-menu" role="menu" hidden>
+            <a href="#" role="menuitem">YBM 어학시험</a>
+            <a href="#" role="menuitem">YBM 인강</a>
+            <a href="#" role="menuitem">YBM 어학원</a>
+            <a href="#" role="menuitem">YBM 교과서</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- 로그인 안내 — DS Alert Dialog (action=pair) · Figma 2445:4016 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="login-alert" role="alertdialog"
+        aria-labelledby="login-alert-title" aria-describedby="login-alert-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="login-alert-title">로그인이 필요합니다</h2>
+    <p class="ds-alertdialog__desc" id="login-alert-desc">로그인 후 문의 접수가 가능합니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer" data-action="pair">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-size="large" data-ds-close>취소</button>
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" id="login-confirm">로그인</button>
+  </div>
+</dialog>
+
+<!-- 모바일 전체 메뉴 — Figma 2746:14642 (모바일 전용) -->
+<div class="cs-menu" id="mobile-menu" role="dialog" aria-label="전체 메뉴" hidden>
+  <div class="cs-menu__header">
+    <p class="cs-menu__title">전체 메뉴</p>
+    <button type="button" class="cs-menu__close" id="mobile-menu-close">
+      <i class="ds-icon ds-icon--x" aria-hidden="true"></i><span class="ds-sr-only">닫기</span>
+    </button>
+  </div>
+  <nav class="cs-menu__list" aria-label="고객센터">
+    <a class="cs-menu__item" href="main.html">홈<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i></a>
+    <a class="cs-menu__item" href="faq.html">도움말<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i></a>
+    <a class="cs-menu__item" href="#">문의하기<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i></a>
+    <a class="cs-menu__item" href="#">내 문의 내역<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i></a>
+    <a class="cs-menu__item" href="#">공지사항<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i></a>
+  </nav>
+</div>
+
+</body>
+</html>

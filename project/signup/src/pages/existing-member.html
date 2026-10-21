@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="회원가입 · 기존 회원 조회 | YBM Family">회원가입 · 기존 회원 조회 | YBM Family</title>
+<!--
+  SB.13 ~ SB.14  회원가입 > 기존 회원 조회 (본인인증 성공 직후)
+  기준: 스토리보드 62슬라이드본(260831) 13~14p
+  서버가 조회 결과에 따라 둘 중 하나만 보여준다 (data-case):
+    · single — SB.13 실명인증된 아이디 1개 → 추가 가입 불가, 비밀번호 재설정 / 로그인하기만
+    · list   — SB.14 같은 정보로 가입된 아이디 여러 개 → 선택 후 로그인 또는 계속해서 가입하기
+    · 가입된 아이디가 없으면 이 화면 없이 SB.15 아이디 입력으로 (서버에서 바로 이동)
+  바로가기(뷰어·QA용): existing-member.html#sb13 · #sb14 · #sb14-selected
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/existing-member.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title" data-i18n="회원가입">회원가입</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <!-- ============ SB.13 · 실명인증 아이디 1개 ============ -->
+  <section class="signup-card" data-case="single" aria-labelledby="single-title">
+    <div class="signup-content">
+      <h2 class="signup-title" id="single-title" data-i18n="이미 가입된 회원입니다">이미 가입된 회원입니다</h2>
+      <div class="signup-member">
+        <!-- 계정 박스 — 이름 · 아이디 · 가입일자 (기획서 1~3번 호출) -->
+        <dl class="signup-account">
+          <div class="signup-account__row"><dt data-i18n="이름">이름</dt><dd data-i18n="홍길동">홍길동</dd></div>
+          <div class="signup-account__row"><dt data-i18n="아이디">아이디</dt><dd>userid</dd></div>
+          <div class="signup-account__row"><dt data-i18n="가입일자">가입일자</dt><dd>2000.00.00</dd></div>
+        </dl>
+        <p class="signup-note">
+          <i class="ds-icon ds-icon--circle-alert" aria-hidden="true"></i>
+          <span data-i18n="시험 접수 등 일부 서비스는 실명인증된 1개 아이디만 이용 가능합니다.">시험 접수 등 일부 서비스는 <em>실명인증된 1개 아이디만</em> 이용 가능합니다.</span>
+        </p>
+      </div>
+    </div>
+    <!-- CTA Area (show secondary) — 비밀번호 재설정: 새 창 find_pw.jsp (추가 인증 없이 바로 재설정) / 로그인하기: 현재 창 login.asp -->
+    <div class="signup-cta">
+      <div class="signup-cta__buttons">
+        <button type="button" class="ds-btn signup-cta__secondary" data-variant="neutralOutline" data-size="large"
+                data-href="https://member.ybmnet.co.kr/join/find_pw.jsp" data-target="_blank" data-i18n="비밀번호 재설정">비밀번호 재설정</button>
+        <button type="button" class="ds-btn" data-variant="brandSolid" data-size="large"
+                data-href="https://www.ybm.co.kr/common/login.asp" data-i18n="로그인하기">로그인하기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SB.14 · 가입된 아이디 여러 개 ============ -->
+  <section class="signup-card" data-case="list" aria-labelledby="list-title" hidden>
+    <form id="member-form" novalidate>
+      <div class="signup-content">
+        <h2 class="signup-title" id="list-title" data-i18n="고객님 정보로 이미 가입된 아이디를 찾았어요">고객님 정보로<br>이미 가입된 아이디를 찾았어요</h2>
+        <div class="signup-member">
+          <!-- 아이디 목록 — 선택한 아이디로 로그인하면 실명인증값이 그 아이디에 저장된다 (기획서 정책) -->
+          <fieldset class="signup-account signup-account--list">
+            <legend class="ds-sr-only" data-i18n="아이디 선택">아이디 선택</legend>
+            <div class="signup-account__option">
+              <label class="ds-radio">
+                <input type="radio" class="ds-radio__control" name="member-id" value="userid1">
+                <span>userid1</span>
+              </label>
+              <span class="ds-badge" data-tone="brand" data-i18n="실명인증">실명인증</span>
+              <span class="ds-tag-group"><span>(<span data-i18n="최근 로그인">최근 로그인</span>: 2024.01.10)</span></span>
+            </div>
+            <div class="signup-account__option">
+              <label class="ds-radio">
+                <input type="radio" class="ds-radio__control" name="member-id" value="userid2">
+                <span>userid2</span>
+              </label>
+              <span class="ds-tag-group"><span>(<span data-i18n="최근 로그인">최근 로그인</span>: 2021.05.20)</span></span>
+            </div>
+          </fieldset>
+          <p class="signup-note">
+            <i class="ds-icon ds-icon--circle-alert" aria-hidden="true"></i>
+            <span data-i18n="시험 접수 등 일부 서비스는 실명인증된 1개 아이디만 이용 가능합니다.">시험 접수 등 일부 서비스는 <em>실명인증된 1개 아이디만</em> 이용 가능합니다.</span>
+          </p>
+        </div>
+      </div>
+      <!-- CTA Area (show secondary + link bottom) — 아이디를 고르면 두 버튼 활성 -->
+      <div class="signup-cta">
+        <div class="signup-cta__buttons">
+          <button type="button" class="ds-btn signup-cta__secondary" id="list-reset" data-variant="neutralOutline" data-size="large" disabled
+                  data-href="https://member.ybmnet.co.kr/join/find_pw.jsp" data-target="_blank" data-i18n="비밀번호 재설정">비밀번호 재설정</button>
+          <button type="submit" class="ds-btn" id="list-login" data-variant="brandSolid" data-size="large" disabled
+                  data-href="https://www.ybm.co.kr/common/login.asp" data-i18n="로그인하기">로그인하기</button>
+        </div>
+        <button type="button" class="ds-link" id="continue-signup" data-i18n="계속해서 가입하기">계속해서 가입하기</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+</body>
+</html>

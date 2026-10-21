@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>문의 상세 | YBM Family 고객센터</title>
+<!--
+  SB.18~20  고객센터 → 문의 상세 · 재문의 작성 · 재문의 완료
+  Figma: 답변대기 2405:3532 (PC 1920×968) · Mobile 2680:10177
+         답변완료 2369:2874 (PC 1920×1439) · Mobile 2680:10359
+         삭제 확인 팝업 2464:7517 · Mobile 2680:13077
+         재문의 작성 2401:3211 (PC 1920×1865) · Mobile 2680:10635
+         등록 완료 팝업 2464:7552 · Mobile 2680:13106
+         재문의 완료 2403:3560 (PC 1920×1678) · Mobile 2680:10882
+  · 한 화면의 상태다 — 답변·재문의 스레드·재문의 폼이 상태에 따라 붙고 빠진다
+  · 수정·삭제는 답변대기에서만, 재문의는 답변완료에서만 가능하다
+  바로가기(뷰어·QA용): #sb18 · #sb18-answered · #sb18-delete
+                       #sb19 · #sb19-done · #sb20
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../cs-components.css">
+<link rel="stylesheet" href="../cs.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/common.js" defer></script>
+<script src="../js/inquiry-detail.js" defer></script>
+</head>
+<body class="cs" data-auth="in">
+
+<div class="cs-page">
+
+  <!-- Top bar — CS/Header -->
+  <header class="cs-header">
+    <div class="cs-header__inner">
+      <div class="cs-header__brand">
+        <a href="main.html"><img class="cs-header__logo" src="../assets/ybm-family-logo.svg" alt="YBM Family" width="127" height="33"></a>
+        <p class="cs-header__service">고객센터</p>
+      </div>
+      <nav class="cs-header__links" aria-label="회원">
+        <a href="#">홍길동님</a>
+        <span class="cs-divider" aria-hidden="true"></span>
+        <a href="#">로그아웃</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cs-page__body cs-page__detail-body">
+    <div class="cs-container">
+      <div class="cs-detail">
+
+        <!-- CS/Page Heading (우측=없음) -->
+        <div class="cs-page-heading">
+          <h1 class="cs-page-heading__title">내 문의 내역</h1>
+        </div>
+
+        <!-- 문의 카드 — 문의 정보(목록 행과 같은 컴포넌트) + 문의 내용 -->
+        <div class="cs-inquiry-card">
+          <div class="cs-inquiry-item cs-inquiry-item--static">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" id="detail-status">답변대기</span>
+                <span class="cs-inquiry-item__type">YBM 회원정보<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>가입/탈퇴</span>
+              </span>
+              <span class="cs-inquiry-item__title">가입한 내역이 사라졌어요.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2026.07.22 09:17</span>
+          </div>
+          <div class="cs-inquiry-body">
+            <p class="cs-inquiry-body__text">2026.07.22 오전 9시경부터 Windows 11, Chrome 128 환경에서 로그인 후 마이페이지 &gt; 수강 내역에 들어가면<br>2024년에 가입한 YBM 인강 수강 내역이 아무것도 표시되지 않습니다.<br>로그아웃 후 다시 로그인하고 브라우저 캐시를 삭제해 보았지만 증상은 동일했고, 모바일 앱에서도 같은 화면이 나타납니다.<br>당시 결제한 토익 종합반 강의는 아직 수강 기간이 남아 있어 계속 들어야 하는 상황이라<br>기존 수강 내역과 진도율을 확인하고 이어서 학습할 수 있도록 확인 부탁드립니다.</p>
+            <div class="cs-attachments">
+              <a class="cs-attachment" href="#" download>
+                <i class="ds-icon ds-icon--paperclip" aria-hidden="true"></i>error_capture.zip
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 답변 — CS/Inquiry Thread (type=답변) · 만족도는 답변 완료 7일 이내만 -->
+        <div class="cs-thread" data-type="answer" id="answer" hidden>
+          <div class="cs-thread__body">
+            <div class="cs-thread__head">
+              <span class="cs-thread__title"><i class="ds-icon ds-icon--corner-down-right" aria-hidden="true"></i>답변</span>
+              <span class="cs-thread__date">2026.07.23 10:30</span>
+            </div>
+            <p class="cs-thread__text">안녕하세요. YBM 고객센터입니다.<br>문의하신 가입 내역은 회원정보 통합 과정에서 통합 계정으로 이관된 것으로 확인됩니다. 통합된 아이디로 로그인하시면 마이페이지 &gt; 수강 내역에서 기존 내역을 그대로 확인하실 수 있습니다.<br>추가로 궁금하신 점이 있으면 언제든지 문의해 주세요. 감사합니다.</p>
+          </div>
+
+          <!-- 만족도 평가 — CS/FAQ Feedback (SB 14 와 같은 컴포넌트) -->
+          <div class="cs-feedback" data-state="default" data-chosen="">
+            <div class="cs-feedback__row">
+              <p class="cs-feedback__label">답변에 만족하셨나요?</p>
+              <div class="cs-feedback__buttons">
+                <button type="button" class="ds-btn cs-feedback__btn" data-variant="ghost" data-size="small" data-value="no" aria-pressed="false">
+                  <i class="ds-icon ds-icon--thumbs-down" aria-hidden="true"></i>아쉬워요
+                </button>
+                <button type="button" class="ds-btn cs-feedback__btn" data-variant="ghost" data-size="small" data-value="yes" aria-pressed="false">
+                  <i class="ds-icon ds-icon--thumbs-up" aria-hidden="true"></i>만족해요
+                </button>
+              </div>
+            </div>
+
+            <div class="cs-feedback__reason" hidden>
+              <p class="cs-feedback__reason-title">어떤 점이 아쉬우셨나요?</p>
+              <div class="cs-feedback__reasons" role="radiogroup" aria-label="불만족 사유">
+                <label class="ds-radio" data-tone="neutral"><input type="radio" class="ds-radio__control" name="reason-detail" value="insufficient"><span class="ds-radio__label">답변 내용이 충분하지 않아요.</span></label>
+                <label class="ds-radio" data-tone="neutral"><input type="radio" class="ds-radio__control" name="reason-detail" value="slow"><span class="ds-radio__label">답변을 받기까지 시간이 오래 걸렸어요.</span></label>
+                <label class="ds-radio" data-tone="neutral"><input type="radio" class="ds-radio__control" name="reason-detail" value="unkind"><span class="ds-radio__label">안내가 불친절했어요.</span></label>
+              </div>
+              <div class="cs-feedback__actions">
+                <button type="button" class="ds-btn cs-feedback__submit" data-variant="neutralSolid" data-size="small">제출</button>
+                <button type="button" class="ds-btn cs-feedback__skip" data-variant="ghost" data-size="small">건너뛰기</button>
+              </div>
+            </div>
+
+            <p class="cs-feedback__thanks" hidden>소중한 의견 감사합니다.</p>
+          </div>
+        </div>
+
+        <!-- 재문의 — CS/Inquiry Thread (type=재문의) -->
+        <div class="cs-thread" data-type="reinquiry" id="reinquiry-thread" hidden>
+          <div class="cs-thread__head">
+            <span class="cs-thread__title"><i class="ds-icon ds-icon--corner-down-right" aria-hidden="true"></i>재문의</span>
+            <span class="cs-thread__date">2026.07.24 14:05</span>
+          </div>
+          <p class="cs-thread__text">안내해 주신 대로 통합 아이디로 로그인했는데, 마이페이지 &gt; 수강 내역에 2024년 YBM 인강 수강 내역이 여전히 보이지 않습니다.<br>기존 아이디와 통합 아이디 모두 확인해 봤지만 같은 증상입니다. 다시 한번 확인 부탁드립니다.</p>
+        </div>
+
+        <!-- 재문의 유도 배너 — 답변완료에서만 -->
+        <div class="cs-inquiry-banner cs-inquiry-banner--outline" id="reinquiry-banner" hidden>
+          <p class="cs-inquiry-banner__title">문제를 해결하지 못하셨나요?</p>
+          <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" id="reinquiry-btn">재문의하기</button>
+        </div>
+
+        <!-- 재문의 작성 (SB 19) — 내용과 첨부만 입력한다 (원 문의를 이어받는다) -->
+        <form class="cs-reinquiry" id="reinquiry-form" novalidate hidden>
+          <section class="cs-form-section">
+            <h2 class="cs-form-section__title">재문의 작성</h2>
+            <div class="cs-form-section__items cs-form-section__items--reinquiry">
+
+              <div class="ds-field">
+                <div class="ds-field__header">
+                  <label class="ds-field__label" for="reinquiry-content">재문의 내용</label><span class="ds-field__required" aria-hidden="true"></span>
+                  <span class="ds-field__count" id="reinquiry-count">0 / 2,000자</span>
+                </div>
+                <textarea class="ds-textarea cs-form__textarea" id="reinquiry-content" placeholder="내용을 입력해 주세요." maxlength="2000" required></textarea>
+              </div>
+
+              <div class="ds-field">
+                <div class="ds-field__header">
+                  <span class="ds-field__label" id="reinquiry-attach-label">첨부파일</span>
+                  <span class="ds-field__count" id="reinquiry-size"><b>0MB</b> / 10MB</span>
+                </div>
+                <div class="cs-field-row cs-field-row--attach" role="group" aria-labelledby="reinquiry-attach-label">
+                  <button type="button" class="ds-fieldbutton" id="reinquiry-attach-field" aria-readonly="true" tabindex="-1">
+                    <span class="ds-fieldbutton__value" data-placeholder="파일을 등록해 주세요."></span>
+                  </button>
+                  <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" id="reinquiry-attach-btn">
+                    <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>첨부
+                  </button>
+                  <input type="file" id="reinquiry-attach-input" accept=".jpg,.jpeg,.png,.pdf,.xlsx" multiple hidden>
+                </div>
+                <div class="cs-attachments" id="reinquiry-attach-list" hidden></div>
+                <ul class="cs-form-note">
+                  <li><span aria-hidden="true">·</span><span>JPG, PNG, PDF, XLSX 파일을 최대 10MB까지 첨부할 수 있습니다.</span></li>
+                  <li><span aria-hidden="true">·</span><span>화면 관련 문의의 경우 캡처 이미지를 함께 첨부해 주시면 더욱 정확한 답변을 드릴 수 있습니다.</span></li>
+                </ul>
+              </div>
+
+            </div>
+          </section>
+
+          <div class="cs-form-actions">
+            <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" id="reinquiry-cancel">취소</button>
+            <button type="submit" class="ds-btn" data-variant="neutralSolid" data-size="large" id="reinquiry-submit" disabled>재문의</button>
+          </div>
+        </form>
+
+        <!-- 하단 — CS/Detail Actions (type=편집 가능 / 편집 불가) -->
+        <div class="cs-detail-actions" id="detail-actions" data-type="editable">
+          <div class="cs-detail-actions__row">
+            <a class="ds-btn" data-variant="neutralOutline" data-size="large" href="inquiry-list.html#sb17">목록으로</a>
+            <div class="cs-detail-actions__edit">
+              <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" id="edit-btn">수정</button>
+              <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" id="delete-btn">삭제</button>
+            </div>
+          </div>
+          <p class="cs-info-caption" id="edit-caption" hidden>
+            <i class="ds-icon ds-icon--circle-alert" aria-hidden="true"></i>답변 완료 후에는 수정, 삭제가 불가합니다.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer — CS/Footer -->
+  <footer class="cs-footer">
+    <div class="cs-footer__inner cs-container">
+      <div class="cs-footer__text">
+        <p class="cs-footer__hours"><b>평일 09:00-18:00</b><span>(점심시간 12:30~13:30 / 주말, 공휴일 휴무)</span></p>
+        <p class="cs-footer__copyright">Copyright © (주)와이비엠넷. All rights reserved.</p>
+      </div>
+      <div class="cs-footer__aside">
+        <nav class="cs-footer__links" aria-label="약관">
+          <a href="#">회사소개</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">개인정보 처리방침</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">이용약관</a>
+        </nav>
+        <div class="cs-family">
+          <button type="button" class="cs-family__button" id="family-site" aria-expanded="false" aria-controls="family-menu">
+            <span>패밀리 사이트</span>
+            <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>
+          </button>
+          <div class="cs-family__menu" id="family-menu" role="menu" hidden>
+            <a href="#" role="menuitem">YBM 어학시험</a>
+            <a href="#" role="menuitem">YBM 인강</a>
+            <a href="#" role="menuitem">YBM 어학원</a>
+            <a href="#" role="menuitem">YBM 교과서</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- 문의 삭제 확인 2464:7532 — 되돌릴 수 없어 주 버튼이 criticalSolid 다 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-delete" role="alertdialog"
+        aria-labelledby="alert-delete-title" aria-describedby="alert-delete-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-delete-title">문의를 삭제하시겠습니까?</h2>
+    <p class="ds-alertdialog__desc" id="alert-delete-desc">삭제한 문의는 다시 확인할 수 없습니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer" data-action="critical">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-size="large" data-ds-close>취소</button>
+    <button type="button" class="ds-btn" data-variant="criticalSolid" data-size="large" id="delete-confirm">삭제</button>
+  </div>
+</dialog>
+
+<!-- 재문의 등록 완료 2464:7587 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-reinquiry" role="alertdialog"
+        aria-labelledby="alert-reinquiry-title" aria-describedby="alert-reinquiry-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-reinquiry-title">재문의가 등록되었습니다</h2>
+    <p class="ds-alertdialog__desc" id="alert-reinquiry-desc">답변이 등록되면 입력하신 이메일로 안내해 드립니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer" data-action="pair">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-size="large" data-ds-close>홈으로</button>
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" id="reinquiry-done">내 문의 내역</button>
+  </div>
+</dialog>
+
+</body>
+</html>

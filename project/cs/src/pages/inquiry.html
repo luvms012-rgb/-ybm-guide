@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>문의하기 | YBM Family 고객센터</title>
+<!--
+  SB.15~16  고객센터 → 문의하기 (작성)
+  Figma: 입력 전 2366:4906 (PC 1920×1866) · Mobile 2664:8779 (375×1893)
+         입력 중 2382:3196 (PC 1920×2134) · Mobile 2665:10592 (375×2386)
+         팝업 6종 — 등록 완료 2448:4489 · 필수 항목 미입력 2449:4439 · 문의 중단 2451:4681
+                    파일 형식 2452:4907 · 파일 용량 2464:5137 · 개인정보 동의 2464:5211
+  · 로그인 상태 화면이다 (헤더 "홍길동님 | 로그아웃")
+  · 입력 전 / 입력 중은 같은 화면의 상태다 — 환불 계좌정보와 AI 추천 연관 도움말은
+    조건이 맞을 때만 나타난다(중분류에 '환불' 포함 / 제목 2자 이상)
+  바로가기(뷰어·QA용): #sb15 · #sb15-filled · #sb16-done · #sb16-required
+                       #sb16-leave · #sb16-filetype · #sb16-filesize · #sb16-consent
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../cs-components.css">
+<link rel="stylesheet" href="../cs.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/common.js" defer></script>
+<script src="../js/inquiry.js" defer></script>
+</head>
+<body class="cs" data-auth="in">
+
+<div class="cs-page">
+
+  <!-- Top bar — CS/Header -->
+  <header class="cs-header">
+    <div class="cs-header__inner">
+      <div class="cs-header__brand">
+        <a href="main.html"><img class="cs-header__logo" src="../assets/ybm-family-logo.svg" alt="YBM Family" width="127" height="33"></a>
+        <p class="cs-header__service">고객센터</p>
+      </div>
+      <nav class="cs-header__links" aria-label="회원">
+        <a href="#">홍길동님</a>
+        <span class="cs-divider" aria-hidden="true"></span>
+        <a href="#">로그아웃</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cs-page__body cs-page__inquiry-body">
+    <div class="cs-container">
+      <form class="cs-form" id="inquiry-form" novalidate>
+
+        <!-- CS/Page Heading (우측=필수 안내 · 기획서 SB 15 기준 폼 상단 우측) -->
+        <div class="cs-page-heading">
+          <h1 class="cs-page-heading__title">문의하기</h1>
+          <p class="cs-form-required"><span class="cs-form-required__dot" aria-hidden="true"></span>필수 입력 항목입니다.</p>
+        </div>
+
+        <!-- 접수자 정보 — 이름은 계정 값(읽기 전용), 이메일은 수정 가능 -->
+        <section class="cs-form-section">
+          <h2 class="cs-form-section__title">접수자 정보</h2>
+          <div class="cs-form-section__items cs-form-section__items--row">
+
+            <div class="ds-field">
+              <div class="ds-field__header">
+                <label class="ds-field__label" for="applicant-name">이름</label><span class="ds-field__required" aria-hidden="true"></span>
+              </div>
+              <div class="ds-input" data-variant="outline">
+                <input class="ds-input__control" type="text" id="applicant-name" value="홍길동" readonly>
+              </div>
+            </div>
+
+            <div class="ds-field">
+              <div class="ds-field__header">
+                <label class="ds-field__label" for="applicant-email">답변 받을 이메일 주소</label><span class="ds-field__required" aria-hidden="true"></span>
+              </div>
+              <div class="ds-input" data-variant="outline">
+                <input class="ds-input__control" type="email" id="applicant-email" value="abcdeed@ybm.co.kr" placeholder="이메일 주소를 입력해 주세요." aria-describedby="email-note" required>
+              </div>
+              <!-- 이메일 안내 — 이메일 입력 바로 아래 -->
+              <p class="cs-info-caption" id="email-note">
+                <i class="ds-icon ds-icon--info" aria-hidden="true"></i>답변이 등록되면 입력하신 이메일로 안내가 발송됩니다.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 문의 접수 정보 -->
+        <section class="cs-form-section">
+          <h2 class="cs-form-section__title">문의 접수 정보</h2>
+          <div class="cs-form-section__items">
+
+            <!-- 문의 유형 — 대분류(서비스) > 중분류(카테고리) -->
+            <div class="ds-field">
+              <div class="ds-field__header">
+                <span class="ds-field__label" id="type-label">문의 유형</span><span class="ds-field__required" aria-hidden="true"></span>
+              </div>
+              <div class="cs-field-row" role="group" aria-labelledby="type-label">
+                <div class="cs-select">
+                  <button type="button" class="ds-fieldbutton" id="type-service" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="ds-fieldbutton__value" data-placeholder="서비스 선택"></span>
+                    <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                  </button>
+                  <div class="cs-select__menu ds-select-content" id="type-service-menu" role="listbox" aria-label="서비스" hidden></div>
+                </div>
+                <div class="cs-select">
+                  <button type="button" class="ds-fieldbutton" id="type-category" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="ds-fieldbutton__value" data-placeholder="카테고리 선택"></span>
+                    <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                  </button>
+                  <div class="cs-select__menu ds-select-content" id="type-category-menu" role="listbox" aria-label="카테고리" hidden></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 환불 계좌정보 — 중분류에 '환불'이 포함될 때만 나타난다 -->
+            <div class="ds-field" id="refund" hidden>
+              <div class="ds-field__header">
+                <span class="ds-field__label" id="refund-label">환불 계좌정보</span>
+              </div>
+              <div class="cs-field-row cs-field-row--three" role="group" aria-labelledby="refund-label">
+                <div class="cs-select">
+                  <button type="button" class="ds-fieldbutton" id="refund-bank" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="ds-fieldbutton__value" data-placeholder="은행 선택"></span>
+                    <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                  </button>
+                  <div class="cs-select__menu ds-select-content" id="refund-bank-menu" role="listbox" aria-label="은행" hidden></div>
+                </div>
+                <div class="ds-input" data-variant="outline">
+                  <input class="ds-input__control" type="text" id="refund-holder" placeholder="예금주" aria-label="예금주">
+                </div>
+                <div class="ds-input" data-variant="outline">
+                  <input class="ds-input__control" type="text" id="refund-account" inputmode="numeric" placeholder="계좌번호 (- 제외하고 입력)" aria-label="계좌번호">
+                </div>
+              </div>
+              <p class="ds-field__help">환불을 요청하시는 경우 환불받으실 계좌정보를 입력해 주세요. 문의 유형에 ‘환불’이 포함된 경우에만 표시됩니다.</p>
+            </div>
+
+            <!-- 문의 제목 + AI 추천 연관 도움말 -->
+            <div class="cs-form-field-group">
+              <div class="ds-field">
+                <div class="ds-field__header">
+                  <label class="ds-field__label" for="inquiry-title">문의 제목</label><span class="ds-field__required" aria-hidden="true"></span>
+                </div>
+                <div class="ds-input" data-variant="outline">
+                  <input class="ds-input__control" type="text" id="inquiry-title" placeholder="제목을 입력해 주세요." maxlength="100" required>
+                </div>
+              </div>
+
+              <!-- AI 추천 연관 도움말 — 제목을 입력하면 나타난다 (최대 5건) -->
+              <div class="cs-ai-recommend" id="ai-recommend" hidden>
+                <p class="cs-ai-recommend__title"><span>AI 추천 연관 도움말</span></p>
+                <div class="cs-ai-recommend__list" id="ai-recommend-list">
+                  <button type="button" class="cs-recommend-chip">Q. 환불 신청은 어디에서 하나요?</button>
+                  <button type="button" class="cs-recommend-chip">Q. 수강 중인 강의도 환불받을 수 있나요?</button>
+                  <button type="button" class="cs-recommend-chip">Q. 환불 금액은 어떻게 계산되나요?</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 문의 내용 -->
+            <div class="ds-field">
+              <div class="ds-field__header">
+                <label class="ds-field__label" for="inquiry-content">문의 내용</label><span class="ds-field__required" aria-hidden="true"></span>
+                <span class="ds-field__count" id="content-count">0 / 2,000자</span>
+              </div>
+              <textarea class="ds-textarea cs-form__textarea" id="inquiry-content" placeholder="내용을 입력해 주세요." maxlength="2000" required></textarea>
+            </div>
+
+            <!-- 첨부파일 — 5개 · 10MB -->
+            <div class="ds-field">
+              <div class="ds-field__header">
+                <span class="ds-field__label" id="attach-label">첨부파일</span>
+                <span class="ds-field__count" id="attach-size"><b>0MB</b> / 10MB</span>
+              </div>
+              <div class="cs-field-row cs-field-row--attach" role="group" aria-labelledby="attach-label">
+                <button type="button" class="ds-fieldbutton" id="attach-field" aria-readonly="true" tabindex="-1">
+                  <span class="ds-fieldbutton__value" data-placeholder="파일을 등록해 주세요."></span>
+                </button>
+                <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" id="attach-btn">
+                  <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>첨부
+                </button>
+                <input type="file" id="attach-input" accept=".jpg,.jpeg,.png,.pdf,.xlsx,.zip" multiple hidden>
+              </div>
+              <!-- 선택한 파일 — CS/Attachment (Figma 에 '선택 후' 화면은 없다) -->
+              <div class="cs-attachments" id="attach-list" hidden></div>
+              <ul class="cs-form-note">
+                <li><span aria-hidden="true">·</span><span>JPG, PNG, PDF, XLSX, ZIP 파일을 최대 5개, 10MB까지 첨부할 수 있습니다.</span></li>
+                <li><span aria-hidden="true">·</span><span>개인정보가 포함된 파일은 반드시 ZIP 파일로 압축하여 첨부해 주세요.</span></li>
+                <li><span aria-hidden="true">·</span><span>오류 화면이나 문의 내용을 확인할 수 있는 캡처 이미지를 함께 첨부하면 더 정확한 안내를 받을 수 있습니다.</span></li>
+              </ul>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 약관 동의 -->
+        <section class="cs-form-section">
+          <h2 class="cs-form-section__title">약관 동의</h2>
+          <div class="cs-form-section__items cs-form-section__items--consent">
+
+            <label class="ds-checkbox cs-consent-all" data-size="large" data-tone="neutral">
+              <input type="checkbox" class="ds-checkbox__control" id="consent-all">
+              <span class="ds-checkbox__label">전체 동의</span>
+            </label>
+
+            <div class="cs-consent-group" id="consent-group">
+
+              <!-- CS/Consent Item (type=필수) -->
+              <div class="cs-consent" data-state="closed">
+                <div class="cs-consent__row">
+                  <label class="ds-checkbox" data-size="large" data-tone="neutral">
+                    <input type="checkbox" class="ds-checkbox__control cs-consent__check" id="consent-privacy" data-required="true">
+                    <span class="ds-checkbox__label">(필수) 개인정보 수집·이용 동의</span>
+                  </label>
+                  <button type="button" class="cs-consent__toggle" aria-expanded="false" aria-controls="consent-privacy-body">
+                    <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                    <span class="ds-sr-only">개인정보 수집·이용 동의 내용 보기</span>
+                  </button>
+                </div>
+                <div class="cs-consent__body" id="consent-privacy-body">
+                  <div class="cs-consent__body-inner">
+                    <dl class="cs-consent__table">
+                      <div class="cs-consent__cell">
+                        <dt>수집 목적</dt>
+                        <dd>문의 내역 확인과 답변 처리</dd>
+                      </div>
+                      <div class="cs-consent__cell">
+                        <dt>수집 항목</dt>
+                        <dd>이름, 아이디, 이메일, 문의·답변 내용에 포함된 개인정보, 환불 문의인 경우 계좌정보(은행명, 예금주, 계좌번호)</dd>
+                      </div>
+                      <div class="cs-consent__cell">
+                        <dt>보유 기간</dt>
+                        <dd>3년간 보관 후 지체 없이 파기</dd>
+                      </div>
+                    </dl>
+                    <p class="cs-consent__note">개인정보 수집·이용에 동의하지 않으실 수 있으나, 동의하지 않으면 문의하기 서비스를 이용할 수 없습니다.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CS/Consent Item (type=선택) -->
+              <div class="cs-consent" data-state="closed">
+                <div class="cs-consent__row">
+                  <label class="ds-checkbox" data-size="large" data-tone="neutral">
+                    <input type="checkbox" class="ds-checkbox__control cs-consent__check" id="consent-ai">
+                    <span class="ds-checkbox__label">(선택) AI 모델 학습을 위한 콘텐츠 이용 동의</span>
+                  </label>
+                  <button type="button" class="cs-consent__toggle" aria-expanded="false" aria-controls="consent-ai-body">
+                    <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                    <span class="ds-sr-only">AI 모델 학습을 위한 콘텐츠 이용 동의 내용 보기</span>
+                  </button>
+                </div>
+                <div class="cs-consent__body" id="consent-ai-body">
+                  <div class="cs-consent__body-inner">
+                    <dl class="cs-consent__table">
+                      <div class="cs-consent__cell">
+                        <dt>이용 목적</dt>
+                        <dd>생성형 AI 및 머신러닝 모델의 학습·분석 및 성능 개선</dd>
+                      </div>
+                      <div class="cs-consent__cell">
+                        <dt>이용 대상</dt>
+                        <dd>서비스 내 이용자가 직접 등록한 게시글의 내용 및 게시글에 포함된 정보</dd>
+                      </div>
+                      <div class="cs-consent__cell">
+                        <dt>이용 방법</dt>
+                        <dd>비식별화 등 보호조치를 적용한 후 AI 모델 학습·분석 및 성능 개선에 이용</dd>
+                      </div>
+                      <div class="cs-consent__cell">
+                        <dt>보유 기간</dt>
+                        <dd>동의 철회 시 또는 서비스 종료 시까지</dd>
+                      </div>
+                    </dl>
+                    <p class="cs-consent__note">선택 동의로, 동의하지 않아도 문의하기 서비스 이용에는 제한이 없습니다.</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- CS/Form Actions — state=비활성/활성 -->
+        <div class="cs-form-actions">
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" id="cancel-btn">취소</button>
+          <button type="submit" class="ds-btn" data-variant="neutralSolid" data-size="large" id="submit-btn" disabled>문의하기</button>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer — CS/Footer -->
+  <footer class="cs-footer">
+    <div class="cs-footer__inner cs-container">
+      <div class="cs-footer__text">
+        <p class="cs-footer__hours"><b>평일 09:00-18:00</b><span>(점심시간 12:30~13:30 / 주말, 공휴일 휴무)</span></p>
+        <p class="cs-footer__copyright">Copyright © (주)와이비엠넷. All rights reserved.</p>
+      </div>
+      <div class="cs-footer__aside">
+        <nav class="cs-footer__links" aria-label="약관">
+          <a href="#">회사소개</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">개인정보 처리방침</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">이용약관</a>
+        </nav>
+        <div class="cs-family">
+          <button type="button" class="cs-family__button" id="family-site" aria-expanded="false" aria-controls="family-menu">
+            <span>패밀리 사이트</span>
+            <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>
+          </button>
+          <div class="cs-family__menu" id="family-menu" role="menu" hidden>
+            <a href="#" role="menuitem">YBM 어학시험</a>
+            <a href="#" role="menuitem">YBM 인강</a>
+            <a href="#" role="menuitem">YBM 어학원</a>
+            <a href="#" role="menuitem">YBM 교과서</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- 팝업 6종 — DS Alert Dialog (고객센터 기준 400 / 모바일 343) ----------------- -->
+
+<!-- 등록 완료 2448:4489 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-done" role="alertdialog"
+        aria-labelledby="alert-done-title" aria-describedby="alert-done-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-done-title">문의가 등록되었습니다</h2>
+    <p class="ds-alertdialog__desc" id="alert-done-desc">답변이 등록되면 입력하신 이메일로 안내해 드립니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer" data-action="pair">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-size="large" data-ds-close>홈으로</button>
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" data-ds-close>내 문의 내역</button>
+  </div>
+</dialog>
+
+<!-- 필수 항목 미입력 2449:4439 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-required" role="alertdialog"
+        aria-labelledby="alert-required-title" aria-describedby="alert-required-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-required-title">입력하지 않은 항목이 있습니다</h2>
+    <p class="ds-alertdialog__desc" id="alert-required-desc">필수 입력 항목을 모두 입력해 주세요.</p>
+  </div>
+  <div class="ds-alertdialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" data-ds-close>확인</button>
+  </div>
+</dialog>
+
+<!-- 문의 중단 확인 2451:4681 — AI 추천 도움말을 눌렀을 때 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-leave" role="alertdialog"
+        aria-labelledby="alert-leave-title" aria-describedby="alert-leave-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-leave-title">문의 작성을 그만하시겠습니까?</h2>
+    <p class="ds-alertdialog__desc" id="alert-leave-desc">선택한 도움말이 새 창으로 열립니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer" data-action="pair">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-size="large" data-ds-close>계속 작성</button>
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" id="leave-confirm">도움말</button>
+  </div>
+</dialog>
+
+<!-- 파일 형식 오류 2452:4907 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-filetype" role="alertdialog"
+        aria-labelledby="alert-filetype-title" aria-describedby="alert-filetype-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-filetype-title">파일 형식을 확인해 주세요</h2>
+    <p class="ds-alertdialog__desc" id="alert-filetype-desc">JPG, PNG, PDF, XLSX, ZIP 파일만 첨부할 수 있습니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" data-ds-close>확인</button>
+  </div>
+</dialog>
+
+<!-- 파일 용량 오류 2464:5137 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-filesize" role="alertdialog"
+        aria-labelledby="alert-filesize-title" aria-describedby="alert-filesize-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-filesize-title">파일 용량을 확인해 주세요</h2>
+    <p class="ds-alertdialog__desc" id="alert-filesize-desc">파일은 최대 5개, 전체 10MB까지 첨부할 수 있습니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" data-ds-close>확인</button>
+  </div>
+</dialog>
+
+<!-- 개인정보 동의 미체크 2464:5211 -->
+<dialog class="ds-dialog ds-alertdialog cs-alert" id="alert-consent" role="alertdialog"
+        aria-labelledby="alert-consent-title" aria-describedby="alert-consent-desc">
+  <div class="ds-alertdialog__header">
+    <h2 class="ds-alertdialog__title" id="alert-consent-title">개인정보 수집·이용에 동의해 주세요</h2>
+    <p class="ds-alertdialog__desc" id="alert-consent-desc">동의하지 않으시면 문의를 접수할 수 없습니다.</p>
+  </div>
+  <div class="ds-alertdialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" data-ds-close>확인</button>
+  </div>
+</dialog>
+
+</body>
+</html>

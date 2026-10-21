@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>회원가입 · 부모·자녀 계정 연동 동의 | YBM Family</title>
+<!--
+  SB.28  회원가입 > 부모·자녀 계정 연동 동의
+  기준: 스토리보드 62슬라이드본(260831) 28p
+  ⚠ 화면·DB 구조만 사전 개발 후 비노출 처리. 부모·자녀 계정 연동 서비스 출시 시 함께 적용한다.
+    그래서 실제 흐름(보호자 인증 → 아동 휴대전화번호)에는 연결하지 않고 가이드에서만 열어 본다.
+  · 계정 박스 3행은 보호자 계정에서 호출 (이름 · 아이디 · 가입일자)
+  · 동의 1건을 체크해야 [보호자 계정과 연동하기] 활성 · [나중에 연동하기] 는 연동 없이 다음 단계
+  만14세 미만 경로는 한국어 전용 (기획서에 영문 없음)
+  바로가기(뷰어·QA용): #sb28 · #sb28-agreed
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/account-link.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title">회원가입</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <section class="signup-card" aria-labelledby="link-title">
+    <form id="link-form" novalidate>
+      <div class="signup-content">
+        <!-- Screen Title (show description) -->
+        <div>
+          <h2 class="signup-title" id="link-title">보호자 아이디를 찾았어요.<br>자녀 아이디와 연동 할까요?</h2>
+          <p class="signup-title__desc">보호자 계정과 연동하면 자녀의 YBM 서비스 이용 내역을 확인할 수 있어요.</p>
+        </div>
+
+        <div class="signup-link-body">
+          <!-- 계정 박스 — 실명인증 완료 보호자 정보 (서버 호출). 라벨 폭 96 -->
+          <dl class="signup-account signup-account--wide">
+            <div class="signup-account__row"><dt>보호자 이름</dt><dd>홍길동</dd></div>
+            <div class="signup-account__row"><dt>보호자 아이디</dt><dd>userid</dd></div>
+            <div class="signup-account__row"><dt>가입일자</dt><dd>2000.00.00</dd></div>
+          </dl>
+
+          <!-- 동의 1건 — 기본값 미선택 -->
+          <div class="signup-terms__item">
+            <label class="ds-checkbox">
+              <input type="checkbox" class="ds-checkbox__control" id="link-agree">
+              <span><em class="signup-terms__tag">필수</em> 개인정보 수집·이용 동의</span>
+            </label>
+            <button type="button" class="signup-terms__view" data-term="개인정보 수집·이용 동의">보기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Area (show link bottom) — 링크는 버튼 아래 -->
+      <div class="signup-cta">
+        <button type="submit" class="ds-btn" id="link-cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled>보호자 계정과 연동하기</button>
+        <button type="button" class="ds-link" id="link-later">나중에 연동하기</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+</body>
+</html>

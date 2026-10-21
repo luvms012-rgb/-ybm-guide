@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>회원가입 · 휴대전화번호 | YBM Family</title>
+<!--
+  SB.26 ~ SB.27  회원가입 > 만14세 미만 — 실사용자(아동) 휴대전화번호
+  기준: 스토리보드 62슬라이드본(260831) 26~27p
+  두 화면은 서로를 가리키는 한 쌍이라 한 파일에 둔다 (data-case).
+    · phone  = SB.26 아동 번호 입력 (국내 번호만 · 통신사/국가번호 선택 없음) → [인증번호 발송] → 인증번호 팝업
+    · notice = SB.27 휴대전화가 없을 때 보호자 번호를 대신 등록 (입력 없음 · [가입하기] 항상 활성)
+  인증 성공 / [가입하기] → 가입완료(complete.html#sb29)
+  만14세 미만 경로는 한국어 전용 (기획서에 영문 없음)
+  바로가기(뷰어·QA용): #sb26 · #sb26-error · #sb26-otp · #sb27
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/verify.js" defer></script>
+<script src="../js/child-phone.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title">회원가입</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <!-- ============ SB.26 · 실사용자(아동) 휴대전화번호 입력 ============ -->
+  <section class="signup-card" data-case="phone" aria-labelledby="phone-title">
+    <form id="phone-form" novalidate>
+      <div class="signup-content">
+        <h2 class="signup-title" id="phone-title">생성 중인 아이디 실사용자의<br>휴대전화번호를 입력해 주세요</h2>
+
+        <div class="signup-fields">
+          <div class="signup-step" data-step="phone" data-state="active">
+            <div class="ds-field">
+              <label class="ds-field__label" for="phone">휴대전화번호</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="phone" type="tel" inputmode="numeric" autocomplete="tel-national"
+                       value="010" placeholder=" " maxlength="13" aria-describedby="phone-help">
+                <button type="button" class="ds-input__clear" aria-label="휴대전화번호 지우기"></button>
+              </div>
+              <p class="ds-field__help" id="phone-help" hidden></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Area (show link) — 링크는 버튼 위 -->
+      <div class="signup-cta">
+        <button type="button" class="ds-link" id="to-notice">아동·청소년이 사용하는 휴대전화가 없어요</button>
+        <button type="submit" class="ds-btn" id="phone-cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled>인증번호 발송</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ============ SB.27 · 보호자 휴대전화번호 등록 안내 ============ -->
+  <section class="signup-card" data-case="notice" aria-labelledby="notice-title" hidden>
+    <div class="signup-content">
+      <!-- 번호는 SB.25 에서 인증한 보호자 휴대전화번호를 그대로 표시 (서버 값) -->
+      <h2 class="signup-title" id="notice-title">보호자의 휴대전화번호<br><em>010-1234-5678</em>를<br>생성중인 아이디에 등록 할게요</h2>
+    </div>
+
+    <div class="signup-cta">
+      <button type="button" class="ds-link" id="to-phone">아동·청소년이 사용하는 휴대전화로 인증할게요</button>
+      <button type="button" class="ds-btn" id="notice-cta" data-variant="brandSolid" data-size="large" data-width="fill">가입하기</button>
+    </div>
+  </section>
+</main>
+
+
+<!-- 인증번호 입력 (SB.12 공통) -->
+<dialog class="ds-dialog signup-modal signup-modal--otp" id="dialog-otp" aria-labelledby="dialog-otp-title">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-otp-title">010-1234-5678로 전송된<br>인증번호를 입력해 주세요</h2>
+    <button type="button" class="ds-dialog__close" data-ds-close aria-label="닫기"></button>
+  </div>
+  <div class="ds-dialog__body">
+    <div class="signup-otp">
+      <div class="ds-code-input" id="otp-code">
+        <input class="ds-code-input__control" id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+               aria-label="인증번호 6자리" aria-describedby="otp-error">
+        <span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span>
+        <span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span>
+      </div>
+      <p class="signup-otp__error" id="otp-error" hidden>인증번호를 다시 입력해 주세요.</p>
+      <div class="signup-otp__meta">
+        <span class="signup-otp__timer">
+          <span id="otp-remaining" role="timer">남은 시간 05:00</span>
+          <span class="signup-otp__divider" aria-hidden="true">|</span>
+          <button type="button" class="signup-otp__extend" id="otp-extend">시간연장</button>
+        </span>
+        <button type="button" class="signup-otp__resend" id="otp-resend">재전송</button>
+      </div>
+    </div>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" id="otp-submit" data-variant="brandSolid" disabled>인증번호 확인</button>
+  </div>
+</dialog>
+
+</body>
+</html>

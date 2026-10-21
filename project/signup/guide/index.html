@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>퍼블리싱 가이드</title>
+<link rel="stylesheet" href="../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="guide.css">
+<link rel="stylesheet" href="comments.css">
+<script src="config.js" defer></script>
+<script src="screens.js" defer></script>
+<script src="guide.js" defer></script>
+<script src="comments.js" defer></script>
+</head>
+<body class="guide">
+
+  <!-- 왼쪽: 프로젝트명 + 보기 설정 + 화면 목록
+       PC   접기/펼치기 (접으면 번호만 남는 레일 — DS Side Navigation collapsed 방식)
+       모바일 왼쪽에서 밀려 나오는 서랍 -->
+  <nav class="g-nav" id="g-nav" aria-label="화면 목록">
+    <div class="g-nav__head">
+      <div class="g-nav__top">
+        <h1 class="g-title" id="g-project-title">가이드</h1>
+        <!-- PC: 접기/펼치기 -->
+        <button type="button" class="g-icon-btn g-nav__collapse" id="g-nav-collapse" aria-expanded="true" aria-controls="g-menu">
+          <i class="ds-icon ds-icon--panel-left ds-icon--lg" aria-hidden="true"></i><span class="ds-sr-only">화면 목록 접기</span>
+        </button>
+        <!-- 모바일: 서랍 닫기 -->
+        <button type="button" class="g-icon-btn g-nav__close" id="g-nav-close">
+          <i class="ds-icon ds-icon--x ds-icon--lg" aria-hidden="true"></i><span class="ds-sr-only">목록 닫기</span>
+        </button>
+      </div>
+      <div class="g-view" id="g-view">
+        <div class="ds-segmented g-lang" data-layout="fill" role="group" aria-label="언어">
+          <button type="button" class="ds-segmented__item" data-lang="ko" aria-pressed="true">한국어</button>
+          <button type="button" class="ds-segmented__item" data-lang="en" aria-pressed="false">English</button>
+        </div>
+        <div class="ds-segmented g-device" data-layout="fill" role="group" aria-label="보기 방식">
+          <button type="button" class="ds-segmented__item" data-device="pc" aria-pressed="true">PC</button>
+          <button type="button" class="ds-segmented__item" data-device="mo" aria-pressed="false">MO</button>
+        </div>
+      </div>
+    </div>
+    <div class="g-menu" id="g-menu"></div>
+  </nav>
+
+  <!-- 서랍 뒤 dim (모바일) -->
+  <div class="g-scrim" id="g-scrim"></div>
+
+  <!-- 오른쪽: 상단바(이전 · 현재 화면 · 다음) + 화면 -->
+  <main class="g-content" id="g-content" data-device="pc">
+
+    <header class="g-bar">
+      <div class="g-bar__side">
+        <!-- 모바일에서만 — 서랍 열기 -->
+        <button type="button" class="g-icon-btn g-bar__nav" id="g-nav-toggle" aria-expanded="false" aria-controls="g-nav">
+          <i class="ds-icon ds-icon--menu ds-icon--lg" aria-hidden="true"></i><span class="ds-sr-only">화면 목록 열기</span>
+        </button>
+        <button type="button" class="g-icon-btn" id="g-prev">
+          <i class="ds-icon ds-icon--chevron-left ds-icon--lg" aria-hidden="true"></i><span class="ds-sr-only">이전 화면</span>
+        </button>
+      </div>
+
+      <!-- 현재 화면 — 가장 위 가운데. 눌러도 목록이 열린다 -->
+      <button type="button" class="g-bar__title" id="g-bar-title" aria-controls="g-nav">
+        <span class="g-bar__sb" id="g-bar-sb"></span>
+        <span class="g-bar__name" id="g-bar-name"></span>
+      </button>
+
+      <div class="g-bar__side g-bar__side--end">
+        <button type="button" class="g-icon-btn" id="g-next">
+          <i class="ds-icon ds-icon--chevron-right ds-icon--lg" aria-hidden="true"></i><span class="ds-sr-only">다음 화면</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="g-stage" id="g-stage">
+      <iframe class="g-frame" id="g-frame" title="퍼블리싱 화면"></iframe>
+      <p class="g-empty" id="g-empty" hidden>퍼블리싱 예정</p>
+    </div>
+
+  </main>
+
+</body>
+</html>

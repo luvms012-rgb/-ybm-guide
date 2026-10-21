@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="비밀번호 재설정 | YBM Family">비밀번호 재설정 | YBM Family</title>
+<!--
+  SB.51 ~ SB.57  비밀번호 재설정
+  기준: 스토리보드 62슬라이드본(260831) 51~57p
+  화면 3장(data-case)이 이어진다:
+    · id       SB.51 아이디 입력 → [다음] (아이디 확인 — 서버. 없으면 '입력하신 정보가 일치하지 않습니다')
+    · verify   SB.52·53 휴대전화번호 / SB.55·56 이메일주소 / SB.57 본인인증 — 아이디 찾기와 같은 구조(recover.js), 타이틀에 아이디
+    · password SB.54 새 비밀번호 → [확인] → '비밀번호가 변경되었습니다' (기존과 같으면 '기존에 사용한 비밀번호는 사용할 수 없습니다')
+  퍼블리싱 확인용: 아이디 nouser = 정보 불일치 · 새 비밀번호 Ybm2025!old = 기존 비밀번호와 동일 · 인증번호 000000 = 불일치
+  바로가기(뷰어·QA용): reset-pw.html#sb51 … (README 표 참고)
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/recover.js" defer></script>
+<script src="../js/reset-pw.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title" data-i18n="비밀번호 재설정">비밀번호 재설정</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <!-- ============ SB.51 · 아이디 입력 ============ -->
+  <form class="signup-card" data-case="id" id="id-form" aria-labelledby="id-title" novalidate>
+    <div class="signup-content">
+      <h2 class="signup-title" id="id-title" data-i18n="비밀번호를 재설정하실&#10;아이디를 입력해 주세요">비밀번호를 재설정하실<br>아이디를 입력해 주세요</h2>
+      <div class="signup-fields">
+        <div class="signup-recover-field">
+          <div class="ds-field">
+            <label class="ds-field__label" for="reset-id" data-i18n="아이디 (2)">아이디</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="reset-id" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="20"
+                     placeholder="아이디" data-i18n-attr="placeholder:아이디 (2)">
+              <button type="button" class="ds-input__clear" aria-label="아이디 지우기" data-i18n-attr="aria-label:아이디 지우기"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CTA Area (show link) — 아이디가 기억나지 않으면 아이디 찾기 -->
+    <div class="signup-cta">
+      <a class="ds-link" href="find-id.html" id="to-find-id" data-i18n="아이디가 기억나지 않나요?">아이디가 기억나지 않나요?</a>
+      <button type="submit" class="ds-btn" id="id-cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled data-i18n="다음">다음</button>
+    </div>
+  </form>
+
+  <!-- ============ SB.52 ~ SB.57 · 인증 방법 선택 + 인증 (아이디 찾기 SB.45~50 과 같은 구조) ============ -->
+  <form class="signup-card" data-case="verify" id="verify-form" hidden aria-labelledby="verify-title" novalidate>
+    <div class="signup-content">
+      <!-- 아이디 = SB.51 에서 입력한 값 (fg/brand). 실제는 서버 값 -->
+      <h2 class="signup-title" id="verify-title" data-i18n="[[userid]] 님,&#10;아래의 인증방법 중 하나를 선택하여&#10;인증을 진행해 주세요."><em>userid</em> 님,<br>아래의 인증방법 중 하나를 선택하여<br>인증을 진행해 주세요.</h2>
+
+      <!-- DS Tabs size=medium · triggerLayout=fill -->
+      <div class="ds-tabs signup-tabs" role="tablist" data-size="medium" aria-labelledby="verify-title">
+        <button type="button" class="ds-tabs__trigger" role="tab" id="tab-phone" data-tab="phone" aria-controls="panel-phone" aria-selected="true" data-i18n="휴대전화번호">휴대전화번호</button>
+        <button type="button" class="ds-tabs__trigger" role="tab" id="tab-email" data-tab="email" aria-controls="panel-email" aria-selected="false" tabindex="-1" data-i18n="이메일주소">이메일주소</button>
+        <button type="button" class="ds-tabs__trigger" role="tab" id="tab-identity" data-tab="identity" aria-controls="panel-identity" aria-selected="false" tabindex="-1" data-i18n="본인인증">본인인증</button>
+      </div>
+
+      <!-- 휴대전화번호 (SB.52 · SB.53) -->
+      <div class="signup-fields" role="tabpanel" id="panel-phone" aria-labelledby="tab-phone">
+        <div class="signup-recover-field">
+          <div class="ds-field">
+            <label class="ds-field__label" for="fp-name" data-i18n="이름">이름</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="fp-name" data-role="name" type="text" autocomplete="name" maxlength="50"
+                     placeholder="이름" data-i18n-attr="placeholder:이름">
+              <button type="button" class="ds-input__clear" aria-label="이름 지우기" data-i18n-attr="aria-label:이름 지우기"></button>
+            </div>
+          </div>
+        </div>
+        <div class="signup-row">
+          <div class="signup-recover-field">
+            <div class="ds-field">
+              <label class="ds-field__label" for="fp-phone" data-i18n="휴대전화번호">휴대전화번호</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="fp-phone" data-role="contact" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11"
+                       placeholder="휴대전화번호" aria-describedby="fp-phone-help" data-i18n-attr="placeholder:휴대전화번호">
+                <button type="button" class="ds-input__clear" aria-label="휴대전화번호 지우기" data-i18n-attr="aria-label:휴대전화번호 지우기"></button>
+              </div>
+            </div>
+            <p class="signup-help" id="fp-phone-help" data-i18n="- 없이 숫자만 입력해 주세요.">- 없이 숫자만 입력해 주세요.</p>
+          </div>
+          <button type="button" class="ds-btn" data-role="send" data-variant="brandSolid" data-i18n="인증번호 전송">인증번호 전송</button>
+        </div>
+        <div class="signup-recover-field" data-role="otp-field" hidden>
+          <div class="ds-field">
+            <label class="ds-field__label" for="fp-code" data-i18n="인증번호">인증번호</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="fp-code" data-role="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+                     placeholder="인증번호" aria-describedby="fp-timer" data-i18n-attr="placeholder:인증번호">
+              <button type="button" class="ds-input__clear" aria-label="인증번호 지우기" data-i18n-attr="aria-label:인증번호 지우기"></button>
+            </div>
+          </div>
+          <p class="signup-timer" id="fp-timer" data-role="timer" role="timer">05:00</p>
+        </div>
+      </div>
+
+      <!-- 이메일주소 (SB.55 · SB.56) — 안내문 없음 -->
+      <div class="signup-fields" role="tabpanel" id="panel-email" aria-labelledby="tab-email" hidden>
+        <div class="signup-recover-field">
+          <div class="ds-field">
+            <label class="ds-field__label" for="fe-name" data-i18n="이름">이름</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="fe-name" data-role="name" type="text" autocomplete="name" maxlength="50"
+                     placeholder="이름" data-i18n-attr="placeholder:이름">
+              <button type="button" class="ds-input__clear" aria-label="이름 지우기" data-i18n-attr="aria-label:이름 지우기"></button>
+            </div>
+          </div>
+        </div>
+        <div class="signup-row">
+          <div class="signup-recover-field">
+            <div class="ds-field">
+              <label class="ds-field__label" for="fe-email" data-i18n="이메일주소">이메일주소</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="fe-email" data-role="contact" type="email" inputmode="email" autocomplete="email" maxlength="100"
+                       placeholder="이메일주소" data-i18n-attr="placeholder:이메일주소">
+                <button type="button" class="ds-input__clear" aria-label="이메일 주소 지우기" data-i18n-attr="aria-label:이메일 주소 지우기"></button>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="ds-btn" data-role="send" data-variant="brandSolid" data-i18n="인증번호 전송">인증번호 전송</button>
+        </div>
+        <div class="signup-recover-field" data-role="otp-field" hidden>
+          <div class="ds-field">
+            <label class="ds-field__label" for="fe-code" data-i18n="인증번호">인증번호</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="fe-code" data-role="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+                     placeholder="인증번호" aria-describedby="fe-timer" data-i18n-attr="placeholder:인증번호">
+              <button type="button" class="ds-input__clear" aria-label="인증번호 지우기" data-i18n-attr="aria-label:인증번호 지우기"></button>
+            </div>
+          </div>
+          <p class="signup-timer" id="fe-timer" data-role="timer" role="timer">05:00</p>
+        </div>
+      </div>
+
+      <!-- 본인인증 (SB.57) — 회원정보 변경 동의(필수) + 수단 버튼 3종. 미동의로 누르면 Alert -->
+      <div class="signup-methods" role="tabpanel" id="panel-identity" aria-labelledby="tab-identity" hidden>
+        <label class="ds-checkbox signup-consent">
+          <input type="checkbox" class="ds-checkbox__control" id="consent">
+          <span data-i18n="[[필수]] 본인확인 결과에 따라 회원정보(이름, 생년월일, 휴대전화번호)가 최신 정보로 변경될 수 있음에 동의합니다."><em>필수</em> 본인확인 결과에 따라 회원정보(이름, 생년월일, 휴대전화번호)가 최신 정보로 변경될 수 있음에 동의합니다.</span>
+        </label>
+        <div class="signup-method-list">
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" data-width="fill" data-method="phone">
+            <i class="ds-icon ds-icon--smartphone" aria-hidden="true"></i><span data-i18n="휴대전화 인증">휴대전화 인증</span>
+          </button>
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" data-width="fill" data-method="ipin">
+            <i class="ds-icon ds-icon--id-card" aria-hidden="true"></i><span data-i18n="아이핀 인증">아이핀 인증</span>
+          </button>
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" data-width="fill" data-method="foreigner">
+            <i class="ds-icon ds-icon--globe" aria-hidden="true"></i><span data-i18n="외국인 인증">외국인 인증</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Area — 인증번호를 보낸 뒤에만 노출 -->
+    <div class="signup-cta" data-role="verify-cta" hidden>
+      <button type="submit" class="ds-btn" id="verify-cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled data-i18n="다음">다음</button>
+    </div>
+  </form>
+
+  <!-- ============ SB.54 · 새 비밀번호 입력 (SB.16 과 같은 필드) ============ -->
+  <form class="signup-card" data-case="password" id="password-form" aria-labelledby="password-title" novalidate hidden>
+    <div class="signup-content">
+      <div>
+        <h2 class="signup-title" id="password-title" data-i18n="새 비밀번호를 입력해 주세요">새 비밀번호를 입력해 주세요</h2>
+        <p class="signup-title__desc" data-i18n="비밀번호는 아이디나 주민등록번호 및 전화번호와 같이 개인정보와 관련된 숫자나 문자를 사용하시면 안 됩니다.">비밀번호는 아이디나 주민등록번호 및 전화번호와 같이 개인정보와 관련된 숫자나 문자를 사용하시면 안 됩니다.</p>
+      </div>
+      <div class="signup-fields">
+        <div class="signup-recover-field signup-recover-field--password" data-label="always">
+          <div class="ds-field">
+            <label class="ds-field__label" for="password" data-i18n="비밀번호">비밀번호</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="password" type="password" autocomplete="new-password" maxlength="20"
+                     placeholder="비밀번호" aria-describedby="password-rules password-banned" data-i18n-attr="placeholder:비밀번호">
+              <button type="button" class="ds-input__suffix signup-eye" id="password-eye" aria-pressed="false"
+                      aria-label="비밀번호 보기" data-i18n-attr="aria-label:비밀번호 보기">
+                <i class="ds-icon ds-icon--lg ds-icon--eye-off" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="signup-rules-wrap">
+            <ul class="signup-rules" id="password-rules">
+              <li class="signup-rule" data-rule="letter"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="영문">영문</span></li>
+              <li class="signup-rule" data-rule="number"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="숫자">숫자</span></li>
+              <li class="signup-rule" data-rule="special"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="특수문자">특수문자</span></li>
+              <li class="signup-rule" data-rule="length"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="8~20자">8~20자</span></li>
+            </ul>
+            <p class="signup-banned" id="password-banned" hidden data-i18n="';--<()\/ 사용불가">';--&lt;()\/ 사용불가</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="signup-cta">
+      <button type="submit" class="ds-btn" id="password-cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled data-i18n="확인 (2)">확인</button>
+    </div>
+  </form>
+</main>
+
+
+<!-- Alert — 문구는 recover.js 가 채운다 (Dialog size=medium · closeButton=false · footer) -->
+<dialog class="ds-dialog signup-alert" id="dialog-alert" role="alertdialog" aria-labelledby="dialog-alert-title" aria-describedby="dialog-alert-desc">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-alert-title"></h2>
+    <p class="ds-dialog__desc" id="dialog-alert-desc" hidden></p>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-ds-close data-i18n="확인">확인</button>
+  </div>
+</dialog>
+
+</body>
+</html>

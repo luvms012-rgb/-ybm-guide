@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>사이트 추가 가입 | YBM Family</title>
+<!--
+  SB.61 ~ SB.62  연계 페이지 > 사이트 추가 가입
+  기준: 스토리보드 62슬라이드본(260831) 61~62p
+  YBM Family 계정으로 아직 가입하지 않은 사이트(예: 어학시험)에 처음 로그인할 때 그 사이트의 약관에만 추가로 동의한다.
+    · agree = SB.61 계정 정보(아이디·가입일) + 전체 동의 + 약관 4종(필수 3 · 선택 1) → [확인] (필수 미동의면 Alert) · [취소]
+    · done  = SB.62 가입 완료 + [로그인] + YBM Family 서비스 바로가기 목록
+  타이틀의 사이트명(어학시험)은 fg/brand — 가입하려는 사이트명으로 바뀐다 (서버 값)
+  연계 페이지는 영문 없음 (한국어 전용)
+  바로가기(뷰어·QA용): #sb61 · #sb61-agreed · #sb61-alert · #sb62
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/recover.js" defer></script>
+<script src="../js/site-join.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title">사이트 추가 가입</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <!-- ============ SB.61 · 약관 동의 ============ -->
+  <form class="signup-card" data-case="agree" id="agree-form" aria-labelledby="agree-title" novalidate>
+    <div class="signup-content">
+      <h2 class="signup-title" id="agree-title"><em>어학시험</em> 사이트 추가 가입에<br>동의해 주세요.</h2>
+
+      <div class="signup-site">
+        <h3 class="signup-site__heading">YBM Family 계정 정보</h3>
+        <div class="signup-site__body">
+          <!-- 계정 박스 — 라벨 96 · gap 24 · 행 gap 16 (SB.28 과 같은 규격) -->
+          <dl class="signup-account signup-account--wide">
+            <div class="signup-account__row"><dt>아이디</dt><dd>supia85</dd></div>
+            <div class="signup-account__row"><dt>가입일</dt><dd>2015.10.27</dd></div>
+          </dl>
+
+          <div class="signup-site__agree">
+            <div class="signup-agree__box">
+              <label class="ds-checkbox" data-size="large">
+                <input type="checkbox" class="ds-checkbox__control" id="agree-all">
+                <span>전체 동의합니다.</span>
+              </label>
+            </div>
+            <!-- 약관 4종 (순서 고정) — data-required 가 모두 체크되어야 가입 가능 -->
+            <ul class="signup-terms">
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="site-terms" value="ybm" data-required>
+                  <span><em class="signup-terms__tag">필수</em> (주)와이비엠 이용약관 동의</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="(주)와이비엠 이용약관 동의">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="site-terms" value="privacy" data-required>
+                  <span><em class="signup-terms__tag">필수</em> 개인정보 수집·이용 동의</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="개인정보 수집·이용 동의">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="site-terms" value="ybm-money" data-required>
+                  <span><em class="signup-terms__tag">필수</em> YBM머니 개인정보 제3자 제공 동의</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="YBM머니 개인정보 제3자 제공 동의">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="site-terms" value="ybm-third-party">
+                  <span><em class="signup-terms__tag" data-tone="optional">선택</em> (주)와이비엠 제3자 제공 동의</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="(주)와이비엠 제3자 제공 동의">보기</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Area — [확인] brandSolid(라벨 16) · [취소] neutralOutline -->
+    <div class="signup-cta">
+      <div class="signup-cta__buttons">
+        <button type="submit" class="ds-btn signup-cta__secondary" data-variant="brandSolid" data-size="large">확인</button>
+        <button type="button" class="ds-btn" id="agree-cancel" data-variant="neutralOutline" data-size="large">취소</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- ============ SB.62 · 가입 완료 ============ -->
+  <section class="signup-card" data-case="done" aria-labelledby="done-title" hidden>
+    <div class="signup-content">
+      <h2 class="signup-title" id="done-title"><em>어학시험</em> 사이트에 가입되었습니다.</h2>
+    </div>
+    <div class="signup-cta signup-cta--40">
+      <button type="button" class="ds-btn" id="done-login" data-variant="brandSolid" data-size="large" data-width="fill">로그인</button>
+    </div>
+    <!-- Service Info — YBM Family 서비스 바로가기 (주소는 개발) -->
+    <ul class="signup-services" aria-label="YBM Family 서비스">
+      <li class="signup-services__item">
+        <span class="signup-services__label">어학시험</span>
+        <ul class="signup-services__links">
+          <li><a class="ds-link" href="#">TOEIC</a></li>
+          <li><a class="ds-link" href="#">TOEIC Speaking</a></li>
+          <li><a class="ds-link" href="#">TOEFL ITP</a></li>
+          <li><a class="ds-link" href="#">TOEIC Bridge</a></li>
+          <li><a class="ds-link" href="#">TOEIC Bridge S&amp;W</a></li>
+          <li><a class="ds-link" href="#">Junior Tests</a></li>
+          <li><a class="ds-link" href="#">JPT</a></li>
+          <li><a class="ds-link" href="#">SJPT</a></li>
+          <li><a class="ds-link" href="#">TSC</a></li>
+          <li><a class="ds-link" href="#">상무한검</a></li>
+          <li><a class="ds-link" href="#">KPE</a></li>
+        </ul>
+      </li>
+      <li class="signup-services__item"><span class="signup-services__label"><a class="ds-link" href="#">YBM IT</a></span></li>
+      <li class="signup-services__item"><span class="signup-services__label"><a class="ds-link" href="#">YBM Books</a></span></li>
+      <li class="signup-services__item"><span class="signup-services__label"><a class="ds-link" href="#">YBM 교원연수</a></span></li>
+    </ul>
+  </section>
+</main>
+
+
+<!-- Alert — 문구는 recover.js 가 채운다 -->
+<dialog class="ds-dialog signup-alert" id="dialog-alert" role="alertdialog" aria-labelledby="dialog-alert-title" aria-describedby="dialog-alert-desc">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-alert-title"></h2>
+    <p class="ds-dialog__desc" id="dialog-alert-desc" hidden></p>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-ds-close>확인</button>
+  </div>
+</dialog>
+
+</body>
+</html>

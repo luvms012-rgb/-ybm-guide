@@ -1,0 +1,2315 @@
+/* ==========================================================================
+   YBM Design System — COMPONENTS (.ds-*)
+   --------------------------------------------------------------------------
+   Figma DS 컴포넌트와 1:1 대응. 이름·베리언트는 Figma 프로퍼티를 그대로 따른다.
+     <button class="ds-btn" data-variant="brandSolid" data-size="large">
+   값의 정본은 Figma(파일 1VCEsFU3xMWuXIntIrZz9i · Components 섹션)다.
+   2026-10-02 전 컴포넌트를 Figma 변형별 실측 덤프와 대조해 다시 맞췄다.
+
+   ▣ 확장 규칙 — 모든 컴포넌트는 "컴포넌트 변수"(--ds-*)를 노출한다.
+     서비스는 클래스를 새로 만들거나 !important 를 쓰지 않고 변수만 바꿔 커스텀한다.
+       예) .signup-dialog { --ds-dialog-width: 360px; }
+
+   ▣ 상태 표기 — 가능한 한 네이티브 상태를 쓴다(:disabled, :checked, :focus-within,
+     [aria-invalid], [aria-selected], [aria-pressed], [aria-current], [aria-expanded]).
+     Figma 의 pressed 상태 = :active (+ 마우스 환경의 :hover).
+
+   ▣ 반경은 shape 시맨틱(--ybm-shape-*)만 쓴다. 원시 --ybm-radius-r* 직접 참조 금지.
+
+   목차
+     01 Action Button        .ds-btn
+     02 Text Link            .ds-link            (CSS 전용)
+     03 Field Label          .ds-field
+     04 Text Field Input     .ds-input
+     05 Text Field Textarea  .ds-textarea
+     06 Field Button         .ds-fieldbutton
+     07 Prefix Select        .ds-prefixselect
+     08 Select Trigger       .ds-select
+     09 Select Content/Item  .ds-select-content · .ds-select-item
+     10 Checkbox             .ds-checkbox
+     11 Radio Group          .ds-radio
+     12 Switch               .ds-switch
+     13 Quantity Picker      .ds-quantity
+     14 Code Input           .ds-code-input      (CSS 전용)
+     15 Chip                 .ds-chip
+     16 Chip Tabs            .ds-chiptabs
+     17 Tabs                 .ds-tabs
+     18 Segmented Control    .ds-segmented
+     19 Toggle Button        .ds-toggle
+     20 Badge                .ds-badge
+     21 Tag Group            .ds-tag-group
+     22 Avatar               .ds-avatar
+     23 Callout              .ds-callout
+     24 Snackbar             .ds-snackbar
+     25 Help Bubble          .ds-helpbubble
+     26 Menu                 .ds-menu · .ds-menu-item
+     27 Dialog               .ds-dialog
+     28 Alert Dialog         .ds-alertdialog
+     29 Bottom Sheet         .ds-bottomsheet
+     30 Accordion            .ds-accordion
+     31 Skeleton             .ds-skeleton
+     32 Slider               .ds-slider
+     33 Progress             .ds-progress
+     34 Progress Circle      .ds-progress-circle
+     35 Floating Action Button .ds-fab
+     36 Date Picker          .ds-datepicker · .ds-date-cell
+     37 Bottom Navigation    .ds-bottomnav
+     38 Side Navigation      .ds-sidenav
+     39 Card                 .ds-card
+     40 Empty                .ds-empty
+     41 Pagination           .ds-pagination
+     42 Table                .ds-table
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   01 Action Button
+   variant : brandSolid(기본) · neutralSolid · neutralWeak · criticalSolid · brandOutline · neutralOutline · ghost
+   size    : xsmall 32 · small 36 · medium 40(기본) · large 52
+   layout  : 기본 withText / data-layout="iconOnly" / data-width="fill"
+     <button class="ds-btn" data-variant="neutralWeak" data-size="large">
+       [<i class="ds-icon ds-icon--plus" aria-hidden="true"></i>] 라벨 [<i class="ds-icon …">]
+     </button>
+   Figma: xsmall px14 gap4 t02 Medium shape/xs (iconOnly pill) · icon 16
+          small  px14 gap4 t04 SemiBold shape/sm · icon 18
+          medium px16 gap6 t04 SemiBold shape/sm · icon 18 (iconOnly 20)
+          large  px20 gap8 t06 SemiBold shape/md · icon 24
+   -------------------------------------------------------------------------- */
+.ds-btn {
+  --ds-btn-height: 40px;
+  --ds-btn-padding-x: var(--ybm-space-x4);
+  --ds-btn-radius: var(--ybm-shape-sm);
+  --ds-btn-gap: var(--ybm-space-x1_5);
+  --ds-btn-font-size: var(--ybm-font-size-t04);
+  --ds-btn-line-height: var(--ybm-line-height-t04);
+  --ds-btn-font-weight: var(--ybm-font-weight-semibold);
+  --ds-btn-icon: 18px;
+  --ds-btn-icon-only: 20px;
+  --ds-btn-bg: var(--ybm-color-bg-brand-solid);
+  --ds-btn-bg-pressed: var(--ybm-color-bg-brand-solid-pressed);
+  --ds-btn-fg: var(--ybm-color-fg-on-brand-solid);
+  --ds-btn-border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-btn-gap);
+  height: var(--ds-btn-height);
+  min-height: var(--ds-btn-height);
+  padding-inline: var(--ds-btn-padding-x);
+  border-radius: var(--ds-btn-radius);
+  background: var(--ds-btn-bg);
+  color: var(--ds-btn-fg);
+  box-shadow: inset 0 0 0 1px var(--ds-btn-border);
+  font-size: var(--ds-btn-font-size);
+  line-height: var(--ds-btn-line-height);
+  font-weight: var(--ds-btn-font-weight);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color var(--ybm-duration-fast) var(--ybm-easing-standard),
+              color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-btn > .ds-icon { --ds-icon-size: var(--ds-btn-icon); }
+.ds-btn:active:not(:disabled) { background: var(--ds-btn-bg-pressed); }
+@media (hover: hover) { .ds-btn:hover:not(:disabled) { background: var(--ds-btn-bg-pressed); } }
+
+/* size */
+.ds-btn[data-size="xsmall"] { --ds-btn-height: 32px; --ds-btn-padding-x: var(--ybm-space-x3_5); --ds-btn-gap: var(--ybm-space-x1);   --ds-btn-radius: var(--ybm-shape-xs); --ds-btn-font-size: var(--ybm-font-size-t02); --ds-btn-line-height: var(--ybm-line-height-t02); --ds-btn-font-weight: var(--ybm-font-weight-medium); --ds-btn-icon: 16px; --ds-btn-icon-only: 16px; }
+.ds-btn[data-size="small"]  { --ds-btn-height: 36px; --ds-btn-padding-x: var(--ybm-space-x3_5); --ds-btn-gap: var(--ybm-space-x1);   --ds-btn-radius: var(--ybm-shape-sm); --ds-btn-icon: 16px; --ds-btn-icon-only: 18px; }
+.ds-btn[data-size="large"]  { --ds-btn-height: 52px; --ds-btn-padding-x: var(--ybm-space-x5);   --ds-btn-gap: var(--ybm-space-x2);   --ds-btn-radius: var(--ybm-shape-md); --ds-btn-font-size: var(--ybm-font-size-t06); --ds-btn-line-height: var(--ybm-line-height-t06); --ds-btn-icon: 24px; --ds-btn-icon-only: 24px; }
+
+/* layout */
+.ds-btn[data-width="fill"] { display: flex; width: 100%; }
+.ds-btn[data-layout="iconOnly"] { padding-inline: 0; width: var(--ds-btn-height); min-width: var(--ds-btn-height); --ds-btn-icon: var(--ds-btn-icon-only); }
+.ds-btn[data-layout="iconOnly"][data-size="xsmall"] { --ds-btn-radius: var(--ybm-shape-pill); }
+
+/* variant */
+.ds-btn[data-variant="neutralSolid"]   { --ds-btn-bg: var(--ybm-color-bg-neutral-solid); --ds-btn-bg-pressed: var(--ybm-color-bg-neutral-solid-pressed); --ds-btn-fg: var(--ybm-color-fg-on-neutral-solid); }
+.ds-btn[data-variant="neutralWeak"]    { --ds-btn-bg: var(--ybm-color-bg-neutral); --ds-btn-bg-pressed: var(--ybm-color-bg-neutral-weak-pressed); --ds-btn-fg: var(--ybm-color-fg-neutral); }
+.ds-btn[data-variant="criticalSolid"]  { --ds-btn-bg: var(--ybm-color-bg-critical-solid); --ds-btn-bg-pressed: var(--ybm-color-bg-critical-solid-pressed); --ds-btn-fg: var(--ybm-color-fg-on-critical-solid); }
+.ds-btn[data-variant="brandOutline"]   { --ds-btn-bg: var(--ybm-color-bg-transparent); --ds-btn-bg-pressed: var(--ybm-color-bg-transparent-pressed); --ds-btn-fg: var(--ybm-color-fg-brand); --ds-btn-border: var(--ybm-color-stroke-neutral-weak); }
+.ds-btn[data-variant="neutralOutline"] { --ds-btn-bg: var(--ybm-color-bg-transparent); --ds-btn-bg-pressed: var(--ybm-color-bg-transparent-pressed); --ds-btn-fg: var(--ybm-color-fg-neutral); --ds-btn-border: var(--ybm-color-stroke-neutral-weak); }
+.ds-btn[data-variant="ghost"]          { --ds-btn-bg: var(--ybm-color-bg-transparent); --ds-btn-bg-pressed: var(--ybm-color-bg-transparent-pressed); --ds-btn-fg: var(--ybm-color-fg-neutral); }
+
+/* disabled — solid 계열은 bg/disabled, outline·ghost 는 배경·테두리 유지 + 글자만 fg/disabled */
+.ds-btn:disabled, .ds-btn[aria-disabled="true"] { --ds-btn-bg: var(--ybm-color-bg-disabled); --ds-btn-fg: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+.ds-btn:is([data-variant="brandOutline"], [data-variant="neutralOutline"], [data-variant="ghost"]):is(:disabled, [aria-disabled="true"]) { --ds-btn-bg: var(--ybm-color-bg-transparent); }
+
+
+/* --------------------------------------------------------------------------
+   02 Text Link — CTA 위/아래 보조 링크 (Figma 컴포넌트 없음 · CSS 전용)
+   -------------------------------------------------------------------------- */
+.ds-link {
+  --ds-link-color: var(--ybm-color-fg-neutral-subtle);
+  --ds-link-color-hover: var(--ybm-color-fg-neutral);
+  display: inline;
+  color: var(--ds-link-color);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-link:hover { color: var(--ds-link-color-hover); }
+
+
+/* --------------------------------------------------------------------------
+   03 Field Label — 라벨(header) + 입력(control) + 안내/오류(footer)
+     <div class="ds-field" [data-label-weight="bold"]>
+       <div class="ds-field__header">
+         <label class="ds-field__label" for="id">라벨</label>
+         [<span class="ds-field__indicator">선택</span>] [<span class="ds-field__required" aria-hidden="true"></span>]
+       </div>
+       <div class="ds-input">…</div>
+       <div class="ds-field__footer">
+         <p class="ds-field__help">설명을 써주세요</p>
+         [<p class="ds-field__error">오류 이유</p>]
+         [<span class="ds-field__count">0/8</span>]
+       </div>
+     </div>
+   Figma: 세로 gap x2 · label t05 Medium(bold 변형 t05 Bold) fg/neutral · indicator t04 fg/neutral-subtle(좌 4)
+          required 점 4×4 fg/critical · footer 좌우 x0_5 · 안내 t04 fg/neutral-subtle · 오류 t04 fg/critical
+   오류: 입력 요소에 aria-invalid="true" → help 대신 error 를 보이고 critical 색.
+   -------------------------------------------------------------------------- */
+.ds-field {
+  --ds-field-gap: var(--ybm-space-x2);
+  --ds-field-label-weight: var(--ybm-font-weight-medium);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-field-gap);
+  min-width: 0;
+}
+.ds-field[data-label-weight="bold"] { --ds-field-label-weight: var(--ybm-font-weight-bold); }
+.ds-field__header { display: flex; align-items: center; gap: var(--ybm-space-x2_5); }
+.ds-field__label {
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  font-weight: var(--ds-field-label-weight);
+}
+.ds-field__header > .ds-field__label { display: inline-flex; align-items: center; }
+.ds-field__indicator { margin-inline-start: calc(4px - var(--ybm-space-x2_5)); color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-field__required { align-self: flex-start; width: 4px; height: 4px; margin-top: 4px; margin-inline-start: calc(4px - var(--ybm-space-x2_5)); border-radius: var(--ybm-shape-pill); background: var(--ybm-color-fg-critical); }
+.ds-field__footer { display: flex; gap: var(--ybm-space-x2); padding-inline: var(--ybm-space-x0_5); }
+.ds-field__footer > :is(.ds-field__help, .ds-field__error) { flex: 1 1 auto; }
+.ds-field__help, .ds-field__error, .ds-field__count { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-field__help  { color: var(--ybm-color-fg-neutral-subtle); }
+.ds-field__error { color: var(--ybm-color-fg-critical); display: none; }
+.ds-field__count { flex: none; color: var(--ybm-color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.ds-field:has([aria-invalid="true"]) .ds-field__error { display: block; }
+.ds-field:has([aria-invalid="true"]) .ds-field__help:has(+ .ds-field__error) { display: none; }
+.ds-field:has([aria-invalid="true"]) .ds-field__help:not(:has(+ .ds-field__error)) { color: var(--ybm-color-fg-critical); }
+/* 하위호환: footer 없이 .ds-field__help 를 바로 둔 마크업 */
+.ds-field > .ds-field__help { padding-inline: var(--ybm-space-x0_5); }
+
+
+/* --------------------------------------------------------------------------
+   04 Text Field Input
+   variant : underline(기본) · outline      size : large(기본) · medium
+     <div class="ds-input" data-variant="outline" data-size="medium">
+       [<i class="ds-icon ds-icon--search ds-input__icon" aria-hidden="true"></i>]
+       [<span class="ds-input__prefix">https://</span>]
+       <input class="ds-input__control" placeholder="플레이스홀더">
+       [<span class="ds-input__suffix">cm</span>]
+       [<button class="ds-input__clear" aria-label="지우기"></button>]
+     </div>
+   Figma
+     outline  large : h52 · px16 · gap10 · shape/lg · t05 · icon 20
+     outline  medium: h40 · px14 · gap8  · shape/sm · t04 · icon 16
+     underline large : py8 · min-h44 · gap10 · t06 · icon 24 · 하단 1px
+     underline medium: py6 · min-h36 · gap8  · t05 · icon 20
+     focused 2px stroke/neutral-contrast · invalid 2px stroke/critical-solid
+     disabled (outline) bg/disabled · 글자 fg/disabled / readOnly (outline) bg/disabled
+   -------------------------------------------------------------------------- */
+.ds-input {
+  --ds-input-height: 44px;
+  --ds-input-padding-x: 0px;
+  --ds-input-padding-y: var(--ybm-space-x2);
+  --ds-input-gap: var(--ybm-space-x2_5);
+  --ds-input-font-size: var(--ybm-font-size-t06);
+  --ds-input-line-height: var(--ybm-line-height-t06);
+  --ds-input-icon: 24px;
+  --ds-input-color: var(--ybm-color-fg-neutral);
+  --ds-input-bg: var(--ybm-color-bg-transparent);
+  --ds-input-radius: 0px;
+  --ds-input-line: var(--ybm-color-stroke-neutral-weak);
+  --ds-input-line-active: var(--ybm-color-stroke-neutral-contrast);
+  --ds-input-line-fade: var(--ybm-duration-normal) var(--ybm-easing-standard);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-input-gap);
+  min-height: var(--ds-input-height);
+  padding: var(--ds-input-padding-y) var(--ds-input-padding-x);
+  border-radius: var(--ds-input-radius);
+  background: var(--ds-input-bg);
+  box-shadow: inset 0 -1px 0 var(--ds-input-line);
+}
+.ds-input[data-size="medium"] {
+  --ds-input-height: 36px;
+  --ds-input-padding-y: var(--ybm-space-x1_5);
+  --ds-input-gap: var(--ybm-space-x2);
+  --ds-input-font-size: var(--ybm-font-size-t05);
+  --ds-input-line-height: var(--ybm-line-height-t05);
+  --ds-input-icon: 20px;
+}
+/* 포커스·오류 라인은 기본 라인 위에 겹친 별도 레이어 → opacity 로 페이드 */
+.ds-input::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: var(--ds-input-line-active);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--ds-input-line-fade), background-color var(--ds-input-line-fade);
+}
+.ds-input:focus-within::after { opacity: 1; }
+.ds-input:has([aria-invalid="true"]) { --ds-input-line-active: var(--ybm-color-stroke-critical-solid); }
+.ds-input:has([aria-invalid="true"])::after { opacity: 1; }
+.ds-input:has(.ds-input__control:disabled) { --ds-input-color: var(--ybm-color-fg-disabled); }
+
+/* outline */
+.ds-input[data-variant="outline"] {
+  --ds-input-height: 52px;
+  --ds-input-padding-x: var(--ybm-space-x4);
+  --ds-input-padding-y: 0px;
+  --ds-input-gap: var(--ybm-space-x2_5);
+  --ds-input-radius: var(--ybm-shape-lg);
+  --ds-input-font-size: var(--ybm-font-size-t05);
+  --ds-input-line-height: var(--ybm-line-height-t05);
+  --ds-input-icon: 20px;
+  box-shadow: inset 0 0 0 1px var(--ds-input-line);
+}
+.ds-input[data-variant="outline"][data-size="medium"] {
+  --ds-input-height: 40px;
+  --ds-input-padding-x: var(--ybm-space-x3_5);
+  --ds-input-gap: var(--ybm-space-x2);
+  --ds-input-radius: var(--ybm-shape-sm);
+  --ds-input-font-size: var(--ybm-font-size-t04);
+  --ds-input-line-height: var(--ybm-line-height-t04);
+  --ds-input-icon: 16px;
+}
+.ds-input[data-variant="outline"]::after {
+  inset: 0;
+  height: auto;
+  border-radius: inherit;
+  background: none;
+  box-shadow: inset 0 0 0 2px var(--ds-input-line-active);
+  transition: opacity var(--ds-input-line-fade), box-shadow var(--ds-input-line-fade);
+}
+.ds-input[data-variant="outline"]:has(.ds-input__control:is(:disabled, [readonly])) { --ds-input-bg: var(--ybm-color-bg-disabled); }
+
+.ds-input__control {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ds-input-color);
+  font-size: var(--ds-input-font-size);
+  line-height: var(--ds-input-line-height);
+  text-align: start;
+  caret-color: var(--ybm-color-fg-brand);
+}
+.ds-input__control::placeholder { color: var(--ybm-color-fg-placeholder); opacity: 1; }
+.ds-input__control:disabled::placeholder { color: var(--ybm-color-fg-disabled); }
+/* <button> 을 control 로 쓰는 선택형 필드 — 값이 없으면 placeholder 색 */
+button.ds-input__control { cursor: pointer; min-height: var(--ds-input-line-height); }
+button.ds-input__control:empty::before { content: attr(data-placeholder); color: var(--ybm-color-fg-placeholder); }
+
+/* prefix / suffix 텍스트 · 아이콘 */
+.ds-input__prefix, .ds-input__suffix {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ybm-space-x1);
+  flex: none;
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ds-input-font-size);
+  line-height: var(--ds-input-line-height);
+}
+.ds-input:has(.ds-input__control:disabled) :is(.ds-input__prefix, .ds-input__suffix) { color: var(--ybm-color-fg-disabled); }
+button.ds-input__prefix:hover { color: var(--ybm-color-fg-neutral); }
+.ds-input > .ds-icon, .ds-input__icon { --ds-icon-size: var(--ds-input-icon); color: var(--ybm-color-fg-neutral-subtle); }
+
+/* clear button — Lucide/x · 아이콘 크기는 size 를 따름 · 터치 영역 40 */
+.ds-input__clear {
+  position: relative;
+  display: none;
+  flex: none;
+  width: var(--ds-input-icon);
+  height: var(--ds-input-icon);
+  color: var(--ybm-color-fg-neutral);
+}
+.ds-input__clear::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  -webkit-mask: var(--ds-icon-x) center / contain no-repeat;
+          mask: var(--ds-icon-x) center / contain no-repeat;
+}
+.ds-input__clear::after { content: ""; position: absolute; inset: calc((var(--ds-input-icon) - 40px) / 2); }
+.ds-input:focus-within:has(.ds-input__control:not(:placeholder-shown)) .ds-input__clear { display: block; }
+
+
+/* --------------------------------------------------------------------------
+   05 Text Field Textarea — 여러 줄 입력 (<textarea> 자체에 클래스)
+   variant : outline(기본) · underline      size : large(기본) · medium
+     <textarea class="ds-textarea" data-size="medium" rows="3" placeholder="…"></textarea>
+   Figma outline large : px16 · py14 · min-h94 · shape/lg · t05
+         outline medium: px14 · py12 · min-h82 · shape/sm · t04
+         underline large : py8+14 · min-h110 · t06 · 하단 1px / underline medium: py6+12 · min-h94 · t05
+   focused 2px stroke/neutral-contrast · invalid 2px stroke/critical-solid · disabled·readOnly bg/disabled
+   -------------------------------------------------------------------------- */
+.ds-textarea {
+  --ds-textarea-padding: var(--ybm-space-x3_5) var(--ybm-space-x4);
+  --ds-textarea-min-height: 94px;
+  --ds-textarea-radius: var(--ybm-shape-lg);
+  --ds-textarea-font-size: var(--ybm-font-size-t05);
+  --ds-textarea-line-height: var(--ybm-line-height-t05);
+  --ds-textarea-line: var(--ybm-color-stroke-neutral-weak);
+  --ds-textarea-line-width: 1px;
+  display: block;
+  width: 100%;
+  min-height: var(--ds-textarea-min-height);
+  margin: 0;
+  padding: var(--ds-textarea-padding);
+  border: 0;
+  border-radius: var(--ds-textarea-radius);
+  background: var(--ybm-color-bg-transparent);
+  box-shadow: inset 0 0 0 var(--ds-textarea-line-width) var(--ds-textarea-line);
+  color: var(--ybm-color-fg-neutral);
+  font: inherit;
+  font-size: var(--ds-textarea-font-size);
+  line-height: var(--ds-textarea-line-height);
+  resize: none;
+  outline: 0;
+  transition: box-shadow var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+.ds-textarea[data-size="medium"] {
+  --ds-textarea-padding: var(--ybm-space-x3) var(--ybm-space-x3_5);
+  --ds-textarea-min-height: 82px;
+  --ds-textarea-radius: var(--ybm-shape-sm);
+  --ds-textarea-font-size: var(--ybm-font-size-t04);
+  --ds-textarea-line-height: var(--ybm-line-height-t04);
+}
+.ds-textarea[data-variant="underline"] {
+  --ds-textarea-padding: calc(var(--ybm-space-x2) + var(--ybm-space-x3_5)) 0;
+  --ds-textarea-min-height: 110px;
+  --ds-textarea-radius: 0px;
+  --ds-textarea-font-size: var(--ybm-font-size-t06);
+  --ds-textarea-line-height: var(--ybm-line-height-t06);
+  box-shadow: inset 0 calc(var(--ds-textarea-line-width) * -1) 0 var(--ds-textarea-line);
+}
+.ds-textarea[data-variant="underline"][data-size="medium"] {
+  --ds-textarea-padding: calc(var(--ybm-space-x1_5) + var(--ybm-space-x3)) 0;
+  --ds-textarea-min-height: 94px;
+  --ds-textarea-font-size: var(--ybm-font-size-t05);
+  --ds-textarea-line-height: var(--ybm-line-height-t05);
+}
+.ds-textarea::placeholder { color: var(--ybm-color-fg-placeholder); opacity: 1; }
+.ds-textarea:focus { --ds-textarea-line: var(--ybm-color-stroke-neutral-contrast); --ds-textarea-line-width: 2px; }
+.ds-textarea[aria-invalid="true"] { --ds-textarea-line: var(--ybm-color-stroke-critical-solid); --ds-textarea-line-width: 2px; }
+.ds-textarea:disabled { color: var(--ybm-color-fg-disabled); }
+.ds-textarea:disabled::placeholder { color: var(--ybm-color-fg-disabled); }
+.ds-textarea:not([data-variant="underline"]):is(:disabled, [readonly]) { background: var(--ybm-color-bg-disabled); }
+
+
+/* --------------------------------------------------------------------------
+   06 Field Button — 누르면 선택 화면(Bottom Sheet·Date Picker)을 여는 입력 모양 버튼
+     <button type="button" class="ds-fieldbutton" data-size="large">
+       [<i class="ds-icon ds-icon--calendar" aria-hidden="true"></i>]
+       [<span class="ds-fieldbutton__affix">https://</span>]
+       <span class="ds-fieldbutton__value" data-placeholder="선택해 주세요"></span>
+       [<span class="ds-fieldbutton__affix">cm</span>]
+       <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+     </button>
+   Figma large : h52 · px16 · gap10 · shape/lg · t05 · icon 20 / medium: h40 · px14 · gap8 · shape/sm · t04 · icon 16
+          1px stroke/neutral-weak · invalid 2px stroke/critical-solid · disabled·readOnly bg/disabled
+          affix·아이콘 fg/neutral-subtle · placeholder fg/placeholder · 값 fg/neutral
+   readOnly: aria-readonly="true" (폼 제출이 필요하면 disabled 대신 readOnly — DS §6.4)
+   -------------------------------------------------------------------------- */
+.ds-fieldbutton {
+  --ds-fb-height: 52px;
+  --ds-fb-padding-x: var(--ybm-space-x4);
+  --ds-fb-gap: var(--ybm-space-x2_5);
+  --ds-fb-radius: var(--ybm-shape-lg);
+  --ds-fb-font-size: var(--ybm-font-size-t05);
+  --ds-fb-line-height: var(--ybm-line-height-t05);
+  --ds-fb-icon: 20px;
+  --ds-fb-line: var(--ybm-color-stroke-neutral-weak);
+  --ds-fb-line-width: 1px;
+  --ds-fb-bg: var(--ybm-color-bg-transparent);
+  display: flex;
+  align-items: center;
+  gap: var(--ds-fb-gap);
+  width: 100%;
+  height: var(--ds-fb-height);
+  padding-inline: var(--ds-fb-padding-x);
+  border-radius: var(--ds-fb-radius);
+  background: var(--ds-fb-bg);
+  box-shadow: inset 0 0 0 var(--ds-fb-line-width) var(--ds-fb-line);
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ds-fb-font-size);
+  line-height: var(--ds-fb-line-height);
+  text-align: start;
+}
+.ds-fieldbutton[data-size="medium"] {
+  --ds-fb-height: 40px;
+  --ds-fb-padding-x: var(--ybm-space-x3_5);
+  --ds-fb-gap: var(--ybm-space-x2);
+  --ds-fb-radius: var(--ybm-shape-sm);
+  --ds-fb-font-size: var(--ybm-font-size-t04);
+  --ds-fb-line-height: var(--ybm-line-height-t04);
+  --ds-fb-icon: 16px;
+}
+.ds-fieldbutton > .ds-icon { --ds-icon-size: var(--ds-fb-icon); color: var(--ybm-color-fg-neutral-subtle); }
+.ds-fieldbutton__value { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ds-fieldbutton__value:empty::before { content: attr(data-placeholder); color: var(--ybm-color-fg-placeholder); }
+.ds-fieldbutton__affix { flex: none; color: var(--ybm-color-fg-neutral-subtle); }
+.ds-fieldbutton[aria-invalid="true"] { --ds-fb-line: var(--ybm-color-stroke-critical-solid); --ds-fb-line-width: 2px; }
+.ds-fieldbutton:is(:disabled, [aria-readonly="true"]) { --ds-fb-bg: var(--ybm-color-bg-disabled); }
+.ds-fieldbutton[aria-readonly="true"] { cursor: default; }
+.ds-fieldbutton:disabled { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+.ds-fieldbutton:disabled :is(.ds-fieldbutton__affix, .ds-fieldbutton__value:empty::before, .ds-icon) { color: var(--ybm-color-fg-disabled); }
+
+
+/* --------------------------------------------------------------------------
+   07 Prefix Select — 입력 앞에 붙는 선택 버튼 (통신사·국가번호)
+     <button type="button" class="ds-prefixselect" [data-size="medium"]>통신사</button>
+   Figma large: t06 Regular · chevron 24 / medium: t05 · chevron 20 · gap x1 · fg/neutral-subtle
+   -------------------------------------------------------------------------- */
+.ds-prefixselect {
+  --ds-ps-icon: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ybm-space-x1);
+  flex: none;
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t06);
+  line-height: var(--ybm-line-height-t06);
+}
+.ds-prefixselect[data-size="medium"] { --ds-ps-icon: 20px; font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-prefixselect::after {
+  content: "";
+  width: var(--ds-ps-icon);
+  height: var(--ds-ps-icon);
+  background: currentColor;
+  -webkit-mask: var(--ds-icon-chevron-down) center / contain no-repeat;
+          mask: var(--ds-icon-chevron-down) center / contain no-repeat;
+}
+.ds-prefixselect:hover { color: var(--ybm-color-fg-neutral); }
+
+
+/* --------------------------------------------------------------------------
+   08 Select Trigger — 목록에서 값을 고르는 트리거 (열리면 Select Content)
+     <button type="button" class="ds-select" aria-haspopup="listbox" aria-expanded="false" [data-size="medium"]>
+       [<i class="ds-icon ds-icon--search" aria-hidden="true"></i>]
+       <span class="ds-select__value" data-placeholder="선택해 주세요"></span>
+     </button>
+   Figma large: h52 · px16 · gap10 · shape/lg · t05 · chevron 20 / medium: h40 · px14 · gap8 · shape/sm · t04 · chevron 16
+          chevron fg/neutral(열림 = chevron-up) · invalid 2px critical · disabled·readOnly bg/disabled
+   -------------------------------------------------------------------------- */
+.ds-select {
+  --ds-select-height: 52px;
+  --ds-select-padding-x: var(--ybm-space-x4);
+  --ds-select-gap: var(--ybm-space-x2_5);
+  --ds-select-radius: var(--ybm-shape-lg);
+  --ds-select-font-size: var(--ybm-font-size-t05);
+  --ds-select-line-height: var(--ybm-line-height-t05);
+  --ds-select-icon: 20px;
+  --ds-select-line: var(--ybm-color-stroke-neutral-weak);
+  --ds-select-line-width: 1px;
+  --ds-select-bg: var(--ybm-color-bg-transparent);
+  display: flex;
+  align-items: center;
+  gap: var(--ds-select-gap);
+  width: 100%;
+  height: var(--ds-select-height);
+  padding-inline: var(--ds-select-padding-x);
+  border-radius: var(--ds-select-radius);
+  background: var(--ds-select-bg);
+  box-shadow: inset 0 0 0 var(--ds-select-line-width) var(--ds-select-line);
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ds-select-font-size);
+  line-height: var(--ds-select-line-height);
+  text-align: start;
+}
+.ds-select[data-size="medium"] {
+  --ds-select-height: 40px;
+  --ds-select-padding-x: var(--ybm-space-x3_5);
+  --ds-select-gap: var(--ybm-space-x2);
+  --ds-select-radius: var(--ybm-shape-sm);
+  --ds-select-font-size: var(--ybm-font-size-t04);
+  --ds-select-line-height: var(--ybm-line-height-t04);
+  --ds-select-icon: 16px;
+}
+.ds-select > .ds-icon { --ds-icon-size: var(--ds-select-icon); color: var(--ybm-color-fg-neutral-subtle); }
+.ds-select__value { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ds-select__value:empty::before { content: attr(data-placeholder); color: var(--ybm-color-fg-placeholder); }
+.ds-select::after {
+  content: "";
+  flex: none;
+  width: var(--ds-select-icon);
+  height: var(--ds-select-icon);
+  background: var(--ybm-color-fg-neutral);
+  -webkit-mask: var(--ds-icon-chevron-down) center / contain no-repeat;
+          mask: var(--ds-icon-chevron-down) center / contain no-repeat;
+}
+.ds-select[aria-expanded="true"]::after { -webkit-mask-image: var(--ds-icon-chevron-up); mask-image: var(--ds-icon-chevron-up); }
+.ds-select[aria-invalid="true"] { --ds-select-line: var(--ybm-color-stroke-critical-solid); --ds-select-line-width: 2px; }
+.ds-select:is(:disabled, [aria-readonly="true"]) { --ds-select-bg: var(--ybm-color-bg-disabled); }
+.ds-select:disabled { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+.ds-select:disabled .ds-select__value:empty::before { color: var(--ybm-color-fg-disabled); }
+
+
+/* --------------------------------------------------------------------------
+   09 Select Content · Select Item — 드롭다운 패널과 그 안의 한 줄
+     <div class="ds-select-content" role="listbox" [data-size="medium"]>
+       <div class="ds-select-content__group" role="group" aria-labelledby="g1">
+         <div class="ds-select-content__label" id="g1">최근 검색</div>
+         <ul class="ds-select-list">
+           <li><button class="ds-select-item" role="option" aria-selected="true">
+                 <span class="ds-select-item__body"><span class="ds-select-item__label">서울특별시</span>
+                 [<span class="ds-select-item__desc">보조 설명</span>]</span></button></li>
+         </ul>
+       </div>
+     </div>
+   Dialog / Bottom Sheet 안에서는 .ds-select-list 만 단독으로 쓴다.
+   Figma Content: shape/2xl · bg/layer-floating · elevation overlay(+헤어라인) · 위아래 x2 · 그룹 사이 x2
+          group label large px16 py10 t04 Medium / medium py8 t03 Regular · fg/neutral-subtle
+          둘째 그룹부터 1px stroke/neutral-muted 구분선(좌우 x4, 아래 x2)
+   Figma Item(large): 바깥 좌우 x2 · surface py12 px8 gap12 shape/lg · label t05 · desc t03 · check 20 fg/neutral
+              (medium): surface py10 gap8 · label t04 · desc t02 · check 16
+          highlighted(hover·focus) bg/transparent-pressed · selected = 우측 체크만 · disabled fg/disabled
+   -------------------------------------------------------------------------- */
+.ds-select-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x2);
+  max-height: min(480px, var(--ds-select-available-height, 80vh));
+  padding-block: var(--ybm-space-x2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--ybm-shape-2xl);
+  background: var(--ybm-color-bg-layer-floating);
+  box-shadow: var(--ybm-elevation-overlay);
+}
+.ds-select-content__group + .ds-select-content__group::before {
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0 var(--ybm-space-x4) var(--ybm-space-x2);
+  background: var(--ybm-color-stroke-neutral-muted);
+}
+.ds-select-content__label {
+  padding: var(--ybm-space-x2_5) var(--ybm-space-x4);
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  font-weight: var(--ybm-font-weight-medium);
+}
+.ds-select-content[data-size="medium"] .ds-select-content__label { padding-block: var(--ybm-space-x2); font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); font-weight: var(--ybm-font-weight-regular); }
+
+.ds-select-list { display: flex; flex-direction: column; }
+.ds-select-list > li { padding-inline: var(--ybm-space-x2); }
+.ds-select-item {
+  --ds-select-item-padding: var(--ybm-space-x3) var(--ybm-space-x2);
+  --ds-select-item-gap: var(--ybm-space-x3);
+  --ds-select-item-check: 20px;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-select-item-gap);
+  width: 100%;
+  padding: var(--ds-select-item-padding);
+  border-radius: var(--ybm-shape-lg);
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  text-align: start;
+  transition: background-color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+:is(.ds-select-content[data-size="medium"], .ds-select-list[data-size="medium"]) .ds-select-item,
+.ds-select-item[data-size="medium"] {
+  --ds-select-item-padding: var(--ybm-space-x2_5) var(--ybm-space-x2);
+  --ds-select-item-gap: var(--ybm-space-x2);
+  --ds-select-item-check: 16px;
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+}
+.ds-select-item:hover:not(:disabled),
+.ds-select-item:focus-visible,
+.ds-select-item[data-highlighted] { background: var(--ybm-color-bg-transparent-pressed); outline: none; }
+.ds-select-item__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--ybm-space-x0_5); }
+.ds-select-item__label { flex: 1 1 auto; }
+.ds-select-item__desc { color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
+:is(.ds-select-content[data-size="medium"], .ds-select-list[data-size="medium"]) .ds-select-item__desc,
+.ds-select-item[data-size="medium"] .ds-select-item__desc { font-size: var(--ybm-font-size-t02); line-height: var(--ybm-line-height-t02); }
+.ds-select-item > .ds-icon { --ds-icon-size: calc(var(--ds-select-item-check) + 2px); }
+.ds-select-item[aria-selected="true"]::after {
+  content: "";
+  flex: none;
+  margin-inline-start: auto;
+  width: var(--ds-select-item-check);
+  height: var(--ds-select-item-check);
+  background: var(--ybm-color-fg-neutral);
+  -webkit-mask: var(--ds-icon-check) center / contain no-repeat;
+          mask: var(--ds-icon-check) center / contain no-repeat;
+}
+.ds-select-item:disabled { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+.ds-select-item:disabled .ds-select-item__desc { color: var(--ybm-color-fg-disabled); }
+
+
+/* --------------------------------------------------------------------------
+   10 Checkbox
+   size: medium(기본 20) · large(24)   variant: square(기본) · ghost   tone: brand(기본) · neutral
+     <label class="ds-checkbox" data-tone="neutral">
+       <input type="checkbox" class="ds-checkbox__control">
+       <span class="ds-checkbox__label">라벨</span>
+     </label>
+   indeterminate: input.indeterminate = true (스크립트) → 가로선
+   Figma: 행 min-h 32/36 · 위 6 · gap x2 · 박스 shape/xs · label t04/t05 fg/neutral
+     unchecked bg/layer-default + 1px stroke/neutral-weak / checked neutral bg/neutral-solid + 체크 fg/on-neutral-solid
+     brand bg/brand-solid + 체크 fg/on-brand-solid / disabled bg/disabled + stroke/neutral-muted
+     disabledChecked bg/disabled + 체크 fg/disabled / ghost 박스 없이 체크 14 (미선택 fg/placeholder)
+   -------------------------------------------------------------------------- */
+.ds-checkbox {
+  --ds-checkbox-size: 20px;
+  --ds-checkbox-icon: 12px;
+  --ds-checkbox-checked-bg: var(--ybm-color-bg-brand-solid);
+  --ds-checkbox-checked-fg: var(--ybm-color-fg-on-brand-solid);
+  --ds-checkbox-line: var(--ybm-color-stroke-neutral-weak);
+  --ds-checkbox-mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--ybm-space-x2);
+  min-height: 32px;
+  padding-top: 6px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+}
+.ds-checkbox[data-size="large"] { --ds-checkbox-size: 24px; --ds-checkbox-icon: 14px; min-height: 36px; font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-checkbox[data-tone="neutral"] { --ds-checkbox-checked-bg: var(--ybm-color-bg-neutral-solid); --ds-checkbox-checked-fg: var(--ybm-color-fg-on-neutral-solid); }
+
+.ds-checkbox__control {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: var(--ds-checkbox-size);
+  height: var(--ds-checkbox-size);
+  margin: 0;
+  border-radius: var(--ybm-shape-xs);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 0 0 1px var(--ds-checkbox-line);
+  cursor: inherit;
+  transition: background-color var(--ybm-duration-fast) var(--ybm-easing-standard), box-shadow var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-checkbox__control::after {
+  content: "";
+  position: absolute;
+  inset: calc((var(--ds-checkbox-size) - var(--ds-checkbox-icon)) / 2);
+  background: var(--ds-checkbox-checked-fg);
+  -webkit-mask: var(--ds-checkbox-mark) center / contain no-repeat;
+          mask: var(--ds-checkbox-mark) center / contain no-repeat;
+  transform: scale(0);
+  transition: transform var(--ybm-duration-fast) var(--ybm-easing-emphasized);
+}
+.ds-checkbox__control:is(:checked, :indeterminate) { background: var(--ds-checkbox-checked-bg); box-shadow: none; }
+.ds-checkbox__control:is(:checked, :indeterminate)::after { transform: scale(1); }
+.ds-checkbox__control:indeterminate { --ds-checkbox-mark: var(--ds-icon-minus); }
+.ds-checkbox__control:disabled { background: var(--ybm-color-bg-disabled); --ds-checkbox-line: var(--ybm-color-stroke-neutral-muted); }
+.ds-checkbox__control:disabled:is(:checked, :indeterminate) { --ds-checkbox-checked-fg: var(--ybm-color-fg-disabled); }
+.ds-checkbox__control:disabled::after { background: var(--ybm-color-fg-disabled); }
+.ds-checkbox:has(:disabled) { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+
+/* ghost — 박스 없이 체크 아이콘만 (약관 리스트) */
+.ds-checkbox[data-variant="ghost"] { --ds-checkbox-icon: 14px; }
+.ds-checkbox[data-variant="ghost"] .ds-checkbox__control { background: none; box-shadow: none; }
+.ds-checkbox[data-variant="ghost"] .ds-checkbox__control::after { transform: none; background: var(--ybm-color-fg-placeholder); }
+.ds-checkbox[data-variant="ghost"] .ds-checkbox__control:checked::after { background: var(--ybm-color-fg-brand); }
+.ds-checkbox[data-variant="ghost"][data-tone="neutral"] .ds-checkbox__control:checked::after { background: var(--ybm-color-fg-neutral); }
+.ds-checkbox[data-variant="ghost"] .ds-checkbox__control:disabled::after { background: var(--ybm-color-fg-disabled); }
+
+
+/* --------------------------------------------------------------------------
+   11 Radio Group — 택일 선택
+   size: large(기본 24) · medium(20)   tone: brand(기본) · neutral
+     <div class="ds-radio-group" role="radiogroup">
+       <label class="ds-radio"><input type="radio" class="ds-radio__control" name="g"><span>라벨</span></label>
+     </div>
+   Figma: 행 min-h 36/32 · 위 6 · gap x2 · 원 bg/layer-default + 1px stroke/neutral-weak · label t05/t04
+     checked neutral bg/neutral-solid + 점(10/8) fg/on-neutral-solid · brand bg/brand-solid + 점 fg/on-brand-solid
+     disabled bg/disabled + stroke/neutral-muted · disabledChecked bg/disabled + 점 fg/disabled
+   -------------------------------------------------------------------------- */
+.ds-radio-group { display: flex; flex-direction: column; }
+.ds-radio {
+  --ds-radio-size: 24px;
+  --ds-radio-dot: 10px;
+  --ds-radio-checked-bg: var(--ybm-color-bg-brand-solid);
+  --ds-radio-checked-fg: var(--ybm-color-fg-on-brand-solid);
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--ybm-space-x2);
+  min-height: 36px;
+  padding-top: 6px;
+  cursor: pointer;
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+}
+.ds-radio[data-size="medium"], .ds-radio-group[data-size="medium"] .ds-radio { --ds-radio-size: 20px; --ds-radio-dot: 8px; min-height: 32px; font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-radio[data-tone="neutral"], .ds-radio-group[data-tone="neutral"] .ds-radio { --ds-radio-checked-bg: var(--ybm-color-bg-neutral-solid); --ds-radio-checked-fg: var(--ybm-color-fg-on-neutral-solid); }
+.ds-radio__control {
+  appearance: none;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--ds-radio-size);
+  height: var(--ds-radio-size);
+  margin: 0;
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 0 0 1px var(--ybm-color-stroke-neutral-weak);
+  cursor: inherit;
+  transition: background-color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-radio__control::after {
+  content: "";
+  width: var(--ds-radio-dot);
+  height: var(--ds-radio-dot);
+  border-radius: inherit;
+  background: var(--ds-radio-checked-fg);
+  transform: scale(0);
+  transition: transform var(--ybm-duration-fast) var(--ybm-easing-emphasized);
+}
+.ds-radio__control:checked { background: var(--ds-radio-checked-bg); box-shadow: none; }
+.ds-radio__control:checked::after { transform: scale(1); }
+.ds-radio__control:disabled { background: var(--ybm-color-bg-disabled); box-shadow: inset 0 0 0 1px var(--ybm-color-stroke-neutral-muted); }
+.ds-radio__control:disabled:checked { box-shadow: none; }
+.ds-radio__control:disabled::after { background: var(--ybm-color-fg-disabled); }
+.ds-radio:has(:disabled) { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+
+
+/* --------------------------------------------------------------------------
+   12 Switch — 즉시 반영되는 켜고 끄기 (저장 버튼이 따로 있으면 Checkbox)
+   size: 24(기본) · 16 · 32   tone: brand(기본) · neutral
+     <label class="ds-switch" data-size="24">
+       <span class="ds-switch__label">알림 받기</span>
+       <input type="checkbox" role="switch" class="ds-switch__control">
+     </label>
+   Figma 16: 트랙 26×16 · 썸 10(켜짐 12) · gap x1_5 · label t03 Medium
+          24: 트랙 38×24 · 썸 16(켜짐 20) · gap x2   · label t04 Medium
+          32: 트랙 52×32 · 썸 21(켜짐 26) · gap x2_5 · label t05 Medium
+     트랙 off palette/gray-600 · on bg/neutral-solid(neutral) / bg/brand-solid(brand)
+     썸 fg/on-neutral-solid(neutral) / static-white(brand · checked 는 fg/on-brand-solid, 같은 값) + elevation raised
+     disabled: 트랙 opacity .38 · 라벨 .58 · 썸 static-black-alpha-700
+   -------------------------------------------------------------------------- */
+.ds-switch {
+  --ds-switch-w: 38px;
+  --ds-switch-h: 24px;
+  --ds-switch-thumb: 16px;
+  --ds-switch-thumb-on: 20px;
+  --ds-switch-on: var(--ybm-color-bg-brand-solid);
+  --ds-switch-thumb-color: var(--ybm-color-palette-static-white);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ybm-space-x2);
+  min-height: var(--ds-switch-h);
+  cursor: pointer;
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  font-weight: var(--ybm-font-weight-medium);
+}
+.ds-switch[data-size="16"] { --ds-switch-w: 26px; --ds-switch-h: 16px; --ds-switch-thumb: 10px; --ds-switch-thumb-on: 12px; gap: var(--ybm-space-x1_5); min-height: 24px; font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
+.ds-switch[data-size="32"] { --ds-switch-w: 52px; --ds-switch-h: 32px; --ds-switch-thumb: 21px; --ds-switch-thumb-on: 26px; gap: var(--ybm-space-x2_5); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-switch[data-tone="neutral"] { --ds-switch-on: var(--ybm-color-bg-neutral-solid); --ds-switch-thumb-color: var(--ybm-color-fg-on-neutral-solid); }
+.ds-switch__control {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: var(--ds-switch-w);
+  height: var(--ds-switch-h);
+  margin: 0;
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ybm-color-palette-gray-600);
+  cursor: inherit;
+  transition: background-color var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+.ds-switch__control::before {
+  --ds-switch-t: var(--ds-switch-thumb);
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc((var(--ds-switch-h) - var(--ds-switch-t)) / 2);
+  width: var(--ds-switch-t);
+  height: var(--ds-switch-t);
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ds-switch-thumb-color);
+  box-shadow: var(--ybm-elevation-raised);
+  translate: 0 -50%;
+  transition: left var(--ybm-duration-normal) var(--ybm-easing-emphasized), width var(--ybm-duration-normal) var(--ybm-easing-emphasized), height var(--ybm-duration-normal) var(--ybm-easing-emphasized);
+}
+.ds-switch__control:checked { background: var(--ds-switch-on); }
+.ds-switch__control:checked::before { --ds-switch-t: var(--ds-switch-thumb-on); left: calc(var(--ds-switch-w) - var(--ds-switch-t) - (var(--ds-switch-h) - var(--ds-switch-t)) / 2); }
+.ds-switch:has(:disabled) { cursor: not-allowed; }
+.ds-switch__control:disabled { opacity: 0.38; }
+.ds-switch__control:disabled::before { background: var(--ybm-color-palette-static-black-alpha-700); }
+.ds-switch:has(:disabled) .ds-switch__label { opacity: 0.58; }
+
+
+/* --------------------------------------------------------------------------
+   13 Quantity Picker — 수량 증감
+   size: medium(기본 40) · small 36 · large 52   layout: hug(기본) · data-layout="fill"
+     <div class="ds-quantity" data-size="medium">
+       <button type="button" class="ds-quantity__btn" aria-label="수량 줄이기"><i class="ds-icon ds-icon--minus" aria-hidden="true"></i></button>
+       <input class="ds-quantity__value" inputmode="numeric" value="1" aria-label="수량">
+       <button type="button" class="ds-quantity__btn" aria-label="수량 늘리기"><i class="ds-icon ds-icon--plus" aria-hidden="true"></i></button>
+     </div>
+   Figma: bg/layer-default · 1px stroke/neutral-weak · small/medium shape/sm · large shape/lg
+          버튼 정사각(36/40/52) · 아이콘 16/18/22 fg/neutral · 값 min-w40 px8 · t05 Medium(large t06)
+          disabled 아이콘·값 fg/disabled · invalid 2px stroke/critical-solid
+   -------------------------------------------------------------------------- */
+.ds-quantity {
+  --ds-qty-size: 40px;
+  --ds-qty-icon: 18px;
+  --ds-qty-radius: var(--ybm-shape-sm);
+  --ds-qty-line: var(--ybm-color-stroke-neutral-weak);
+  --ds-qty-line-width: 1px;
+  display: inline-flex;
+  align-items: center;
+  height: var(--ds-qty-size);
+  border-radius: var(--ds-qty-radius);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 0 0 var(--ds-qty-line-width) var(--ds-qty-line);
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  font-weight: var(--ybm-font-weight-medium);
+}
+.ds-quantity[data-size="small"] { --ds-qty-size: 36px; --ds-qty-icon: 16px; }
+.ds-quantity[data-size="large"] { --ds-qty-size: 52px; --ds-qty-icon: 22px; --ds-qty-radius: var(--ybm-shape-lg); font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); }
+.ds-quantity[data-layout="fill"] { display: flex; width: 100%; }
+.ds-quantity__btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--ds-qty-size);
+  height: var(--ds-qty-size);
+  border-radius: var(--ds-qty-radius);
+  background: var(--ybm-color-bg-transparent);
+  color: var(--ybm-color-fg-neutral);
+}
+.ds-quantity__btn > .ds-icon { --ds-icon-size: var(--ds-qty-icon); }
+.ds-quantity__btn:active:not(:disabled) { background: var(--ybm-color-bg-transparent-pressed); }
+.ds-quantity__btn:disabled { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+.ds-quantity__value {
+  flex: 1 1 auto;
+  width: 40px;
+  min-width: 40px;
+  padding: 0 var(--ybm-space-x2);
+  border: 0;
+  background: none;
+  text-align: center;
+  font: inherit;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  outline: 0;
+}
+.ds-quantity[data-layout="fill"] .ds-quantity__value { width: auto; }
+.ds-quantity:has([aria-invalid="true"]) { --ds-qty-line: var(--ybm-color-stroke-critical-solid); --ds-qty-line-width: 2px; }
+.ds-quantity:has(.ds-quantity__value:disabled) { color: var(--ybm-color-fg-disabled); }
+.ds-quantity:has(.ds-quantity__value:disabled) .ds-quantity__btn { color: var(--ybm-color-fg-disabled); pointer-events: none; }
+
+
+/* --------------------------------------------------------------------------
+   14 Code Input — 인증번호 6칸 (Figma 컴포넌트 없음 · CSS 전용)
+   실제 입력은 투명한 <input> 하나가 받고, 칸(__cell)은 보여주기만 한다 → 붙여넣기·자동완성 그대로 동작
+     <div class="ds-code-input">
+       <input class="ds-code-input__control" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+       <span class="ds-code-input__cell"></span> ×6
+     </div>
+   셀 state(data-state): empty · focused · filled · invalid(컨테이너 aria-invalid) · disabled
+   -------------------------------------------------------------------------- */
+.ds-code-input { position: relative; display: flex; justify-content: center; gap: var(--ybm-space-x1_5); }
+.ds-code-input__control {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  color: transparent;
+  caret-color: transparent;
+  border: 0;
+  font-size: 16px;
+  cursor: text;
+}
+.ds-code-input__cell {
+  display: grid;
+  place-items: center;
+  flex: 0 1 55px;
+  min-width: 0;
+  height: 56px;
+  border-radius: var(--ybm-shape-md);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 0 0 1px var(--ybm-color-stroke-neutral-weak);
+  color: var(--ybm-color-fg-brand);
+  font-size: var(--ybm-font-size-t08);
+  line-height: var(--ybm-line-height-t08);
+  font-weight: var(--ybm-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  transition: background-color var(--ybm-duration-fast) var(--ybm-easing-standard), box-shadow var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-code-input__cell[data-state="focused"] { box-shadow: inset 0 0 0 2px var(--ybm-color-stroke-focus-ring); }
+.ds-code-input__cell[data-state="filled"]  { background: var(--ybm-color-bg-brand-weak); box-shadow: none; }
+.ds-code-input[aria-invalid="true"] .ds-code-input__cell[data-state="filled"] { background: var(--ybm-color-bg-critical-weak); color: var(--ybm-color-fg-critical); }
+.ds-code-input:has(:disabled) .ds-code-input__cell { background: var(--ybm-color-bg-disabled); color: var(--ybm-color-fg-disabled); box-shadow: none; }
+.ds-code-input__control:focus-visible { outline: none; }
+
+
+/* --------------------------------------------------------------------------
+   15 Chip — 선택·필터용 칩
+   variant: solid(기본) · outlineStrong · outlineWeak   size: medium(기본 36) · small 32 · large 40
+   layout : 기본 withText / data-layout="iconOnly"      state: aria-pressed="true"(checked) · disabled
+     <button type="button" class="ds-chip" aria-pressed="false">
+       [<i class="ds-icon ds-icon--heart" aria-hidden="true"></i>] @naver.com [<i class="ds-icon ds-icon--chevron-down"></i>]
+     </button>
+   Figma: shape/pill · t04 Regular(large t05) · 좌우 12/14/16 · min-w 44/48/52 · 아이콘 14/16/16 · 아이콘↔라벨 x1_5
+     solid bg/neutral-weak-alpha · outlineStrong bg/layer-default + stroke/neutral-weak · outlineWeak + stroke/neutral-muted
+     checked(solid·outlineStrong) bg/neutral-solid + fg/on-neutral-solid SemiBold
+     checked(outlineWeak) bg/neutral + stroke/neutral-contrast + fg/neutral Medium · disabled opacity .5
+   -------------------------------------------------------------------------- */
+.ds-chip {
+  --ds-chip-height: 36px;
+  --ds-chip-padding-x: calc(var(--ybm-space-x2) + var(--ybm-space-x1_5));
+  --ds-chip-min-width: var(--ybm-space-x12);
+  --ds-chip-icon: 16px;
+  --ds-chip-bg: var(--ybm-color-bg-neutral-weak-alpha);
+  --ds-chip-fg: var(--ybm-color-fg-neutral);
+  --ds-chip-line: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ybm-space-x1_5);
+  flex: none;
+  height: var(--ds-chip-height);
+  min-width: var(--ds-chip-min-width);
+  padding-inline: var(--ds-chip-padding-x);
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ds-chip-bg);
+  box-shadow: inset 0 0 0 1px var(--ds-chip-line);
+  color: var(--ds-chip-fg);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  white-space: nowrap;
+}
+.ds-chip > .ds-icon { --ds-icon-size: var(--ds-chip-icon); }
+.ds-chip > .ds-avatar { --ds-avatar-size: 24px; margin-inline-start: calc(var(--ybm-space-x1_5) - var(--ds-chip-padding-x)); }
+.ds-chip[data-size="small"] { --ds-chip-height: 32px; --ds-chip-padding-x: calc(var(--ybm-space-x1_5) * 2); --ds-chip-min-width: 44px; --ds-chip-icon: 14px; }
+.ds-chip[data-size="large"] { --ds-chip-height: 40px; --ds-chip-padding-x: calc(var(--ybm-space-x2_5) + var(--ybm-space-x1_5)); --ds-chip-min-width: var(--ybm-space-x13); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-chip[data-layout="iconOnly"] { width: var(--ds-chip-height); min-width: var(--ds-chip-height); padding: 0; }
+.ds-chip[data-variant="outlineStrong"] { --ds-chip-bg: var(--ybm-color-bg-layer-default); --ds-chip-line: var(--ybm-color-stroke-neutral-weak); }
+.ds-chip[data-variant="outlineWeak"]   { --ds-chip-bg: var(--ybm-color-bg-layer-default); --ds-chip-line: var(--ybm-color-stroke-neutral-muted); }
+.ds-chip[aria-pressed="true"] { --ds-chip-bg: var(--ybm-color-bg-neutral-solid); --ds-chip-fg: var(--ybm-color-fg-on-neutral-solid); font-weight: var(--ybm-font-weight-semibold); }
+.ds-chip[data-variant="outlineWeak"][aria-pressed="true"] { --ds-chip-bg: var(--ybm-color-bg-neutral); --ds-chip-fg: var(--ybm-color-fg-neutral); --ds-chip-line: var(--ybm-color-stroke-neutral-contrast); font-weight: var(--ybm-font-weight-medium); }
+.ds-chip:disabled { opacity: 0.5; cursor: not-allowed; }
+/* 호버 — 마우스 환경에서만, Figma 의 pressed 색을 쓴다 (DS 공통 규칙) */
+@media (hover: hover) {
+  .ds-chip:hover:not(:disabled) { --ds-chip-bg: var(--ybm-color-bg-neutral-weak-alpha-pressed); }
+  .ds-chip:is([data-variant="outlineStrong"], [data-variant="outlineWeak"]):hover:not(:disabled) { --ds-chip-bg: var(--ybm-color-bg-transparent-pressed); }
+  .ds-chip[aria-pressed="true"]:hover:not(:disabled) { --ds-chip-bg: var(--ybm-color-bg-neutral-solid-pressed); }
+  .ds-chip[data-variant="outlineWeak"][aria-pressed="true"]:hover:not(:disabled) { --ds-chip-bg: var(--ybm-color-bg-neutral-weak-pressed); }
+}
+.ds-chip:active:not(:disabled) { --ds-chip-bg: var(--ybm-color-bg-neutral-weak-alpha-pressed); }
+.ds-chip-group { display: flex; flex-wrap: wrap; gap: var(--ybm-space-x2); }
+
+
+/* --------------------------------------------------------------------------
+   16 Chip Tabs — 콘텐츠 카테고리 전환(가로 스크롤). 주요 내비게이션은 Tabs.
+   variant: neutralSolid(기본) · neutralOutline   size: medium(기본 36) · large 40
+     <div class="ds-chiptabs" role="tablist" data-variant="neutralOutline">
+       <button class="ds-chiptabs__trigger" role="tab" aria-selected="true">전체</button>
+       <button class="ds-chiptabs__trigger" role="tab" aria-selected="false" data-notification>공지</button>
+     </div>
+   Figma list: 좌우 x4 · gap x2 / trigger: shape/pill · medium h36 px14 min-w48 · large h40 px16 min-w52 · t04 Medium
+     neutralSolid bg/neutral-weak-alpha · neutralOutline 투명 + stroke/neutral-muted
+     selected bg/neutral-solid + fg/on-neutral-solid · disabled opacity .5 · notification 점 6 bg/brand-solid
+   -------------------------------------------------------------------------- */
+.ds-chiptabs {
+  --ds-ct-height: 36px;
+  --ds-ct-padding-x: 14px;
+  --ds-ct-min-width: 48px;
+  display: flex;
+  gap: var(--ybm-space-x2);
+  padding-inline: var(--ybm-space-x4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ds-chiptabs::-webkit-scrollbar { display: none; }
+.ds-chiptabs[data-size="large"] { --ds-ct-height: 40px; --ds-ct-padding-x: var(--ybm-space-x4); --ds-ct-min-width: 52px; }
+.ds-chiptabs__trigger {
+  --ds-ct-bg: var(--ybm-color-bg-neutral-weak-alpha);
+  --ds-ct-fg: var(--ybm-color-fg-neutral);
+  --ds-ct-line: transparent;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: var(--ds-ct-height);
+  min-width: var(--ds-ct-min-width);
+  padding-inline: var(--ds-ct-padding-x);
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ds-ct-bg);
+  box-shadow: inset 0 0 0 1px var(--ds-ct-line);
+  color: var(--ds-ct-fg);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  font-weight: var(--ybm-font-weight-medium);
+  white-space: nowrap;
+}
+.ds-chiptabs[data-variant="neutralOutline"] .ds-chiptabs__trigger { --ds-ct-bg: var(--ybm-color-bg-transparent); --ds-ct-line: var(--ybm-color-stroke-neutral-muted); }
+.ds-chiptabs .ds-chiptabs__trigger[aria-selected="true"] { --ds-ct-bg: var(--ybm-color-bg-neutral-solid); --ds-ct-fg: var(--ybm-color-fg-on-neutral-solid); --ds-ct-line: transparent; }
+.ds-chiptabs__trigger:disabled { opacity: 0.5; cursor: not-allowed; }
+.ds-chiptabs__trigger[data-notification]::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-inline-start: 2px;
+  align-self: flex-start;
+  margin-top: calc((var(--ds-ct-height) - var(--ybm-line-height-t04)) / 2);
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ybm-color-bg-brand-solid);
+}
+
+
+/* --------------------------------------------------------------------------
+   17 Tabs — 화면 안 콘텐츠 영역 전환(주요 내비게이션)
+   size: small(기본 40) · medium 44   triggerLayout: fill(기본) · hug
+     <div class="ds-tabs" role="tablist" [data-size="medium"] [data-layout="hug"]>
+       <button class="ds-tabs__trigger" role="tab" aria-selected="true">탭</button>
+     </div>
+   Figma: bg/layer-default · 하단 1px stroke/neutral-muted · trigger padding x2_5 · t04 Medium fg/placeholder
+     selected t04 SemiBold fg/neutral + 하단 2px fg/neutral 인디케이터(트리거 폭) · disabled fg/disabled
+     hug: 좌우 x4 · 트리거는 내용 폭
+   -------------------------------------------------------------------------- */
+.ds-tabs {
+  --ds-tabs-height: 40px;
+  position: relative;
+  display: flex;
+  min-height: var(--ds-tabs-height);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 -1px 0 var(--ybm-color-stroke-neutral-muted);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ds-tabs::-webkit-scrollbar { display: none; }
+.ds-tabs[data-size="medium"] { --ds-tabs-height: 44px; }
+.ds-tabs[data-layout="hug"] { padding-inline: var(--ybm-space-x4); }
+.ds-tabs__trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-height: var(--ds-tabs-height);
+  padding: var(--ybm-space-x2_5);
+  color: var(--ybm-color-fg-placeholder);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  font-weight: var(--ybm-font-weight-medium);
+  white-space: nowrap;
+  transition: color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-tabs[data-layout="hug"] .ds-tabs__trigger { flex: none; }
+.ds-tabs__trigger::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: var(--ybm-color-fg-neutral);
+  opacity: 0;
+  transition: opacity var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-tabs__trigger[aria-selected="true"] { color: var(--ybm-color-fg-neutral); font-weight: var(--ybm-font-weight-semibold); }
+.ds-tabs__trigger[aria-selected="true"]::after { opacity: 1; }
+.ds-tabs__trigger:disabled { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+
+
+/* --------------------------------------------------------------------------
+   18 Segmented Control — 택일 전환(2~4개, 화면당 1개)
+   size: small(기본) · medium   layout: hug(기본) · fill
+     <div class="ds-segmented" role="group" aria-label="보기 방식" [data-size="medium"] [data-layout="fill"]>
+       <button type="button" class="ds-segmented__item" aria-pressed="true">목록</button>
+     </div>
+   Figma small : 트랙 bg/neutral · padding 2 · shape/sm / item py6 px12 · shape/xs · t03 Bold fg/neutral-subtle
+         medium: 트랙 shape/lg / item py8 px16 · shape/sm · t04 Bold
+         selected bg/layer-default + elevation raised + fg/neutral · disabled fg/disabled
+   -------------------------------------------------------------------------- */
+.ds-segmented {
+  --ds-seg-track-radius: var(--ybm-shape-sm);
+  --ds-seg-item-radius: var(--ybm-shape-xs);
+  --ds-seg-item-padding: var(--ybm-space-x1_5) var(--ybm-space-x3);
+  --ds-seg-font-size: var(--ybm-font-size-t03);
+  --ds-seg-line-height: var(--ybm-line-height-t03);
+  display: inline-flex;
+  padding: var(--ybm-space-x0_5);
+  border-radius: var(--ds-seg-track-radius);
+  background: var(--ybm-color-bg-neutral);
+}
+.ds-segmented[data-size="medium"] {
+  --ds-seg-track-radius: var(--ybm-shape-lg);
+  --ds-seg-item-radius: var(--ybm-shape-sm);
+  --ds-seg-item-padding: var(--ybm-space-x2) var(--ybm-space-x4);
+  --ds-seg-font-size: var(--ybm-font-size-t04);
+  --ds-seg-line-height: var(--ybm-line-height-t04);
+}
+.ds-segmented[data-layout="fill"] { display: flex; }
+.ds-segmented[data-layout="fill"] > .ds-segmented__item { flex: 1 1 0; }
+.ds-segmented__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ds-seg-item-padding);
+  border-radius: var(--ds-seg-item-radius);
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ds-seg-font-size);
+  line-height: var(--ds-seg-line-height);
+  font-weight: var(--ybm-font-weight-bold);
+  white-space: nowrap;
+  transition: background-color var(--ybm-duration-fast) var(--ybm-easing-standard), color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.ds-segmented__item[aria-pressed="true"] { background: var(--ybm-color-bg-layer-default); color: var(--ybm-color-fg-neutral); box-shadow: var(--ybm-elevation-raised); }
+.ds-segmented__item:disabled { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+/* 모션 — fill 에서는 선택 배경이 선택한 항목으로 미끄러져 이동한다(항목 2~4개). aria-pressed 만 바꾸면 된다. */
+.ds-segmented[data-layout="fill"] { --ds-seg-count: 2; --ds-seg-index: 0; position: relative; isolation: isolate; }
+.ds-segmented[data-layout="fill"]:has(> .ds-segmented__item:nth-child(3):last-child) { --ds-seg-count: 3; }
+.ds-segmented[data-layout="fill"]:has(> .ds-segmented__item:nth-child(4):last-child) { --ds-seg-count: 4; }
+.ds-segmented[data-layout="fill"]:has(> .ds-segmented__item:nth-child(2)[aria-pressed="true"]) { --ds-seg-index: 1; }
+.ds-segmented[data-layout="fill"]:has(> .ds-segmented__item:nth-child(3)[aria-pressed="true"]) { --ds-seg-index: 2; }
+.ds-segmented[data-layout="fill"]:has(> .ds-segmented__item:nth-child(4)[aria-pressed="true"]) { --ds-seg-index: 3; }
+.ds-segmented[data-layout="fill"]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-block: var(--ybm-space-x0_5);
+  inset-inline-start: var(--ybm-space-x0_5);
+  width: calc((100% - var(--ybm-space-x0_5) * 2) / var(--ds-seg-count));
+  border-radius: var(--ds-seg-item-radius);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: var(--ybm-elevation-raised);
+  translate: calc(var(--ds-seg-index) * 100%) 0;
+  transition: translate var(--ybm-duration-normal) var(--ybm-easing-emphasized);
+}
+.ds-segmented[data-layout="fill"]:not(:has(> [aria-pressed="true"]))::before { opacity: 0; }
+.ds-segmented[data-layout="fill"] > .ds-segmented__item[aria-pressed="true"] { background: transparent; box-shadow: none; }
+
+
+/* --------------------------------------------------------------------------
+   19 Toggle Button — 켜고 끄는 단일 버튼(필터·옵션)
+   size: small(기본) · medium
+     <button type="button" class="ds-toggle" aria-pressed="false" [data-size="medium"]>라벨</button>
+   Figma small: py6 px12 · t03 Bold / medium: py10 px16 · t04 Bold · shape/lg
+     off bg/layer-default + stroke/neutral-weak · on bg/brand-weak + stroke/brand-solid + fg/brand · disabled bg/disabled + fg/disabled
+   -------------------------------------------------------------------------- */
+.ds-toggle {
+  --ds-toggle-bg: var(--ybm-color-bg-layer-default);
+  --ds-toggle-fg: var(--ybm-color-fg-neutral);
+  --ds-toggle-line: var(--ybm-color-stroke-neutral-weak);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ybm-space-x1_5) var(--ybm-space-x3);
+  border-radius: var(--ybm-shape-lg);
+  background: var(--ds-toggle-bg);
+  box-shadow: inset 0 0 0 1px var(--ds-toggle-line);
+  color: var(--ds-toggle-fg);
+  font-size: var(--ybm-font-size-t03);
+  line-height: var(--ybm-line-height-t03);
+  font-weight: var(--ybm-font-weight-bold);
+  white-space: nowrap;
+}
+.ds-toggle[data-size="medium"] { padding: var(--ybm-space-x2_5) var(--ybm-space-x4); font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-toggle[aria-pressed="true"] { --ds-toggle-bg: var(--ybm-color-bg-brand-weak); --ds-toggle-fg: var(--ybm-color-fg-brand); --ds-toggle-line: var(--ybm-color-stroke-brand-solid); }
+.ds-toggle:disabled { --ds-toggle-bg: var(--ybm-color-bg-disabled); --ds-toggle-fg: var(--ybm-color-fg-disabled); --ds-toggle-line: transparent; cursor: not-allowed; }
+
+
+/* --------------------------------------------------------------------------
+   20 Badge — 상태 없는 표시 전용 라벨(클릭 불가)
+   size: medium(기본) · large   variant: weak(기본) · solid · outline
+   tone: neutral(기본) · brand · informative · positive · warning · critical
+     <span class="ds-badge" data-variant="solid" data-tone="brand">NEW</span>
+     <span class="ds-badge" data-size="large">
+       [<i class="ds-icon ds-icon--circle-check-solid ds-badge__prefix" aria-hidden="true"></i>]
+       <span class="ds-badge__label">라벨</span>
+       [<button type="button" class="ds-badge__action" aria-label="삭제"><i class="ds-icon ds-icon--x"></i></button>]
+     </span>
+   Figma medium: py2 px6 · min-h20 · shape/2xs · t01 Medium · 아이콘 12
+         large : py4 px8 · min-h24 · shape/xs  · t02 Medium · 아이콘 14
+   공통: gap x0_5 · solid 라벨 fg/on-{tone}-solid
+   기본 최대 너비 없음 — 말줄임이 필요하면 사용처에서 max-width 지정
+   -------------------------------------------------------------------------- */
+.ds-badge {
+  --ds-badge-bg: var(--ybm-color-bg-neutral);
+  --ds-badge-fg: var(--ybm-color-fg-neutral-muted);
+  --ds-badge-line: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: var(--ybm-space-x0_5);
+  min-height: var(--ybm-space-x5);
+  padding: var(--ybm-space-x0_5) var(--ybm-space-x1_5);
+  border-radius: var(--ybm-shape-2xs);
+  background: var(--ds-badge-bg);
+  box-shadow: inset 0 0 0 1px var(--ds-badge-line);
+  color: var(--ds-badge-fg);
+  font-size: var(--ybm-font-size-t01);
+  line-height: var(--ybm-line-height-t01);
+  font-weight: var(--ybm-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-badge[data-size="large"] { min-height: var(--ybm-space-x6); padding: var(--ybm-space-x1) var(--ybm-space-x2); border-radius: var(--ybm-shape-xs); font-size: var(--ybm-font-size-t02); line-height: var(--ybm-line-height-t02); }
+/* slots — prefix · label · action. 기본 최대 너비 없음: 말줄임이 필요하면 사용처에서 max-width 지정 */
+.ds-badge__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ds-badge__prefix, .ds-badge__action { flex: none; --ds-icon-size: 12px; color: inherit; }
+.ds-badge[data-size="large"] :is(.ds-badge__prefix, .ds-badge__action) { --ds-icon-size: 14px; }
+.ds-badge__action { display: inline-flex; padding: 0; border: 0; background: none; cursor: pointer; }
+.ds-badge__action:focus-visible { outline: 2px solid var(--ybm-color-stroke-focus-ring); outline-offset: 1px; border-radius: var(--ybm-shape-2xs); }
+/* weak */
+.ds-badge[data-tone="brand"]       { --ds-badge-bg: var(--ybm-color-bg-brand-weak);       --ds-badge-fg: var(--ybm-color-fg-brand); }
+.ds-badge[data-tone="informative"] { --ds-badge-bg: var(--ybm-color-bg-informative-weak); --ds-badge-fg: var(--ybm-color-fg-brand-contrast); }
+.ds-badge[data-tone="positive"]    { --ds-badge-bg: var(--ybm-color-bg-positive-weak);    --ds-badge-fg: var(--ybm-color-fg-positive); }
+.ds-badge[data-tone="warning"]     { --ds-badge-bg: var(--ybm-color-bg-warning-weak);     --ds-badge-fg: var(--ybm-color-fg-warning); }
+.ds-badge[data-tone="critical"]    { --ds-badge-bg: var(--ybm-color-bg-critical-weak);    --ds-badge-fg: var(--ybm-color-fg-critical); }
+/* solid */
+.ds-badge[data-variant="solid"]                          { --ds-badge-bg: var(--ybm-color-palette-gray-800); --ds-badge-fg: var(--ybm-color-fg-on-neutral-solid); }
+.ds-badge[data-variant="solid"][data-tone="brand"]       { --ds-badge-bg: var(--ybm-color-bg-brand-solid);       --ds-badge-fg: var(--ybm-color-fg-on-brand-solid); }
+.ds-badge[data-variant="solid"][data-tone="informative"] { --ds-badge-bg: var(--ybm-color-bg-informative-solid); --ds-badge-fg: var(--ybm-color-fg-on-informative-solid); }
+.ds-badge[data-variant="solid"][data-tone="positive"]    { --ds-badge-bg: var(--ybm-color-bg-positive-solid);    --ds-badge-fg: var(--ybm-color-fg-on-positive-solid); }
+.ds-badge[data-variant="solid"][data-tone="warning"]     { --ds-badge-bg: var(--ybm-color-bg-warning-solid);     --ds-badge-fg: var(--ybm-color-fg-on-warning-solid); }
+.ds-badge[data-variant="solid"][data-tone="critical"]    { --ds-badge-bg: var(--ybm-color-bg-critical-solid);    --ds-badge-fg: var(--ybm-color-fg-on-critical-solid); }
+/* outline */
+.ds-badge[data-variant="outline"]                          { --ds-badge-bg: transparent; --ds-badge-line: var(--ybm-color-stroke-neutral-weak); }
+.ds-badge[data-variant="outline"][data-tone="brand"]       { --ds-badge-line: var(--ybm-color-stroke-brand-weak); }
+.ds-badge[data-variant="outline"][data-tone="informative"] { --ds-badge-line: var(--ybm-color-stroke-informative-weak); --ds-badge-fg: var(--ybm-color-fg-informative); }
+.ds-badge[data-variant="outline"][data-tone="positive"]    { --ds-badge-line: var(--ybm-color-stroke-positive-weak); }
+.ds-badge[data-variant="outline"][data-tone="warning"]     { --ds-badge-line: var(--ybm-color-stroke-warning-weak); }
+.ds-badge[data-variant="outline"][data-tone="critical"]    { --ds-badge-line: var(--ybm-color-stroke-critical-weak); }
+
+
+/* --------------------------------------------------------------------------
+   21 Tag Group — 인라인 메타 정보 (작성자 · 날짜 · 조회수)
+   size: t3(기본 13/20) · t4(14/21)   tone: neutralSubtle(기본) · neutral
+     <span class="ds-tag-group" [data-size="t4"] [data-tone="neutral"]><span>홍길동</span><span>2026.10.02</span></span>
+   Figma: 항목 사이 "·" 구분 · gap x1 · neutral fg/neutral-muted / neutralSubtle fg/neutral-subtle
+   -------------------------------------------------------------------------- */
+.ds-tag-group {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ybm-space-x1);
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t03);
+  line-height: var(--ybm-line-height-t03);
+}
+.ds-tag-group[data-size="t4"] { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-tag-group[data-tone="neutral"] { color: var(--ybm-color-fg-neutral-muted); }
+.ds-tag-group > * + *::before { content: "·"; margin-inline-end: var(--ybm-space-x1); }
+
+
+/* --------------------------------------------------------------------------
+   22 Avatar — 원형 프로필
+   size: 20 · 24 · 36(기본) · 42 · 48 · 56 · 64 · 80 · 96 · 108
+     <span class="ds-avatar" data-size="48"><img src="…" alt="">[<span class="ds-avatar__badge"></span>]</span>
+   Figma: 원 · 이미지 없을 때 palette/gray-500 · 1px ring stroke/neutral-subtle(INSIDE)
+          badge 지름 = 24→10 · 36→14 · 42→16 · 48→18 · 56→20 · 64→22 · 80→28 · 96→32 · 108→36 (우하단)
+   -------------------------------------------------------------------------- */
+.ds-avatar {
+  --ds-avatar-size: 36px;
+  --ds-avatar-badge: 14px;
+  --ds-avatar-bg: var(--ybm-color-palette-gray-500);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--ds-avatar-size);
+  height: var(--ds-avatar-size);
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ds-avatar-bg);
+  color: var(--ybm-color-palette-static-white-alpha-800);
+  font-size: calc(var(--ds-avatar-size) * 0.42);
+  line-height: 1;
+  font-weight: var(--ybm-font-weight-semibold);
+  user-select: none;
+}
+.ds-avatar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--ybm-color-stroke-neutral-subtle); pointer-events: none; }
+.ds-avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.ds-avatar__badge { position: absolute; right: 0; bottom: 0; width: var(--ds-avatar-badge); height: var(--ds-avatar-badge); border-radius: var(--ybm-shape-pill); background: var(--ybm-color-bg-layer-default); overflow: hidden; }
+.ds-avatar__badge > img { width: 100%; height: 100%; object-fit: cover; }
+.ds-avatar[data-size="20"]  { --ds-avatar-size: 20px; }
+.ds-avatar[data-size="24"]  { --ds-avatar-size: 24px;  --ds-avatar-badge: 10px; }
+.ds-avatar[data-size="42"]  { --ds-avatar-size: 42px;  --ds-avatar-badge: 16px; }
+.ds-avatar[data-size="48"]  { --ds-avatar-size: 48px;  --ds-avatar-badge: 18px; }
+.ds-avatar[data-size="56"]  { --ds-avatar-size: 56px;  --ds-avatar-badge: 20px; }
+.ds-avatar[data-size="64"]  { --ds-avatar-size: 64px;  --ds-avatar-badge: 22px; }
+.ds-avatar[data-size="80"]  { --ds-avatar-size: 80px;  --ds-avatar-badge: 28px; }
+.ds-avatar[data-size="96"]  { --ds-avatar-size: 96px;  --ds-avatar-badge: 32px; }
+.ds-avatar[data-size="108"] { --ds-avatar-size: 108px; --ds-avatar-badge: 36px; }
+
+
+/* --------------------------------------------------------------------------
+   23 Callout — 인라인 안내(본문 흐름 안)
+   tone: neutral(기본) · informative · positive · warning · critical
+     <div class="ds-callout" data-tone="warning">
+       <i class="ds-icon ds-icon--triangle-alert-solid" aria-hidden="true"></i>
+       <p class="ds-callout__content"><strong class="ds-callout__title">안내</strong>  본문  <a class="ds-callout__link" href="#">자세히</a></p>
+       [<button class="ds-callout__suffix" aria-label="닫기"><i class="ds-icon ds-icon--x"></i></button>]
+     </div>
+   Figma: padding x3_5 · gap x2 · min-h50 · shape/md · t04 · 아이콘 Solid 16
+     neutral bg/neutral + fg/neutral(info) · informative bg/informative-weak + fg/brand-contrast(info)
+     positive bg/positive-weak + fg/positive(circle-check) · warning bg/warning-weak + fg/warning(triangle-alert)
+     critical bg/critical-weak + fg/critical(circle-alert)
+   제목·링크는 본문과 같은 줄(inline), 구분은 띄어쓰기 두 칸. 제목 Bold · 링크 밑줄.
+   -------------------------------------------------------------------------- */
+.ds-callout {
+  --ds-callout-bg: var(--ybm-color-bg-neutral);
+  --ds-callout-fg: var(--ybm-color-fg-neutral);
+  display: flex;
+  align-items: center;
+  gap: var(--ybm-space-x2);
+  min-height: 50px;
+  padding: var(--ybm-space-x3_5);
+  border-radius: var(--ybm-shape-md);
+  background: var(--ds-callout-bg);
+  color: var(--ds-callout-fg);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+}
+.ds-callout > .ds-icon { --ds-icon-size: 16px; }
+.ds-callout__content { flex: 1 1 auto; min-width: 0; white-space: pre-wrap; }
+.ds-callout__title { font-weight: var(--ybm-font-weight-bold); }
+.ds-callout__link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.ds-callout__suffix { position: relative; display: grid; place-items: center; flex: none; width: 16px; height: 16px; color: inherit; }
+.ds-callout__suffix::after { content: ""; position: absolute; inset: -12px; }
+.ds-callout__suffix > .ds-icon { --ds-icon-size: 16px; }
+.ds-callout[data-tone="informative"] { --ds-callout-bg: var(--ybm-color-bg-informative-weak); --ds-callout-fg: var(--ybm-color-fg-brand-contrast); }
+.ds-callout[data-tone="positive"]    { --ds-callout-bg: var(--ybm-color-bg-positive-weak);    --ds-callout-fg: var(--ybm-color-fg-positive); }
+.ds-callout[data-tone="warning"]     { --ds-callout-bg: var(--ybm-color-bg-warning-weak);     --ds-callout-fg: var(--ybm-color-fg-warning); }
+.ds-callout[data-tone="critical"]    { --ds-callout-bg: var(--ybm-color-bg-critical-weak);    --ds-callout-fg: var(--ybm-color-fg-critical); }
+a.ds-callout, button.ds-callout { width: 100%; text-align: start; text-decoration: none; }
+a.ds-callout:active, button.ds-callout:active { filter: brightness(0.97); }
+
+
+/* --------------------------------------------------------------------------
+   24 Snackbar — 하단 중앙 알림, 4초 후 자동 사라짐 (YBM.snackbar("문구", { variant, action }))
+   variant: default · positive · critical
+     <div class="ds-snackbar" role="status" data-variant="positive" data-state="open">
+       <i class="ds-icon ds-icon--circle-check-solid" aria-hidden="true"></i>
+       <span class="ds-snackbar__message">저장했어요</span>
+       [<button type="button" class="ds-snackbar__action">확인</button>]
+     </div>
+   Figma: padding x2_5(+본문 좌우 x1_5) · min-h44 · max-w560 · shape/sm · bg/neutral-solid · elevation overlay
+          message t04 fg/on-neutral-solid · action t04 Bold · gap x2_5 · 아이콘 Solid 24
+          positive 아이콘 bg/positive-solid · critical 아이콘 bg/critical-solid
+   -------------------------------------------------------------------------- */
+.ds-snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--ybm-space-x4) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--ybm-z-toast);
+  display: flex;
+  align-items: center;
+  gap: var(--ybm-space-x2_5);
+  width: calc(100% - var(--ybm-space-x8) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+  max-width: 560px;
+  min-height: 44px;
+  padding: var(--ybm-space-x2_5) calc(var(--ybm-space-x2_5) + var(--ybm-space-x1_5));
+  border-radius: var(--ybm-shape-sm);
+  background: var(--ybm-color-bg-neutral-solid);
+  color: var(--ybm-color-fg-on-neutral-solid);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  box-shadow: var(--ybm-elevation-overlay);
+  translate: -50% 0;
+  transition: opacity var(--ybm-duration-normal) var(--ybm-easing-standard), translate var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+.ds-snackbar[data-state="closed"] { opacity: 0; translate: -50% 12px; pointer-events: none; }
+.ds-snackbar > .ds-icon { --ds-icon-size: 24px; margin-inline: calc(var(--ybm-space-x1_5) * -1) calc(var(--ybm-space-x0_5) - var(--ybm-space-x1_5)); }
+.ds-snackbar[data-variant="positive"] > .ds-icon { color: var(--ybm-color-bg-positive-solid); }
+.ds-snackbar[data-variant="critical"] > .ds-icon { color: var(--ybm-color-bg-critical-solid); }
+.ds-snackbar__message { flex: 1 1 auto; min-width: 0; }
+.ds-snackbar__action { flex: none; color: var(--ybm-color-fg-on-neutral-solid); font-weight: var(--ybm-font-weight-bold); }
+
+
+/* --------------------------------------------------------------------------
+   25 Help Bubble — 특정 요소를 가리키는 짧은 도움말(툴팁)
+   placement: top(기본) · top-start · top-end · bottom · bottom-start · bottom-end · left · left-start · left-end · right · right-start · right-end
+     <div class="ds-helpbubble" role="tooltip" data-placement="bottom-start">
+       <div class="ds-helpbubble__body">
+         <strong class="ds-helpbubble__title">제목</strong>
+         [<p class="ds-helpbubble__desc">부연 설명</p>]
+       </div>
+       [<button class="ds-helpbubble__close" aria-label="닫기"><i class="ds-icon ds-icon--x"></i></button>]
+     </div>
+   Figma: bg/neutral-solid · shape/lg · padding 10/12 · 본문 gap x0_5 · 최대 글 폭 236
+          title t03 Bold · desc t03 · fg/on-neutral-solid · 꼬리 12×8(가장자리 정렬 시 x3_5 안쪽) · elevation 2
+   -------------------------------------------------------------------------- */
+.ds-helpbubble {
+  --ds-hb-arrow-offset: 50%;
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  max-width: calc(236px + var(--ybm-space-x3) * 2 + 18px);
+  padding: var(--ybm-space-x2_5) var(--ybm-space-x3);
+  border-radius: var(--ybm-shape-lg);
+  background: var(--ybm-color-bg-neutral-solid);
+  color: var(--ybm-color-fg-on-neutral-solid);
+  box-shadow: var(--ybm-elevation-2);
+  font-size: var(--ybm-font-size-t03);
+  line-height: var(--ybm-line-height-t03);
+}
+.ds-helpbubble__body { display: flex; flex-direction: column; gap: var(--ybm-space-x0_5); min-width: 0; max-width: 236px; }
+.ds-helpbubble__title { font-weight: var(--ybm-font-weight-bold); }
+.ds-helpbubble__close { flex: none; display: grid; place-items: center; padding: var(--ybm-space-x0_5) 0 0 var(--ybm-space-x1); color: inherit; }
+.ds-helpbubble__close > .ds-icon { --ds-icon-size: 14px; }
+.ds-helpbubble:focus { outline: none; } /* 콘텐츠로 포커스가 옮겨질 때 기본 outline 제거 */
+.ds-helpbubble::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 8px;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+/* 꼬리 위치 — 말풍선의 반대편 */
+.ds-helpbubble:not([data-placement]), .ds-helpbubble[data-placement^="top"] { margin-bottom: 8px; }
+.ds-helpbubble:not([data-placement])::after, .ds-helpbubble[data-placement^="top"]::after { top: 100%; left: var(--ds-hb-arrow-offset); translate: -50% 0; }
+.ds-helpbubble[data-placement^="bottom"] { margin-top: 8px; }
+.ds-helpbubble[data-placement^="bottom"]::after { bottom: 100%; left: var(--ds-hb-arrow-offset); translate: -50% 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.ds-helpbubble[data-placement$="-start"] { --ds-hb-arrow-offset: calc(var(--ybm-space-x3_5) + 6px); }
+.ds-helpbubble[data-placement$="-end"]   { --ds-hb-arrow-offset: calc(100% - var(--ybm-space-x3_5) - 6px); }
+.ds-helpbubble[data-placement^="left"]  { margin-right: 8px; }
+.ds-helpbubble[data-placement^="right"] { margin-left: 8px; }
+.ds-helpbubble:is([data-placement^="left"], [data-placement^="right"])::after { width: 8px; height: 12px; top: var(--ds-hb-arrow-offset); translate: 0 -50%; }
+.ds-helpbubble[data-placement^="left"]::after  { left: 100%; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.ds-helpbubble[data-placement^="right"]::after { right: 100%; clip-path: polygon(100% 0, 100% 100%, 0 50%); }
+
+
+/* --------------------------------------------------------------------------
+   26 Menu · Menu Item — 동작을 실행하는 플로팅 메뉴(값 고르기는 Select)
+     <div class="ds-menu" role="menu">
+       <button class="ds-menu-item" role="menuitem"><i class="ds-icon ds-icon--search" aria-hidden="true"></i>공유하기</button>
+       <div class="ds-menu__divider" role="separator"></div>
+       <button class="ds-menu-item" role="menuitem" data-tone="critical">삭제하기</button>
+     </div>
+   Figma Menu: 폭 220 · padding x1 · shape/2xl · bg/layer-floating · elevation overlay(+헤어라인)
+              divider 1px stroke/neutral-subtle · 위아래 4
+   Figma Item: py10 px12 · gap x2 · shape/sm · 아이콘 18 · t04 fg/neutral
+              pressed bg/neutral-weak-alpha · disabled fg/disabled · critical fg/critical
+   -------------------------------------------------------------------------- */
+.ds-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  padding: var(--ybm-space-x1);
+  border-radius: var(--ybm-shape-2xl);
+  background: var(--ybm-color-bg-layer-floating);
+  box-shadow: var(--ybm-elevation-overlay);
+}
+.ds-menu__divider { height: 9px; padding-block: 4px; flex: none; }
+.ds-menu__divider::before { content: ""; display: block; height: 1px; background: var(--ybm-color-stroke-neutral-subtle); }
+.ds-menu-item {
+  --ds-menu-item-fg: var(--ybm-color-fg-neutral);
+  display: flex;
+  align-items: center;
+  gap: var(--ybm-space-x2);
+  width: 100%;
+  padding: var(--ybm-space-x2_5) var(--ybm-space-x3);
+  border-radius: var(--ybm-shape-sm);
+  color: var(--ds-menu-item-fg);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  text-align: start;
+}
+.ds-menu-item > .ds-icon { --ds-icon-size: 18px; }
+.ds-menu-item:active:not(:disabled), .ds-menu-item:focus-visible { background: var(--ybm-color-bg-neutral-weak-alpha); outline: none; }
+@media (hover: hover) { .ds-menu-item:hover:not(:disabled) { background: var(--ybm-color-bg-neutral-weak-alpha); } }
+.ds-menu-item[data-tone="critical"] { --ds-menu-item-fg: var(--ybm-color-fg-critical); }
+.ds-menu-item:disabled { --ds-menu-item-fg: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+
+
+/* --------------------------------------------------------------------------
+   27 Dialog — 네이티브 <dialog> + showModal()
+     <dialog class="ds-dialog" id="dlg" aria-labelledby="dlg-title" [data-size="large"]>
+       <div class="ds-dialog__header">
+         <h2 class="ds-dialog__title" id="dlg-title">제목</h2>
+         [<p class="ds-dialog__desc">설명</p>]
+         [<button class="ds-dialog__close" data-ds-close aria-label="닫기"></button>]
+       </div>
+       <div class="ds-dialog__body">…</div>
+       [<div class="ds-dialog__footer"><button class="ds-btn" data-variant="neutralSolid" data-size="large">확인</button></div>]
+     </dialog>
+   Figma: 폭 480(large 800) · shape/2xl · bg/layer-floating · 그림자 없음(2026-10-01 결정)
+     header 24/20/16/20 · gap x4 · title t07 SemiBold fg/neutral · desc t05 fg/neutral-muted
+     body 12/20/16/20 · min-h64 · footer 24/20 · Action Button large 폭 채움
+     닫기 40×40 · 위 18 · 오른쪽 10 · Lucide/x 24 fg/neutral
+   -------------------------------------------------------------------------- */
+.ds-dialog {
+  --ds-dialog-width: 480px;
+  --ds-dialog-radius: var(--ybm-shape-2xl);
+  --ds-dialog-max-height: 80vh;
+  /* safe area: 노치·홈 인디케이터·가로 화면 측면 inset 을 뺀 영역의 가운데에 놓고, 폭·높이도 그 영역을 넘지 않는다 */
+  inset: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  width: min(var(--ds-dialog-width), calc(100% - var(--ybm-space-x10) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+  max-width: none;
+  max-height: min(var(--ds-dialog-max-height), calc(100% - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ds-dialog-radius);
+  background: var(--ybm-color-bg-layer-floating);
+  color: var(--ybm-color-fg-neutral);
+  overflow: hidden;
+  flex-direction: column;
+}
+.ds-dialog:focus { outline: none; }
+.ds-dialog[open] { display: flex; animation: ds-dialog-in var(--ybm-duration-normal) var(--ybm-easing-emphasized); }
+.ds-dialog[data-size="large"] { --ds-dialog-width: 800px; }
+.ds-dialog::backdrop { background: var(--ybm-color-bg-overlay); animation: ds-fade-in var(--ybm-duration-normal) var(--ybm-easing-standard); }
+@keyframes ds-dialog-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@keyframes ds-fade-in { from { opacity: 0; } }
+
+.ds-dialog__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x4);
+  padding: var(--ybm-space-x6) var(--ybm-space-x5) var(--ybm-space-x4);
+}
+.ds-dialog__title { padding-right: 40px; font-size: var(--ybm-font-size-t07); line-height: var(--ybm-line-height-t07); font-weight: var(--ybm-font-weight-semibold); }
+.ds-dialog__header:not(:has(.ds-dialog__close)) .ds-dialog__title { padding-right: 0; }
+.ds-dialog__desc { color: var(--ybm-color-fg-neutral-muted); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-dialog__close {
+  position: absolute;
+  top: 18px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ybm-shape-pill);
+  color: var(--ybm-color-fg-neutral);
+}
+.ds-dialog__close::before {
+  content: "";
+  width: 24px;
+  height: 24px;
+  background: currentColor;
+  -webkit-mask: var(--ds-icon-x) center / contain no-repeat;
+          mask: var(--ds-icon-x) center / contain no-repeat;
+}
+.ds-dialog__close:active { background: var(--ybm-color-bg-transparent-pressed); }
+.ds-dialog__body {
+  flex: 1 1 auto;
+  min-height: 64px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--ybm-space-x3) var(--ybm-space-x5) var(--ybm-space-x4);
+}
+.ds-dialog__footer { display: flex; flex-direction: column; gap: var(--ybm-space-x2); padding: var(--ybm-space-x6) var(--ybm-space-x5); }
+.ds-dialog__footer > .ds-btn { width: 100%; }
+html:has(:is(.ds-dialog, .ds-bottomsheet)[open]) { overflow: hidden; }
+
+
+/* --------------------------------------------------------------------------
+   28 Alert Dialog — 되돌릴 수 없는 작업 확인(버튼으로만 닫힘)
+   action(data-action): single(기본) · pair · critical · stacked · nonpreferred
+     <dialog class="ds-dialog ds-alertdialog" role="alertdialog" aria-labelledby="a-t" aria-describedby="a-d">
+       <div class="ds-alertdialog__header"><h2 id="a-t" class="ds-alertdialog__title">제목</h2><p id="a-d" class="ds-alertdialog__desc">이 작업은 되돌릴 수 없습니다.</p></div>
+       <div class="ds-alertdialog__footer" data-action="pair">
+         <button class="ds-btn" data-variant="neutralWeak" data-ds-close>취소</button>
+         <button class="ds-btn" data-variant="neutralSolid">확인</button>
+       </div>
+     </dialog>
+   Figma: 폭 272 · gap x2 · header 20/20/0/20 · gap x1_5 · title t07 Bold · desc t05 fg/neutral-muted
+          footer 16/20/20/20 · 버튼 medium · single/stacked 세로 gap x2 · pair/critical 가로 2등분 gap x2 · nonpreferred 세로 gap x4
+   -------------------------------------------------------------------------- */
+.ds-alertdialog { --ds-dialog-width: 272px; gap: var(--ybm-space-x2); }
+.ds-alertdialog__header { display: flex; flex-direction: column; gap: var(--ybm-space-x1_5); padding: var(--ybm-space-x5) var(--ybm-space-x5) 0; }
+.ds-alertdialog__title { font-size: var(--ybm-font-size-t07); line-height: var(--ybm-line-height-t07); font-weight: var(--ybm-font-weight-bold); }
+.ds-alertdialog__desc { color: var(--ybm-color-fg-neutral-muted); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-alertdialog__footer { display: flex; flex-direction: column; gap: var(--ybm-space-x2); padding: var(--ybm-space-x4) var(--ybm-space-x5) var(--ybm-space-x5); }
+.ds-alertdialog__footer > .ds-btn { width: 100%; }
+.ds-alertdialog__footer:is([data-action="pair"], [data-action="critical"]) { flex-direction: row; }
+.ds-alertdialog__footer:is([data-action="pair"], [data-action="critical"]) > .ds-btn { flex: 1 1 0; width: auto; }
+.ds-alertdialog__footer[data-action="nonpreferred"] { gap: var(--ybm-space-x4); }
+
+
+/* --------------------------------------------------------------------------
+   29 Bottom Sheet — 화면 아래에서 올라오는 패널(네이티브 <dialog> 재사용)
+   headerAlign: left(기본) · center   handle: data-handle
+     <dialog class="ds-bottomsheet" aria-labelledby="bs-t" [data-header-align="center"] [data-handle]>
+       <div class="ds-bottomsheet__header">
+         <h2 class="ds-bottomsheet__title" id="bs-t">제목</h2>
+         [<p class="ds-bottomsheet__desc">설명</p>]
+         [<button class="ds-bottomsheet__close" data-ds-close aria-label="닫기"></button>]
+       </div>
+       <div class="ds-bottomsheet__body">…</div>
+       [<div class="ds-bottomsheet__footer"><button class="ds-btn" data-variant="neutralSolid" data-size="large">확인</button></div>]
+     </dialog>
+   Figma: 폭 채움 · 위쪽 shape/3xl · bg/layer-floating
+     header 24/20/16/20 · gap x2 · title t07 SemiBold · desc t05 fg/neutral-muted
+     body 12/20/16/20 · min-h64 · footer 16/20/24/20 · 닫기 40×40(위 18 · 오른쪽 10) · handle 36×4 palette/gray-400 (위 6)
+   -------------------------------------------------------------------------- */
+.ds-bottomsheet {
+  position: fixed;
+  /* 최대 폭 480 · safe area — 좌우 inset 을 뺀 영역 가운데, 높이는 화면 90% 와 위쪽 inset 아래 중 작은 쪽.
+     배경은 화면 아래 끝까지 채우고 푸터가 bottom inset 만큼 패딩한다 */
+  inset: auto env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
+  width: auto;
+  max-width: 480px;
+  max-height: min(90%, calc(100% - env(safe-area-inset-top, 0px)));
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ybm-shape-3xl) var(--ybm-shape-3xl) 0 0;
+  background: var(--ybm-color-bg-layer-floating);
+  color: var(--ybm-color-fg-neutral);
+  overflow: hidden;
+  flex-direction: column;
+}
+.ds-bottomsheet:focus { outline: none; }
+.ds-bottomsheet[open] { display: flex; animation: ds-sheet-in var(--ybm-duration-slow) var(--ybm-easing-emphasized); }
+.ds-bottomsheet::backdrop { background: var(--ybm-color-bg-overlay); animation: ds-fade-in var(--ybm-duration-normal) var(--ybm-easing-standard); }
+@keyframes ds-sheet-in { from { transform: translateY(100%); } }
+.ds-bottomsheet[data-handle]::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 36px;
+  height: 4px;
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ybm-color-palette-gray-400);
+  translate: -50% 0;
+}
+.ds-bottomsheet__header { display: flex; flex-direction: column; gap: var(--ybm-space-x2); padding: var(--ybm-space-x6) var(--ybm-space-x5) var(--ybm-space-x4); }
+.ds-bottomsheet__title { padding-right: 40px; font-size: var(--ybm-font-size-t07); line-height: var(--ybm-line-height-t07); font-weight: var(--ybm-font-weight-semibold); }
+.ds-bottomsheet__header:not(:has(.ds-bottomsheet__close)) .ds-bottomsheet__title { padding-right: 0; }
+.ds-bottomsheet__desc { color: var(--ybm-color-fg-neutral-muted); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-bottomsheet[data-header-align="center"] :is(.ds-bottomsheet__title, .ds-bottomsheet__desc) { text-align: center; }
+.ds-bottomsheet[data-header-align="center"] .ds-bottomsheet__title { padding-inline: 40px; }
+.ds-bottomsheet__close {
+  position: absolute;
+  top: 18px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ybm-shape-pill);
+  color: var(--ybm-color-fg-neutral);
+}
+.ds-bottomsheet__close::before { content: ""; width: 24px; height: 24px; background: currentColor; -webkit-mask: var(--ds-icon-x) center / contain no-repeat; mask: var(--ds-icon-x) center / contain no-repeat; }
+.ds-bottomsheet__close:active { background: var(--ybm-color-bg-transparent-pressed); }
+.ds-bottomsheet__body { flex: 1 1 auto; min-height: 64px; overflow-y: auto; overscroll-behavior: contain; padding: var(--ybm-space-x3) var(--ybm-space-x5) var(--ybm-space-x4); }
+.ds-bottomsheet[data-header-align="center"] .ds-bottomsheet__body { text-align: center; }
+.ds-bottomsheet__footer { display: flex; flex-direction: column; gap: var(--ybm-space-x2); padding: var(--ybm-space-x4) var(--ybm-space-x5) calc(var(--ybm-space-x6) + env(safe-area-inset-bottom, 0px)); }
+.ds-bottomsheet__footer > .ds-btn { width: 100%; }
+
+
+/* --------------------------------------------------------------------------
+   30 Accordion — 펼쳐 보는 목록(<details> 사용)
+   variant: inline(기본) · separated   size: medium(기본) · large
+     <details class="ds-accordion" [data-variant="separated"] [data-size="large"]>
+       <summary class="ds-accordion__trigger">
+         [<i class="ds-icon ds-icon--… " aria-hidden="true"></i>]
+         <span class="ds-accordion__body"><span class="ds-accordion__title">항목</span>[<span class="ds-accordion__desc">설명</span>]</span>
+       </summary>
+       <div class="ds-accordion__content">내용</div>
+     </details>
+   Figma medium: trigger 16 사방 · gap x3 · title t05 Medium · desc t03 fg/neutral-subtle · chevron 20 fg/neutral
+                 content 0/16/16/16 · t04 fg/neutral-subtle
+   Figma large : trigger py20 · title t06 Medium · desc t04 · chevron 24 · content t05
+     inline 하단 1px stroke/neutral-weak / separated 1px 사방 + shape/lg + bg/layer-default
+     disabled(aria-disabled) 글자·아이콘 fg/disabled
+   -------------------------------------------------------------------------- */
+.ds-accordion {
+  --ds-acc-py: var(--ybm-space-x4);
+  --ds-acc-icon: 20px;
+  --ds-acc-title-size: var(--ybm-font-size-t05);
+  --ds-acc-title-line: var(--ybm-line-height-t05);
+  --ds-acc-desc-size: var(--ybm-font-size-t03);
+  --ds-acc-desc-line: var(--ybm-line-height-t03);
+  --ds-acc-content-size: var(--ybm-font-size-t04);
+  --ds-acc-content-line: var(--ybm-line-height-t04);
+  box-shadow: inset 0 -1px 0 var(--ybm-color-stroke-neutral-weak);
+}
+.ds-accordion[data-size="large"] {
+  --ds-acc-py: var(--ybm-space-x5);
+  --ds-acc-icon: 24px;
+  --ds-acc-title-size: var(--ybm-font-size-t06);
+  --ds-acc-title-line: var(--ybm-line-height-t06);
+  --ds-acc-desc-size: var(--ybm-font-size-t04);
+  --ds-acc-desc-line: var(--ybm-line-height-t04);
+  --ds-acc-content-size: var(--ybm-font-size-t05);
+  --ds-acc-content-line: var(--ybm-line-height-t05);
+}
+.ds-accordion[data-variant="separated"] { border-radius: var(--ybm-shape-lg); background: var(--ybm-color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--ybm-color-stroke-neutral-weak); }
+.ds-accordion-group[data-variant="separated"] { display: flex; flex-direction: column; gap: var(--ybm-space-x2); }
+.ds-accordion__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--ybm-space-x3);
+  padding: var(--ds-acc-py) var(--ybm-space-x4);
+  color: var(--ybm-color-fg-neutral);
+  cursor: pointer;
+  list-style: none;
+}
+.ds-accordion__trigger::-webkit-details-marker { display: none; }
+.ds-accordion__trigger > .ds-icon { --ds-icon-size: var(--ds-acc-icon); }
+.ds-accordion__trigger::after {
+  content: "";
+  flex: none;
+  width: var(--ds-acc-icon);
+  height: var(--ds-acc-icon);
+  background: currentColor;
+  -webkit-mask: var(--ds-icon-chevron-down) center / contain no-repeat;
+          mask: var(--ds-icon-chevron-down) center / contain no-repeat;
+  transition: rotate var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+.ds-accordion[open] > .ds-accordion__trigger::after { rotate: 180deg; }
+.ds-accordion__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--ybm-space-x0_5); }
+.ds-accordion__title { font-size: var(--ds-acc-title-size); line-height: var(--ds-acc-title-line); font-weight: var(--ybm-font-weight-medium); }
+.ds-accordion__desc { color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ds-acc-desc-size); line-height: var(--ds-acc-desc-line); }
+.ds-accordion__content { padding: 0 var(--ybm-space-x4) var(--ybm-space-x4); color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ds-acc-content-size); line-height: var(--ds-acc-content-line); }
+.ds-accordion[aria-disabled="true"] > .ds-accordion__trigger { pointer-events: none; }
+.ds-accordion[aria-disabled="true"] :is(.ds-accordion__trigger, .ds-accordion__desc, .ds-accordion__content) { color: var(--ybm-color-fg-disabled); }
+
+
+/* --------------------------------------------------------------------------
+   31 Skeleton — 로딩 자리표시자
+   shape: rectangle(기본) · circle · text
+     <span class="ds-skeleton" style="width:220px;height:16px"></span>
+     <span class="ds-skeleton" data-shape="circle" style="--ds-skeleton-size:48px"></span>
+     <span class="ds-skeleton" data-shape="text" data-lines="3"></span>
+   Figma: palette/gray-200 · rectangle shape/sm · circle pill · text 줄 높이 14 · 줄 사이 x2 · 마지막 줄 64%
+   -------------------------------------------------------------------------- */
+.ds-skeleton {
+  --ds-skeleton-color: var(--ybm-color-palette-gray-200);
+  display: block;
+  height: 16px;
+  border-radius: var(--ybm-shape-sm);
+  background: var(--ds-skeleton-color);
+  animation: ds-skeleton-pulse 1.6s var(--ybm-easing-standard) infinite;
+}
+.ds-skeleton[data-shape="circle"] { --ds-skeleton-size: 48px; width: var(--ds-skeleton-size); height: var(--ds-skeleton-size); border-radius: var(--ybm-shape-pill); }
+.ds-skeleton[data-shape="text"] {
+  height: auto;
+  min-height: calc(14px * 3 + var(--ybm-space-x2) * 2);
+  border-radius: 0;
+  background:
+    linear-gradient(var(--ds-skeleton-color), var(--ds-skeleton-color)) 0 0 / 100% 14px no-repeat,
+    linear-gradient(var(--ds-skeleton-color), var(--ds-skeleton-color)) 0 calc(14px + var(--ybm-space-x2)) / 100% 14px no-repeat,
+    linear-gradient(var(--ds-skeleton-color), var(--ds-skeleton-color)) 0 calc((14px + var(--ybm-space-x2)) * 2) / 64% 14px no-repeat;
+}
+@keyframes ds-skeleton-pulse { 50% { opacity: 0.55; } }
+
+
+/* --------------------------------------------------------------------------
+   32 Slider — 범위 안의 값 고르기 (<input type="range">)
+   tone: neutral(기본) · brand
+     <input type="range" class="ds-slider" min="0" max="100" value="45" [data-tone="brand"]>
+   채움 길이는 --ds-slider-value(0~100%) — ybm-ds.js 가 input 마다 자동으로 갱신한다.
+   Figma: 높이 20 · 트랙 4 pill palette/gray-200 · 채움 bg/neutral-solid(brand bg/brand-solid)
+          썸 20 static-white + 2px 테두리(채움 색) + elevation raised
+          disabled opacity .7 · 채움 bg/disabled · 썸 테두리 stroke/neutral-weak
+   -------------------------------------------------------------------------- */
+.ds-slider {
+  --ds-slider-value: 50%;
+  --ds-slider-active: var(--ybm-color-bg-neutral-solid);
+  --ds-slider-thumb-line: var(--ybm-color-bg-neutral-solid);
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.ds-slider[data-tone="brand"] { --ds-slider-active: var(--ybm-color-bg-brand-solid); --ds-slider-thumb-line: var(--ybm-color-bg-brand-solid); }
+.ds-slider::-webkit-slider-runnable-track { height: 4px; border-radius: var(--ybm-shape-pill); background: linear-gradient(var(--ds-slider-active), var(--ds-slider-active)) 0 0 / var(--ds-slider-value) 100% no-repeat, var(--ybm-color-palette-gray-200); }
+.ds-slider::-moz-range-track { height: 4px; border-radius: var(--ybm-shape-pill); background: var(--ybm-color-palette-gray-200); }
+.ds-slider::-moz-range-progress { height: 4px; border-radius: var(--ybm-shape-pill); background: var(--ds-slider-active); }
+.ds-slider::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; margin-top: -8px; border-radius: var(--ybm-shape-pill); background: var(--ybm-color-palette-static-white); box-shadow: inset 0 0 0 2px var(--ds-slider-thumb-line), var(--ybm-elevation-raised); }
+.ds-slider::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: var(--ybm-shape-pill); background: var(--ybm-color-palette-static-white); box-shadow: inset 0 0 0 2px var(--ds-slider-thumb-line), var(--ybm-elevation-raised); }
+.ds-slider:disabled { --ds-slider-active: var(--ybm-color-bg-disabled); --ds-slider-thumb-line: var(--ybm-color-stroke-neutral-weak); opacity: 0.7; cursor: not-allowed; }
+
+
+/* --------------------------------------------------------------------------
+   33 Progress — 진행 막대(determinate)
+   tone: brand(기본) · neutral   size: medium(기본 8) · small 4
+     <div class="ds-progress" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"
+          style="--ds-progress-value: 40%" [data-tone="neutral"] [data-size="small"]></div>
+   Figma: 트랙 palette/brand-200(neutral palette/gray-200) · 채움 bg/brand-solid(neutral bg/neutral-solid) · pill
+   -------------------------------------------------------------------------- */
+.ds-progress {
+  --ds-progress-value: 0%;
+  --ds-progress-track: var(--ybm-color-palette-brand-200);
+  --ds-progress-range: var(--ybm-color-bg-brand-solid);
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 8px;
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ds-progress-track);
+  overflow: hidden;
+}
+.ds-progress[data-size="small"] { height: 4px; }
+.ds-progress[data-tone="neutral"] { --ds-progress-track: var(--ybm-color-palette-gray-200); --ds-progress-range: var(--ybm-color-bg-neutral-solid); }
+.ds-progress::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--ds-progress-value);
+  border-radius: inherit;
+  background: var(--ds-progress-range);
+  transition: width var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+
+
+/* --------------------------------------------------------------------------
+   34 Progress Circle — 원형 진행 표시(값을 모르는 대기는 indeterminate)
+   tone: neutral(기본) · brand · staticWhite   size: 24(기본) · 40 · 56   type: determinate · indeterminate
+     <span class="ds-progress-circle" data-size="40" data-tone="brand" role="progressbar" aria-valuenow="40" style="--ds-progress-value: 40">
+       <svg viewBox="0 0 40 40" aria-hidden="true"><circle class="ds-progress-circle__track" pathLength="100"/><circle class="ds-progress-circle__range" pathLength="100"/></svg>
+     </span>
+     indeterminate: data-type="indeterminate" (회전하는 25% 호)
+   Figma: 두께 24→3 · 40→5 · 56→7 · 둥근 끝 · 12시 시작
+     neutral 트랙 palette/gray-200 + 호 palette/gray-500 · brand palette/brand-200 + bg/brand-solid
+     staticWhite palette/static-white-alpha-300 + palette/static-white (팔레트 직참은 의도된 예외)
+   -------------------------------------------------------------------------- */
+.ds-progress-circle {
+  --ds-progress-value: 40;
+  --ds-pc-size: 24px;
+  --ds-pc-stroke: 3px;
+  --ds-pc-track: var(--ybm-color-palette-gray-200);
+  --ds-pc-range: var(--ybm-color-palette-gray-500);
+  display: inline-block;
+  flex: none;
+  width: var(--ds-pc-size);
+  height: var(--ds-pc-size);
+}
+.ds-progress-circle[data-size="40"] { --ds-pc-size: 40px; --ds-pc-stroke: 5px; }
+.ds-progress-circle[data-size="56"] { --ds-pc-size: 56px; --ds-pc-stroke: 7px; }
+.ds-progress-circle[data-tone="brand"]       { --ds-pc-track: var(--ybm-color-palette-brand-200); --ds-pc-range: var(--ybm-color-bg-brand-solid); }
+.ds-progress-circle[data-tone="staticWhite"] { --ds-pc-track: var(--ybm-color-palette-static-white-alpha-300); --ds-pc-range: var(--ybm-color-palette-static-white); }
+.ds-progress-circle > svg { width: 100%; height: 100%; rotate: -90deg; overflow: visible; }
+.ds-progress-circle circle { cx: 50%; cy: 50%; r: calc(50% - var(--ds-pc-stroke) / 2); fill: none; stroke-width: var(--ds-pc-stroke); stroke-linecap: round; }
+.ds-progress-circle__track { stroke: var(--ds-pc-track); }
+.ds-progress-circle__range { stroke: var(--ds-pc-range); stroke-dasharray: var(--ds-progress-value) 100; transition: stroke-dasharray var(--ybm-duration-normal) var(--ybm-easing-standard); }
+.ds-progress-circle[data-type="indeterminate"] > svg { animation: ds-spin 0.9s linear infinite; }
+.ds-progress-circle[data-type="indeterminate"] .ds-progress-circle__range { stroke-dasharray: 25 100; }
+@keyframes ds-spin { to { rotate: 270deg; } }
+
+
+/* --------------------------------------------------------------------------
+   35 Floating Action Button — 화면의 대표 작성 동작(화면당 1개 · 라벨 권장)
+     <button class="ds-fab"><i class="ds-icon ds-icon--plus" aria-hidden="true"></i>글쓰기</button>
+     <button class="ds-fab" data-layout="iconOnly" aria-label="글쓰기"><i class="ds-icon ds-icon--plus"></i></button>
+   Figma extended: h48 · px18 · gap x1 · 아이콘 16 · t05 Bold / iconOnly 56×56 · 아이콘 24
+          shape/pill · bg/brand-solid(pressed -pressed) · 글자·아이콘 fg/on-brand-solid · elevation floating
+   -------------------------------------------------------------------------- */
+.ds-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ybm-space-x1);
+  height: 48px;
+  padding-inline: var(--ybm-space-x4_5);
+  border-radius: var(--ybm-shape-pill);
+  background: var(--ybm-color-bg-brand-solid);
+  color: var(--ybm-color-fg-on-brand-solid);
+  box-shadow: var(--ybm-elevation-floating);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  font-weight: var(--ybm-font-weight-bold);
+  white-space: nowrap;
+}
+.ds-fab > .ds-icon { --ds-icon-size: 16px; }
+.ds-fab[data-layout="iconOnly"] { width: 56px; height: 56px; padding: 0; }
+.ds-fab[data-layout="iconOnly"] > .ds-icon { --ds-icon-size: 24px; }
+.ds-fab:active { background: var(--ybm-color-bg-brand-solid-pressed); }
+@media (hover: hover) { .ds-fab:hover { background: var(--ybm-color-bg-brand-solid-pressed); } }
+
+
+/* --------------------------------------------------------------------------
+   36 Date Picker · Date Cell — 1개월 달력
+   selection: single · range
+     <div class="ds-datepicker">
+       <div class="ds-datepicker__header">
+         <button class="ds-datepicker__nav" aria-label="이전 달"><i class="ds-icon ds-icon--chevron-left ds-icon--lg"></i></button>
+         <strong class="ds-datepicker__title">2026년 8월</strong>
+         <button class="ds-datepicker__nav" aria-label="다음 달"><i class="ds-icon ds-icon--chevron-right ds-icon--lg"></i></button>
+       </div>
+       <div class="ds-datepicker__weekdays"><span>일</span>…<span>토</span></div>
+       <div class="ds-datepicker__grid" role="grid">
+         <button class="ds-date-cell" data-state="today|selected|range-start|range-middle|range-end" [disabled]>15</button> × 42
+       </div>
+     </div>
+   Figma: 폭 320 · padding x5 · gap x3 · shape/2xl · bg/layer-default · elevation overlay(+헤어라인)
+     header h40 · 이동 버튼 24 폭 · chevron 24 fg/neutral · title t06 Bold 가운데
+     요일 t04 fg/neutral-subtle · 셀 40×44 · pill 32×32 shape/xl · label t05
+     today pill 1px stroke/brand-solid + fg/brand Medium / selected pill bg/brand-solid + fg/on-brand-solid Medium
+     range 띠 bg/brand-weak 32 높이 (start 오른쪽 절반 · end 왼쪽 절반 · middle 전체, middle 글자 fg/brand) / disabled fg/disabled
+   -------------------------------------------------------------------------- */
+.ds-datepicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x3);
+  width: 320px;
+  padding: var(--ybm-space-x5);
+  border-radius: var(--ybm-shape-2xl);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: var(--ybm-elevation-overlay);
+}
+.ds-datepicker__header { display: flex; align-items: center; height: 40px; }
+.ds-datepicker__nav { display: grid; place-items: center; flex: none; width: 24px; height: 40px; color: var(--ybm-color-fg-neutral); }
+.ds-datepicker__nav > .ds-icon { --ds-icon-size: 24px; }
+.ds-datepicker__nav:disabled { color: var(--ybm-color-fg-disabled); }
+.ds-datepicker__title { flex: 1 1 auto; text-align: center; font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); font-weight: var(--ybm-font-weight-bold); }
+.ds-datepicker__weekdays, .ds-datepicker__grid { display: grid; grid-template-columns: repeat(7, 40px); }
+.ds-datepicker__weekdays > * { height: 20px; text-align: center; color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t04); line-height: 20px; }
+.ds-date-cell {
+  --ds-date-pill-bg: transparent;
+  --ds-date-pill-line: transparent;
+  --ds-date-track: transparent;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 44px;
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  font-variant-numeric: tabular-nums;
+}
+.ds-date-cell::before, .ds-date-cell::after { content: ""; position: absolute; z-index: -1; top: 6px; height: 32px; }
+.ds-date-cell::before { left: 0; right: 0; background: var(--ds-date-track); }
+.ds-date-cell::after { left: 4px; width: 32px; border-radius: var(--ybm-shape-xl); background: var(--ds-date-pill-bg); box-shadow: inset 0 0 0 1px var(--ds-date-pill-line); }
+.ds-date-cell[data-state="today"]    { --ds-date-pill-line: var(--ybm-color-stroke-brand-solid); color: var(--ybm-color-fg-brand); font-weight: var(--ybm-font-weight-medium); }
+.ds-date-cell:is([data-state="selected"], [data-state="range-start"], [data-state="range-end"]) { --ds-date-pill-bg: var(--ybm-color-bg-brand-solid); color: var(--ybm-color-fg-on-brand-solid); font-weight: var(--ybm-font-weight-medium); }
+.ds-date-cell[data-state="range-start"]::before  { left: 20px; background: var(--ybm-color-bg-brand-weak); }
+.ds-date-cell[data-state="range-end"]::before    { right: 20px; background: var(--ybm-color-bg-brand-weak); }
+.ds-date-cell[data-state="range-middle"] { --ds-date-track: var(--ybm-color-bg-brand-weak); color: var(--ybm-color-fg-brand); }
+.ds-date-cell:disabled { color: var(--ybm-color-fg-disabled); cursor: not-allowed; }
+.ds-date-cell:empty { pointer-events: none; }
+
+
+/* --------------------------------------------------------------------------
+   37 Bottom Navigation — 앱 하단 주요 이동(탭 3~5개)
+     <nav class="ds-bottomnav" aria-label="주요 메뉴">
+       <a class="ds-bottomnav__item" href="#" aria-current="page">
+         <span class="ds-bottomnav__icon"><i class="ds-icon ds-icon--house-solid ds-icon--lg"></i>[<span class="ds-bottomnav__badge--dot"></span>]</span>
+         <span class="ds-bottomnav__label">홈</span>
+       </a>
+     </nav>
+   Figma: bg/layer-default · 상단 1px stroke/neutral-muted · 항목 높이 51 · padding 4/2 · gap 2 · 아이콘 24(Solid)
+     label Static t01 SemiBold · 선택 아이콘 fg/brand + 라벨 fg/neutral · 미선택 fg/neutral-subtle · disabled fg/disabled
+     뱃지 bg/critical-solid + 1.5px bg/layer-default 테두리 · dot 6 · count 최소 18 · Static t01 Bold static-white
+     안쪽 최대 폭 480 · 하단 safe area
+   -------------------------------------------------------------------------- */
+.ds-bottomnav {
+  display: flex;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 1px 0 var(--ybm-color-stroke-neutral-muted);
+}
+.ds-bottomnav > .ds-bottomnav__item { max-width: 96px; }   /* 5칸 × 96 = 안쪽 최대 480 */
+.ds-bottomnav__item {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 51px;
+  padding: 4px 2px;
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t01-static);
+  line-height: var(--ybm-line-height-t01-static);
+  font-weight: var(--ybm-font-weight-semibold);
+  text-decoration: none;
+}
+.ds-bottomnav__icon { position: relative; display: grid; place-items: center; width: 24px; height: 24px; }
+.ds-bottomnav__icon > .ds-icon { --ds-icon-size: 24px; }
+.ds-bottomnav__label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ds-bottomnav__item[aria-current="page"] { color: var(--ybm-color-fg-neutral); }
+.ds-bottomnav__item[aria-current="page"] .ds-bottomnav__icon { color: var(--ybm-color-fg-brand); }
+.ds-bottomnav__item:is([aria-disabled="true"], :disabled) { color: var(--ybm-color-fg-disabled); pointer-events: none; }
+.ds-bottomnav__badge--dot, .ds-bottomnav__badge--count { position: absolute; border-radius: var(--ybm-shape-pill); background: var(--ybm-color-bg-critical-solid); box-shadow: 0 0 0 1.5px var(--ybm-color-bg-layer-default); }
+.ds-bottomnav__badge--dot { top: -1px; left: 18px; width: 6px; height: 6px; }
+.ds-bottomnav__badge--count {
+  top: -7px;
+  left: 12px;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: 4px;
+  color: var(--ybm-color-fg-on-critical-solid);
+  font-size: var(--ybm-font-size-t01-static);
+  line-height: 18px;
+  font-weight: var(--ybm-font-weight-bold);
+  text-align: center;
+}
+
+
+/* --------------------------------------------------------------------------
+   38 Side Navigation — 데스크탑 좌측 내비게이션
+   collapsed: data-collapsed (240 → 56)
+     <nav class="ds-sidenav" aria-label="메뉴" [data-collapsed]>
+       <div class="ds-sidenav__header"><button class="ds-sidenav__trigger" aria-label="메뉴 접기"><i class="ds-icon ds-icon--panel-left"></i></button></div>
+       <div class="ds-sidenav__content">
+         <div class="ds-sidenav__group">
+           [<div class="ds-sidenav__group-label">그룹</div>]
+           <a class="ds-sidenav__item" href="#" aria-current="page">
+             <span class="ds-sidenav__prefix"><i class="ds-icon ds-icon--house-solid"></i></span>
+             <span class="ds-sidenav__label">메뉴</span>
+             [<i class="ds-icon ds-icon--chevron-down ds-icon--sm ds-sidenav__suffix"></i>]
+           </a>
+         </div>
+       </div>
+       <div class="ds-sidenav__footer">…</div>
+     </nav>
+   Figma: bg/canvas · header h64 padding x2(트리거 40 shape/sm · panel-left 20 fg/neutral-subtle 오른쪽 정렬)
+     content padding 8/8/24/8 · 그룹 사이 x2 · group label padding x1_5 · Static t04 Bold fg/neutral-muted
+     item h44 · px x2(접힘 x2_5 · 폭 40) · gap x3 · shape/sm · prefix 20 · label Static t04 Medium fg/neutral-muted · 아이콘 fg/neutral-subtle
+     current bg/neutral-weak-alpha + 글자·아이콘 fg/neutral · disabled fg/disabled · suffix 16
+   -------------------------------------------------------------------------- */
+.ds-sidenav {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  height: 100%;
+  background: var(--ybm-color-bg-canvas);
+  transition: width var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+.ds-sidenav[data-collapsed] { width: 56px; }
+.ds-sidenav__header { display: flex; align-items: center; justify-content: flex-end; min-height: 64px; padding: var(--ybm-space-x2); }
+.ds-sidenav__trigger { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--ybm-shape-sm); color: var(--ybm-color-fg-neutral-subtle); }
+.ds-sidenav__trigger:active { background: var(--ybm-color-bg-neutral-weak-alpha); }
+.ds-sidenav__content { flex: 1 1 auto; display: flex; flex-direction: column; gap: var(--ybm-space-x2); padding: var(--ybm-space-x2) var(--ybm-space-x2) var(--ybm-space-x6); overflow-y: auto; }
+.ds-sidenav[data-collapsed] .ds-sidenav__content { gap: 0; }
+.ds-sidenav__group { display: flex; flex-direction: column; }
+.ds-sidenav__group-label { padding: var(--ybm-space-x1_5); color: var(--ybm-color-fg-neutral-muted); font-size: var(--ybm-font-size-t04-static); line-height: var(--ybm-line-height-t04-static); font-weight: var(--ybm-font-weight-bold); }
+.ds-sidenav[data-collapsed] .ds-sidenav__group-label { display: none; }
+.ds-sidenav__footer { padding: var(--ybm-space-x2); }
+.ds-sidenav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--ybm-space-x3);
+  height: 44px;
+  padding-inline: var(--ybm-space-x2);
+  border-radius: var(--ybm-shape-sm);
+  color: var(--ybm-color-fg-neutral-muted);
+  font-size: var(--ybm-font-size-t04-static);
+  line-height: var(--ybm-line-height-t04-static);
+  font-weight: var(--ybm-font-weight-medium);
+  text-decoration: none;
+}
+.ds-sidenav__prefix { display: grid; place-items: center; flex: none; width: 20px; height: 20px; color: var(--ybm-color-fg-neutral-subtle); }
+.ds-sidenav__label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ds-sidenav__suffix { --ds-icon-size: 16px; color: var(--ybm-color-fg-neutral-subtle); }
+.ds-sidenav__item[aria-current="page"] { background: var(--ybm-color-bg-neutral-weak-alpha); color: var(--ybm-color-fg-neutral); }
+.ds-sidenav__item[aria-current="page"] .ds-sidenav__prefix { color: var(--ybm-color-fg-neutral); }
+.ds-sidenav__item:active:not([aria-current="page"]) { background: var(--ybm-color-bg-transparent-pressed); }
+.ds-sidenav__item[aria-disabled="true"], .ds-sidenav__item[aria-disabled="true"] :is(.ds-sidenav__prefix, .ds-sidenav__suffix) { color: var(--ybm-color-fg-disabled); pointer-events: none; }
+.ds-sidenav[data-collapsed] .ds-sidenav__item { width: 40px; padding-inline: var(--ybm-space-x2_5); }
+.ds-sidenav[data-collapsed] :is(.ds-sidenav__label, .ds-sidenav__suffix) { display: none; }
+
+
+/* --------------------------------------------------------------------------
+   39 Card — 관련 정보를 한 덩어리로 묶는 컨테이너
+   variant: outline(기본) · elevated   size: medium(기본) · small
+     <article class="ds-card" [data-variant="elevated"] [data-size="small"]>
+       <header class="ds-card__header"><h3 class="ds-card__title">카드 제목</h3>[<p class="ds-card__desc">설명</p>]</header>
+       <div class="ds-card__content">…</div>
+       [<footer class="ds-card__footer"><button class="ds-btn" data-variant="neutralWeak" data-width="fill">자세히 보기</button></footer>]
+     </article>
+   Figma: bg/layer-default · shape/xl · padding medium x5 / small x4 · 영역 gap x4 / x3
+     header gap x1 · title t05 Bold(small t04 Bold) fg/neutral · desc t04(small t03) fg/neutral-subtle
+     outline 1px stroke/neutral-weak · elevated elevation raised · footer 버튼 neutralWeak medium(small) gap x2
+   전체가 눌리는 카드: <a class="ds-card" href> → pressed 시 bg/transparent-pressed 를 덧씌움
+   -------------------------------------------------------------------------- */
+.ds-card {
+  --ds-card-padding: var(--ybm-space-x5);
+  --ds-card-gap: var(--ybm-space-x4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-card-gap);
+  padding: var(--ds-card-padding);
+  border-radius: var(--ybm-shape-xl);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 0 0 1px var(--ybm-color-stroke-neutral-weak);
+  color: var(--ybm-color-fg-neutral);
+  text-decoration: none;
+}
+.ds-card[data-variant="elevated"] { box-shadow: var(--ybm-elevation-raised); }
+.ds-card[data-size="small"] { --ds-card-padding: var(--ybm-space-x4); --ds-card-gap: var(--ybm-space-x3); }
+.ds-card__header { display: flex; flex-direction: column; gap: var(--ybm-space-x1); }
+.ds-card__title { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); font-weight: var(--ybm-font-weight-bold); }
+.ds-card__desc { color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-card[data-size="small"] .ds-card__title { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-card[data-size="small"] .ds-card__desc { font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
+.ds-card__content { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-card__footer { display: flex; gap: var(--ybm-space-x2); }
+.ds-card__footer > .ds-btn { flex: 1 1 0; }
+a.ds-card:active, button.ds-card:active { background: linear-gradient(var(--ybm-color-bg-transparent-pressed), var(--ybm-color-bg-transparent-pressed)), var(--ybm-color-bg-layer-default); }
+
+
+/* --------------------------------------------------------------------------
+   40 Empty — 보여 줄 데이터가 없을 때의 안내
+   size: medium(기본) · small
+     <div class="ds-empty" [data-size="small"]>
+       <span class="ds-empty__media"><i class="ds-icon ds-icon--inbox" aria-hidden="true"></i></span>
+       <p class="ds-empty__title">아직 내역이 없어요</p>
+       [<p class="ds-empty__desc">조건을 바꾸거나 새로 추가해 보세요.</p>]
+       [<div class="ds-empty__actions"><button class="ds-btn" data-variant="neutralWeak">새로 추가하기</button></div>]
+     </div>
+   Figma medium: padding 40/16 · gap x4 · media 56(아이콘 28) · title t06 Bold · desc t04 · actions 위 x2 · 버튼 medium
+         small : padding 24/16 · gap x3 · media 40(아이콘 20) · title t05 Bold · desc t03 · actions 위 x1 · 버튼 small
+     media bg/neutral-muted + 아이콘 fg/neutral-subtle · title fg/neutral · desc fg/neutral-subtle · 가운데 정렬
+   -------------------------------------------------------------------------- */
+.ds-empty {
+  --ds-empty-media: 56px;
+  --ds-empty-icon: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ybm-space-x4);
+  padding: var(--ybm-space-x10) var(--ybm-space-x4);
+  text-align: center;
+}
+.ds-empty[data-size="small"] { --ds-empty-media: 40px; --ds-empty-icon: 20px; gap: var(--ybm-space-x3); padding: var(--ybm-space-x6) var(--ybm-space-x4); }
+.ds-empty__media { display: grid; place-items: center; width: var(--ds-empty-media); height: var(--ds-empty-media); border-radius: var(--ybm-shape-pill); background: var(--ybm-color-bg-neutral-muted); color: var(--ybm-color-fg-neutral-subtle); }
+.ds-empty__media > .ds-icon { --ds-icon-size: var(--ds-empty-icon); }
+.ds-empty__title { color: var(--ybm-color-fg-neutral); font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); font-weight: var(--ybm-font-weight-bold); }
+.ds-empty__desc { margin-top: calc(var(--ybm-space-x1) - var(--ybm-space-x4)); color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.ds-empty[data-size="small"] .ds-empty__title { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.ds-empty[data-size="small"] .ds-empty__desc { margin-top: calc(var(--ybm-space-x1) - var(--ybm-space-x3)); font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
+.ds-empty__actions { display: flex; gap: var(--ybm-space-x2); padding-top: var(--ybm-space-x2); }
+.ds-empty[data-size="small"] .ds-empty__actions { padding-top: var(--ybm-space-x1); }
+
+
+/* --------------------------------------------------------------------------
+   41 Pagination — 목록 페이지 이동
+   type: full(기본) · simple
+     <nav class="ds-pagination" aria-label="페이지">
+       <a class="ds-pagination__item" data-type="first" aria-label="첫 페이지" aria-disabled="true"></a>
+       <a class="ds-pagination__item" data-type="prev"  aria-label="이전 페이지" aria-disabled="true"></a>
+       <a class="ds-pagination__item" href="?p=1" aria-current="page">1</a>
+       <a class="ds-pagination__item" href="?p=2">2</a>
+       <span class="ds-pagination__item" data-type="ellipsis" aria-hidden="true"></span>
+       <a class="ds-pagination__item" href="?p=10">10</a>
+       <a class="ds-pagination__item" data-type="next" href="?p=2" aria-label="다음 페이지"></a>
+       <a class="ds-pagination__item" data-type="last" href="?p=10" aria-label="마지막 페이지"></a>
+     </nav>
+     simple: <nav class="ds-pagination" data-type="simple"> prev · <span class="ds-pagination__indicator"><b>3</b> / 10</span> · next
+   Figma item: 36(높이·최소 폭) · px x2 · shape/sm · 숫자 t04 Medium fg/neutral-muted · 화살표 20 fg/neutral · ellipsis 16 fg/neutral-subtle
+     pressed bg/transparent-pressed · current bg/neutral-solid + fg/on-neutral-solid t04 Bold · disabled 화살표 fg/disabled
+     full gap x1 · simple gap x3 · indicator 현재 t04 Bold fg/neutral + "/ 전체" t04 fg/neutral-subtle
+   -------------------------------------------------------------------------- */
+.ds-pagination { display: flex; align-items: center; justify-content: center; gap: var(--ybm-space-x1); }
+.ds-pagination[data-type="simple"] { gap: var(--ybm-space-x3); }
+.ds-pagination__item {
+  --ds-pg-icon: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 36px;
+  height: 36px;
+  padding-inline: var(--ybm-space-x2);
+  border-radius: var(--ybm-shape-sm);
+  background: var(--ybm-color-bg-transparent);
+  color: var(--ybm-color-fg-neutral-muted);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+  font-weight: var(--ybm-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+}
+.ds-pagination__item:active { background: var(--ybm-color-bg-transparent-pressed); }
+@media (hover: hover) { .ds-pagination__item:not([aria-current="page"], [aria-disabled="true"], [data-type="ellipsis"]):hover { background: var(--ybm-color-bg-transparent-pressed); } }
+.ds-pagination__item[aria-current="page"] { background: var(--ybm-color-bg-neutral-solid); color: var(--ybm-color-fg-on-neutral-solid); font-weight: var(--ybm-font-weight-bold); pointer-events: none; }
+.ds-pagination__item[data-type]::before { content: ""; width: 20px; height: 20px; background: currentColor; -webkit-mask: var(--ds-pg-icon) center / contain no-repeat; mask: var(--ds-pg-icon) center / contain no-repeat; }
+.ds-pagination__item[data-type="first"] { --ds-pg-icon: var(--ds-icon-chevrons-left); }
+.ds-pagination__item[data-type="prev"]  { --ds-pg-icon: var(--ds-icon-chevron-left); }
+.ds-pagination__item[data-type="next"]  { --ds-pg-icon: var(--ds-icon-chevron-right); }
+.ds-pagination__item[data-type="last"]  { --ds-pg-icon: var(--ds-icon-chevrons-right); }
+.ds-pagination__item:is([data-type="first"], [data-type="prev"], [data-type="next"], [data-type="last"]) { color: var(--ybm-color-fg-neutral); }
+.ds-pagination__item[data-type="ellipsis"] { --ds-pg-icon: var(--ds-icon-ellipsis); color: var(--ybm-color-fg-neutral-subtle); pointer-events: none; }
+.ds-pagination__item[data-type="ellipsis"]::before { width: 16px; height: 16px; }
+.ds-pagination__item[aria-disabled="true"], .ds-pagination__item:disabled { color: var(--ybm-color-fg-disabled); pointer-events: none; }
+.ds-pagination__indicator { display: inline-flex; gap: var(--ybm-space-x1); color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); font-variant-numeric: tabular-nums; }
+.ds-pagination__indicator > b, .ds-pagination__indicator > strong { color: var(--ybm-color-fg-neutral); font-weight: var(--ybm-font-weight-bold); }
+
+
+/* --------------------------------------------------------------------------
+   42 Table — 같은 기준(열)으로 비교하는 표 (<table> 그대로)
+   density: default(기본) · compact
+     <div class="ds-table-wrap">            ← 열이 넘치면 가로 스크롤
+       <table class="ds-table" [data-density="compact"]>
+         <thead><tr><th scope="col" data-align="center">번호</th><th scope="col">제목</th>…</tr></thead>
+         <tbody><tr [aria-selected="true"] [data-interactive]><td data-align="center">10</td><td>…</td></tr></tbody>
+       </table>
+     </div>
+   Figma: 행 하단 1px stroke/neutral-weak · header bg/neutral-muted · 높이 header 44 / body 52 (compact 36 / 40)
+     칸 좌우 x4 · 한 줄 말줄임 · header t04 Medium fg/neutral-muted · body t04 fg/neutral
+     hover(data-interactive 행만) bg/neutral-weak-alpha · selected bg/brand-weak
+     정렬: 글 left(기본) · 숫자 right · 짧은 고정 길이 값(번호·날짜·상태) center → data-align
+   -------------------------------------------------------------------------- */
+.ds-table-wrap { width: 100%; overflow-x: auto; }
+.ds-table {
+  --ds-table-head-h: 44px;
+  --ds-table-row-h: 52px;
+  width: 100%;
+  table-layout: fixed;              /* 고정 폭 열은 <th style="width:…"> 또는 <col>, 나머지 열이 남은 폭을 나눈다 */
+  border-collapse: collapse;
+  color: var(--ybm-color-fg-neutral);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+}
+.ds-table[data-density="compact"] { --ds-table-head-h: 36px; --ds-table-row-h: 40px; }
+.ds-table :is(th, td) {
+  padding: 0 var(--ybm-space-x4);
+  overflow: hidden;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.ds-table thead tr { height: var(--ds-table-head-h); background: var(--ybm-color-bg-neutral-muted); }
+.ds-table thead th { color: var(--ybm-color-fg-neutral-muted); font-weight: var(--ybm-font-weight-medium); }
+.ds-table tbody tr { height: var(--ds-table-row-h); }
+.ds-table tr { box-shadow: inset 0 -1px 0 var(--ybm-color-stroke-neutral-weak); }
+.ds-table td { font-weight: var(--ybm-font-weight-regular); }
+.ds-table [data-align="center"] { text-align: center; }
+.ds-table [data-align="right"] { text-align: end; }
+.ds-table tbody tr[data-interactive] { cursor: pointer; }
+.ds-table tbody tr[data-interactive]:active { background: var(--ybm-color-bg-neutral-weak-alpha); }
+@media (hover: hover) { .ds-table tbody tr[data-interactive]:hover { background: var(--ybm-color-bg-neutral-weak-alpha); } }
+.ds-table tbody tr[aria-selected="true"] { background: var(--ybm-color-bg-brand-weak); }
+.ds-table caption { padding-bottom: var(--ybm-space-x2); text-align: start; color: var(--ybm-color-fg-neutral-subtle); }

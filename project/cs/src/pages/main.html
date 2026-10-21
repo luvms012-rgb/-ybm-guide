@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>고객센터 | YBM Family</title>
+<!--
+  SB.6~7  고객센터 → 고객센터 메인 (비로그인·기본)
+  Figma: 2147:525 (PC 1920×2144) · Mobile 2564:7897
+  · 히어로(타이틀 + 검색창 + 인기키워드) → 공지 → 자주 찾는 도움말 → 서비스별 고객센터 안내 → 푸터
+  · 검색어 2자 미만이면 검색창 아래 인라인 안내 (Figma 2745:13839)
+  바로가기(뷰어·QA용): main.html#sb6 · #sb6-min
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../cs-components.css">
+<link rel="stylesheet" href="../cs.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/common.js" defer></script>
+<script src="../js/main.js" defer></script>
+</head>
+<body class="cs">
+
+<div class="cs-page">
+
+  <!-- Top bar — CS/Header -->
+  <header class="cs-header">
+    <div class="cs-header__inner">
+      <div class="cs-header__brand">
+        <a href="#"><img class="cs-header__logo" src="../assets/ybm-family-logo.svg" alt="YBM Family" width="127" height="33"></a>
+        <p class="cs-header__service">고객센터</p>
+      </div>
+      <nav class="cs-header__links" aria-label="회원">
+        <a href="#">로그인</a>
+        <span class="cs-divider" aria-hidden="true"></span>
+        <a href="#">회원가입</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cs-page__body">
+
+    <!-- 히어로 — CS/Hero (type=Main) -->
+    <section class="cs-page__section cs-hero" aria-label="도움말 검색">
+      <!-- 바탕 glow는 페이드인으로 남고, 테두리 glow는 한 바퀴 돈 뒤 사라진다 -->
+      <div class="cs-hero__glow cs-hero__glow--base" aria-hidden="true"></div>
+      <svg class="cs-hero__glow cs-hero__glow--orbit" viewBox="0 0 720 72" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="cs-hero-glow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:var(--cs-gradient-brand-start)"></stop>
+            <stop offset="100%" style="stop-color:var(--cs-gradient-brand-end)"></stop>
+          </linearGradient>
+        </defs>
+        <rect class="cs-hero__glow-line" x="3" y="3" width="714" height="66" rx="33" pathLength="1000"></rect>
+      </svg>
+      <div class="cs-hero__inner">
+        <h1 class="cs-hero__title">무엇을 도와드릴까요?</h1>
+
+        <div class="cs-hero__search">
+          <form class="cs-hero__searchbox" id="search-form" action="#" novalidate>
+            <!-- CS/Search Bar -->
+            <div class="cs-search">
+              <div class="cs-search__main">
+                <button type="button" class="cs-search__category" id="search-category" aria-haspopup="dialog">
+                  <span id="search-category-label" data-service="TOEIC">TOEIC</span>
+                  <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                  <span class="ds-sr-only">검색할 서비스 선택</span>
+                </button>
+                <input class="cs-search__input" type="search" id="search-input" placeholder="궁금한 점을 검색해 보세요." aria-label="검색어">
+              </div>
+              <div class="cs-search__actions">
+                <button type="button" class="cs-search__clear" id="search-clear" hidden>
+                  <i class="ds-icon ds-icon--x" aria-hidden="true"></i><span class="ds-sr-only">검색어 지우기</span>
+                </button>
+                <button type="submit" class="cs-search__submit">
+                  <i class="ds-icon ds-icon--search" aria-hidden="true"></i><span class="ds-sr-only">검색</span>
+                </button>
+              </div>
+            </div>
+            <!-- 검색어 2자 미만 안내 -->
+            <p class="cs-hero__hint" id="search-hint" hidden>두 글자 이상 입력해 주세요.</p>
+          </form>
+
+          <!-- CS/Popular Keywords -->
+          <div class="cs-keywords">
+            <p class="cs-keywords__label">추천키워드</p>
+            <ul class="cs-keywords__list">
+              <li><a class="cs-keywords__item" href="#"><span>성적표재발급</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>성적유효기간</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>시험환불</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>접수취소</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>시험연기</span></a></li>
+            </ul>
+            <!-- 모바일: 롤링 한 줄 (누르면 6개 전체 펼침 — SB 6~7 모바일 2569:9033) -->
+            <button type="button" class="cs-keywords__rolling" id="keywords-rolling">
+              <span>성적표재발급</span>
+              <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 공지 — CS/Notice Bar -->
+    <section class="cs-page__section cs-page__notice" aria-label="공지사항">
+      <div class="cs-notice-bar cs-container">
+        <div class="cs-notice-bar__content">
+          <span class="cs-notice-bar__label">공지</span>
+          <a class="cs-notice-bar__title" href="#">㈜와이비엠넷 개인정보처리방침 개정 안내</a>
+        </div>
+        <a class="ds-btn" data-variant="ghost" href="#"><span class="cs-notice-bar__more-label">전체보기</span><i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i><span class="ds-sr-only">공지사항 전체보기</span></a>
+      </div>
+    </section>
+
+    <!-- 자주 찾는 도움말 -->
+    <section class="cs-page__section cs-page__faq" aria-labelledby="faq-title">
+      <div class="cs-container">
+        <h2 class="cs-section-title" id="faq-title">자주 찾는 도움말</h2>
+        <div class="cs-grid">
+
+          <a class="cs-faq-card" href="#">
+            <div class="cs-faq-card__content">
+              <span class="ds-badge cs-faq-card__badge" data-variant="solid" data-tone="brand">토익</span>
+              <p class="cs-faq-card__question">영문이름을 잘못 기재했습니다. <br class="cs-br">변경 가능한가요?</p>
+            </div>
+            <p class="cs-faq-card__path">토익<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>시험접수</p>
+          </a>
+
+          <a class="cs-faq-card" href="#">
+            <div class="cs-faq-card__content">
+              <span class="ds-badge cs-faq-card__badge" data-variant="solid" data-tone="brand">회원정보</span>
+              <p class="cs-faq-card__question">이미 사용중이거나 탈퇴한 아이디라고 나옵니다.</p>
+            </div>
+            <p class="cs-faq-card__path">회원정보<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>정보변경</p>
+          </a>
+
+          <a class="cs-faq-card" href="#">
+            <div class="cs-faq-card__content">
+              <span class="ds-badge cs-faq-card__badge" data-variant="solid" data-tone="brand">인강</span>
+              <p class="cs-faq-card__question">YBM인강 수강 시 수강 기기에 <br class="cs-br">제한이 있나요?</p>
+            </div>
+            <p class="cs-faq-card__path">인강<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>수강문의</p>
+          </a>
+
+          <a class="cs-faq-card" href="#">
+            <div class="cs-faq-card__content">
+              <span class="ds-badge cs-faq-card__badge" data-variant="solid" data-tone="brand">토익</span>
+              <p class="cs-faq-card__question">성적표는 언제 발급되나요?</p>
+            </div>
+            <p class="cs-faq-card__path">토익<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>시험접수</p>
+          </a>
+
+          <a class="cs-faq-card" href="#">
+            <div class="cs-faq-card__content">
+              <span class="ds-badge cs-faq-card__badge" data-variant="solid" data-tone="brand">인강</span>
+              <p class="cs-faq-card__question">영어 제로 클래스 환급 신청은 <br class="cs-br">어떻게 하나요?</p>
+            </div>
+            <p class="cs-faq-card__path">인강<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>수강문의</p>
+          </a>
+
+          <a class="cs-faq-card" href="#">
+            <div class="cs-faq-card__content">
+              <span class="ds-badge cs-faq-card__badge" data-variant="solid" data-tone="brand">YBM머니</span>
+              <p class="cs-faq-card__question">상품권 구매 시 세금계산서 또는 <br class="cs-br">현금영수증이 발행이 되나요?</p>
+            </div>
+            <p class="cs-faq-card__path">YBM머니<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>교육상품권</p>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 서비스별 고객센터 안내 -->
+    <section class="cs-page__section cs-page__service" aria-labelledby="service-title">
+      <div class="cs-container">
+        <h2 class="cs-section-title" id="service-title">서비스별 고객센터 안내</h2>
+        <div class="cs-grid">
+
+          <div class="cs-service-card">
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/exam.svg" alt="YBM 어학시험" width="108" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">TOEIC</span><span class="cs-tag">TOEIC Speaking</span><span class="cs-tag">기타시험</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>시험</dt><dd>02-2279-0505</dd></div>
+              <div><dt>결제</dt><dd>02-2008-5200</dd></div>
+              <div><dt>성적표출력</dt><dd>1544-4536</dd></div>
+            </dl>
+          </div>
+
+          <div class="cs-service-card">
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/ingang.svg" alt="YBM 인강" width="89" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">인강</span><span class="cs-tag">전화화상</span><span class="cs-tag">환급코스</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>시험</dt><dd>02-2279-0505</dd></div>
+              <div><dt>결제</dt><dd>02-2008-5200</dd></div>
+            </dl>
+            <div class="cs-chat">
+              <button type="button" class="cs-chat-btn">
+                <svg class="cs-chat-btn__mark" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">
+                  <path d="M0 10C0 4.47715 4.47715 0 10 0C15.5228 0 20 4.47715 20 10C20 15.5228 15.5228 20 10 20C4.47715 20 0 15.5228 0 10Z" fill="#FEE500"/>
+                  <path d="M10.1664 5.625C7.1748 5.625 4.74976 7.50079 4.74976 9.81479C4.74976 11.3022 5.74101 12.6076 7.23059 13.3465C7.12117 13.7527 6.83517 14.8198 6.77776 15.0484C6.70734 15.3317 6.88176 15.3279 6.99659 15.2515C7.08651 15.1919 8.42821 14.2792 9.00942 13.8838C9.38534 13.9396 9.77317 13.9688 10.1664 13.9688C13.158 13.9688 15.5831 12.093 15.5831 9.77904C15.5831 7.46504 13.158 5.625 10.1664 5.625Z" fill="black"/>
+                </svg>
+                채팅상담<span class="ds-sr-only">(YBM 인강 카카오톡 채팅상담)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="cs-service-card">
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/academy.svg" alt="YBM 어학원" width="96" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">현장강의</span><span class="cs-tag">불라방(라이브)</span><span class="cs-tag">1:1수업</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>종로</dt><dd>02-2278-0509</dd></div>
+              <div><dt>강남</dt><dd>02-565-0509</dd></div>
+              <div><dt>건대</dt><dd>02-464-0509</dd></div>
+            </dl>
+          </div>
+
+          <div class="cs-service-card">
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/it.svg" alt="YBM IT" width="82" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">MOS</span><span class="cs-tag">COS</span><span class="cs-tag">COS PRO</span><span class="cs-tag">DATA</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>접수/결제</dt><dd>02-2279-0505</dd></div>
+              <div><dt>회원/인증</dt><dd>02-2008-5200</dd></div>
+            </dl>
+          </div>
+
+          <div class="cs-service-card">
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/biz.svg" alt="YBM 기업교육" width="110" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">비대면 교육</span><span class="cs-tag">직무교육</span><span class="cs-tag">맞춤 사내교육</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>온/오프 교육</dt><dd>02-2009-0000</dd></div>
+              <div><dt>출강 교육</dt><dd>02-2009-0071</dd></div>
+            </dl>
+          </div>
+
+          <div class="cs-service-card">
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/textbook.svg" alt="YBM 교과서" width="95" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">Y클라우드</span><span class="cs-tag">YBM스마트스쿨</span><span class="cs-tag">YBM북샘</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>Y클라우드</dt><dd>02-2279-0505</dd></div>
+              <div><dt>YBM북샘</dt><dd>02-2008-5200</dd></div>
+            </dl>
+          </div>
+
+          <!-- [전체보기] 를 누르면 나타나는 다음 묶음 — 동작 확인용 더미 (실제로는 서버가 내려준다) -->
+          <div class="cs-service-card cs-service-card--more" hidden>
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/it.svg" alt="YBM IT" width="82" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">MOS</span><span class="cs-tag">COS</span><span class="cs-tag">COS PRO</span><span class="cs-tag">DATA</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>접수/결제</dt><dd>02-2279-0505</dd></div>
+              <div><dt>회원/인증</dt><dd>02-2008-5200</dd></div>
+            </dl>
+          </div>
+
+          <div class="cs-service-card cs-service-card--more" hidden>
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/biz.svg" alt="YBM 기업교육" width="110" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">비대면 교육</span><span class="cs-tag">직무교육</span><span class="cs-tag">맞춤 사내교육</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>온/오프 교육</dt><dd>02-2009-0000</dd></div>
+              <div><dt>출강 교육</dt><dd>02-2009-0071</dd></div>
+            </dl>
+          </div>
+
+          <div class="cs-service-card cs-service-card--more" hidden>
+            <div class="cs-service-card__details">
+              <div class="cs-service-card__head">
+                <a class="cs-service-card__link" href="#"><span class="cs-service-card__logo"><img src="../assets/service-logo/textbook.svg" alt="YBM 교과서" width="95" height="26"></span></a>
+                <i class="ds-icon ds-icon--arrow-right" aria-hidden="true"></i>
+              </div>
+              <div class="cs-service-card__tags">
+                <span class="cs-tag">Y클라우드</span><span class="cs-tag">YBM스마트스쿨</span><span class="cs-tag">YBM북샘</span>
+              </div>
+            </div>
+            <dl class="cs-service-card__contacts">
+              <div><dt>Y클라우드</dt><dd>02-2279-0505</dd></div>
+              <div><dt>YBM북샘</dt><dd>02-2008-5200</dd></div>
+            </dl>
+          </div>
+
+        </div>
+
+        <div class="cs-more">
+          <button type="button" class="ds-btn" data-variant="neutralSolid" data-size="large" id="service-more">
+            전체보기<i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer — CS/Footer -->
+  <footer class="cs-footer">
+    <div class="cs-footer__inner cs-container">
+      <div class="cs-footer__text">
+        <p class="cs-footer__hours"><b>평일 09:00-18:00</b><span>(점심시간 12:30~13:30 / 주말, 공휴일 휴무)</span></p>
+        <p class="cs-footer__copyright">Copyright © (주)와이비엠넷. All rights reserved.</p>
+      </div>
+      <div class="cs-footer__aside">
+        <nav class="cs-footer__links" aria-label="약관">
+          <a href="#">회사소개</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">개인정보 처리방침</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">이용약관</a>
+        </nav>
+        <div class="cs-family">
+          <button type="button" class="cs-family__button" id="family-site" aria-expanded="false" aria-controls="family-menu">
+            <span>패밀리 사이트</span>
+            <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>
+          </button>
+          <!-- 디자인 전 — 퍼블리싱 기준으로 만든 목록. 항목은 더미 -->
+          <div class="cs-family__menu" id="family-menu" role="menu" hidden>
+            <a href="#" role="menuitem">YBM 어학시험</a>
+            <a href="#" role="menuitem">YBM 인강</a>
+            <a href="#" role="menuitem">YBM 어학원</a>
+            <a href="#" role="menuitem">YBM 교과서</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

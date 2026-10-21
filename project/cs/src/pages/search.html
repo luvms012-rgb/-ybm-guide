@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>검색 결과 | 고객센터 | YBM Family</title>
+<!--
+  SB.9  고객센터 → 검색 결과 상태 (검색 로딩 · 검색 결과 없음)
+  Figma: 검색 결과 없음 2330:2823 (PC 1920×1002) · Mobile 2567:6432 (375×812)
+         검색 로딩     2475:5756 (PC 1920×962)  · Mobile 2567:6531 (375×812)
+  · 헤더 → 히어로(검색어 입력 상태) → 콘텐츠(상태 블록 한 개) → 푸터
+  · 두 상태는 화면을 나누지 않고 같은 파일의 해시로 전환한다
+  바로가기(뷰어·QA용): search.html#sb9-loading · #sb9-empty
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../cs-components.css">
+<link rel="stylesheet" href="../cs.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/common.js" defer></script>
+<script src="../js/search.js" defer></script>
+</head>
+<body class="cs">
+
+<div class="cs-page cs-page--search">
+
+  <!-- Top bar — CS/Header -->
+  <header class="cs-header">
+    <div class="cs-header__inner">
+      <div class="cs-header__brand">
+        <a href="main.html"><img class="cs-header__logo" src="../assets/ybm-family-logo.svg" alt="YBM Family" width="127" height="33"></a>
+        <p class="cs-header__service">고객센터</p>
+      </div>
+      <nav class="cs-header__links" aria-label="회원">
+        <a href="#">로그인</a>
+        <span class="cs-divider" aria-hidden="true"></span>
+        <a href="#">회원가입</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cs-page__body">
+
+    <!-- 히어로 — CS/Hero (type=Main) · 검색어 입력 상태 -->
+    <section class="cs-page__section cs-hero" aria-label="도움말 검색">
+      <div class="cs-hero__glow cs-hero__glow--base" aria-hidden="true"></div>
+      <svg class="cs-hero__glow cs-hero__glow--orbit" viewBox="0 0 720 72" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="cs-hero-glow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:var(--cs-gradient-brand-start)"></stop>
+            <stop offset="100%" style="stop-color:var(--cs-gradient-brand-end)"></stop>
+          </linearGradient>
+        </defs>
+        <rect class="cs-hero__glow-line" x="3" y="3" width="714" height="66" rx="33" pathLength="1000"></rect>
+      </svg>
+      <div class="cs-hero__inner">
+        <h1 class="cs-hero__title">무엇을 도와드릴까요?</h1>
+
+        <div class="cs-hero__search">
+          <form class="cs-hero__searchbox" id="search-form" action="#" novalidate>
+            <!-- CS/Search Bar -->
+            <div class="cs-search">
+              <div class="cs-search__main">
+                <button type="button" class="cs-search__category" id="search-category" aria-haspopup="dialog">
+                  <span id="search-category-label" data-service="회원정보">회원정보</span>
+                  <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                  <span class="ds-sr-only">검색할 서비스 선택</span>
+                </button>
+                <input class="cs-search__input" type="search" id="search-input" value="회원정보 이관 신청" placeholder="궁금한 점을 검색해 보세요." aria-label="검색어">
+              </div>
+              <div class="cs-search__actions">
+                <button type="button" class="cs-search__clear" id="search-clear">
+                  <i class="ds-icon ds-icon--x" aria-hidden="true"></i><span class="ds-sr-only">검색어 지우기</span>
+                </button>
+                <button type="submit" class="cs-search__submit">
+                  <i class="ds-icon ds-icon--search" aria-hidden="true"></i><span class="ds-sr-only">검색</span>
+                </button>
+              </div>
+            </div>
+            <p class="cs-hero__hint" id="search-hint" hidden>두 글자 이상 입력해 주세요.</p>
+          </form>
+
+          <!-- CS/Popular Keywords -->
+          <div class="cs-keywords">
+            <p class="cs-keywords__label">추천키워드</p>
+            <ul class="cs-keywords__list">
+              <li><a class="cs-keywords__item" href="#"><span>성적표재발급</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>성적유효기간</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>시험환불</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>접수취소</span></a></li>
+              <li><a class="cs-keywords__item" href="#"><span>시험연기</span></a></li>
+            </ul>
+            <button type="button" class="cs-keywords__rolling" id="keywords-rolling">
+              <span>성적표재발급</span>
+              <i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 콘텐츠 — 상태 블록 한 개 (Figma 2740:11191 / 2743:11192) -->
+    <section class="cs-page__section cs-page__result" id="result" data-state="loading" aria-live="polite">
+
+      <!-- 검색 로딩 — Figma 2475:5831 -->
+      <div class="cs-loading" id="state-loading">
+        <span class="ds-progress-circle cs-loading__circle" data-size="56" data-tone="brand" data-type="indeterminate"
+              role="progressbar" aria-label="검색 중">
+          <svg viewBox="0 0 56 56" aria-hidden="true">
+            <defs>
+              <linearGradient id="cs-progress-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="56">
+                <stop offset="0%" style="stop-color:var(--cs-gradient-brand-start)"></stop>
+                <stop offset="100%" style="stop-color:var(--cs-gradient-glow-end)"></stop>
+              </linearGradient>
+            </defs>
+            <circle class="ds-progress-circle__track" pathLength="100"></circle>
+            <circle class="ds-progress-circle__range" pathLength="100"></circle>
+          </svg>
+        </span>
+        <div class="cs-loading__text">
+          <p class="cs-loading__title">AI가 답변을 찾고 있습니다</p>
+          <p class="cs-loading__desc">관련 FAQ를 분석 중입니다.</p>
+        </div>
+      </div>
+
+      <!-- 검색 결과 없음 — CS/Empty State · Figma 2359:2269 -->
+      <div class="cs-empty" id="state-empty" hidden>
+        <div class="cs-empty__text">
+          <p class="cs-empty__title">검색 결과가 없습니다.</p>
+          <p class="cs-empty__desc">검색어를 정확히 입력했는지 확인 후 다시 시도해주세요.<br>두 단어 이상의 검색은 띄어쓰기를 확인해 주세요.</p>
+        </div>
+        <a class="ds-btn" data-variant="neutralSolid" data-size="large" href="main.html">홈으로</a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer — CS/Footer -->
+  <footer class="cs-footer">
+    <div class="cs-footer__inner cs-container">
+      <div class="cs-footer__text">
+        <p class="cs-footer__hours"><b>평일 09:00-18:00</b><span>(점심시간 12:30~13:30 / 주말, 공휴일 휴무)</span></p>
+        <p class="cs-footer__copyright">Copyright © (주)와이비엠넷. All rights reserved.</p>
+      </div>
+      <div class="cs-footer__aside">
+        <nav class="cs-footer__links" aria-label="약관">
+          <a href="#">회사소개</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">개인정보 처리방침</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">이용약관</a>
+        </nav>
+        <div class="cs-family">
+          <button type="button" class="cs-family__button" id="family-site" aria-expanded="false" aria-controls="family-menu">
+            <span>패밀리 사이트</span>
+            <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>
+          </button>
+          <div class="cs-family__menu" id="family-menu" role="menu" hidden>
+            <a href="#" role="menuitem">YBM 어학시험</a>
+            <a href="#" role="menuitem">YBM 인강</a>
+            <a href="#" role="menuitem">YBM 어학원</a>
+            <a href="#" role="menuitem">YBM 교과서</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

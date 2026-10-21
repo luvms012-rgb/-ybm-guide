@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="회원가입 · 가입완료 | YBM Family">회원가입 · 가입완료 | YBM Family</title>
+<!--
+  SB.18  회원가입 > 가입완료 — 간편계정 연결
+  기준: 스토리보드 62슬라이드본(260831) 18p
+  · CTA 버튼이 없는 화면 — 하단 링크만 둔다
+  · 소셜 아이콘을 누르면 해당 소셜 로그인 → 연동. 실패 사유에 따라 Alert 2종 (서버 판정 — 퍼블리싱은 바로가기로 확인)
+  · '다음에 하기' = 소셜 연동 없이 로그인 상태로 가입을 시작한 사이트로 이동
+  · 만14세 미만 가입완료(SB.29)도 이 화면과 같다 — 기획서에 '일반 / 만14세미만 공통 사용' 명시. 별도 파일을 만들지 않는다
+    (기획서 Description '만 14세미만 가입완료 시 문구 추가' — 추가 문구가 비어 있어 아직 반영하지 않았다)
+  바로가기(뷰어·QA용): complete.html#sb18 · #sb18-dup(소셜계정 중복 연동) · #sb18-ci(CI 불일치) · #sb29(만14세 미만 · 기본과 동일)
+  아이디: ?id=아이디 로 넘기면 타이틀에 표시 (없으면 userid). 실제로는 서버 값
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/complete.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title" data-i18n="회원가입">회원가입</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <section class="signup-card" aria-labelledby="complete-title">
+    <div class="signup-content">
+      <!-- Screen Title (show description) — 아이디만 fg/brand -->
+      <div>
+        <h2 class="signup-title" id="complete-title" data-i18n="[[userid]]님, 환영합니다."><em>userid</em>님, 환영합니다.</h2>
+        <p class="signup-title__desc" data-i18n="보다 간편한 로그인을 위해 간편계정을 연결해 주세요.">보다 간편한 로그인을 위해<br>간편계정을 연결해 주세요.</p>
+      </div>
+    </div>
+
+    <!-- Social — 로컬 컴포넌트 Social Login Icon(brand) 4종 · 48 원형 · gap 12 · 위 여백 48 -->
+    <div class="signup-social">
+      <button type="button" class="signup-social__btn" data-brand="naver" aria-label="네이버 계정 연결" data-i18n-attr="aria-label:네이버 계정 연결">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path class="signup-social__on" d="M10.8492 8.56216L4.92308 0H0V16H5.15077V7.43662L11.077 16H16V0H10.8492V8.56216Z"/></svg>
+      </button>
+      <button type="button" class="signup-social__btn" data-brand="kakao" aria-label="카카오 계정 연결" data-i18n-attr="aria-label:카카오 계정 연결">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path class="signup-social__kakao" d="M12 3C6.477 3 2 6.463 2 10.735C2 13.481 3.83 15.891 6.58 17.255C6.378 18.005 5.85 19.975 5.744 20.397C5.614 20.92 5.936 20.913 6.148 20.772C6.314 20.662 8.791 18.977 9.864 18.247C10.558 18.35 11.274 18.404 12 18.404C17.523 18.404 22 14.941 22 10.669C22 6.397 17.523 3 12 3Z"/></svg>
+      </button>
+      <button type="button" class="signup-social__btn" data-brand="google" aria-label="구글 계정 연결" data-i18n-attr="aria-label:구글 계정 연결">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+          <path class="signup-social__g-blue" d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.255H17.92C17.665 15.63 16.89 16.795 15.725 17.575V20.335H19.28C21.36 18.42 22.56 15.6 22.56 12.25Z"/>
+          <path class="signup-social__g-green" d="M12 22.9998C14.97 22.9998 17.46 22.0148 19.28 20.3348L15.725 17.5748C14.74 18.2348 13.48 18.6248 12 18.6248C9.13504 18.6248 6.71004 16.6898 5.84504 14.0898H2.17004V16.9398C3.98004 20.5348 7.70004 22.9998 12 22.9998Z"/>
+          <path class="signup-social__g-yellow" d="M5.845 14.0905C5.625 13.4305 5.5 12.7255 5.5 12.0005C5.5 11.2755 5.625 10.5705 5.845 9.91055V7.06055H2.17C1.425 8.54555 1 10.2255 1 12.0005C1 13.7755 1.425 15.4555 2.17 16.9405L5.845 14.0905Z"/>
+          <path class="signup-social__g-red" d="M12 5.375C13.615 5.375 15.065 5.93 16.205 7.02L19.36 3.865C17.455 2.09 14.965 1 12 1C7.70004 1 3.98004 3.465 2.17004 7.06L5.84504 9.91C6.71004 7.31 9.13504 5.375 12 5.375Z"/>
+        </svg>
+      </button>
+      <button type="button" class="signup-social__btn" data-brand="apple" aria-label="애플 계정 연결" data-i18n-attr="aria-label:애플 계정 연결">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path class="signup-social__on" d="M17.05 12.536C17.02 9.746 19.33 8.406 19.43 8.336C18.13 6.436 16.11 6.176 15.39 6.146C13.67 5.976 12.03 7.156 11.16 7.156C10.29 7.156 8.93999 6.166 7.50999 6.196C5.62999 6.226 3.89999 7.286 2.92999 8.966C0.979993 12.356 2.42999 17.376 4.32999 20.126C5.25999 21.476 6.36999 22.986 7.82999 22.926C9.22999 22.866 9.75999 22.026 11.46 22.026C13.15 22.026 13.63 22.926 15.11 22.896C16.62 22.876 17.57 21.526 18.49 20.176C19.56 18.616 20 17.106 20.02 17.026C19.99 17.016 17.08 15.896 17.05 12.536ZM14.32 4.5C15.09 3.57 15.61 2.27 15.47 1C14.36 1.04 13.02 1.74 12.23 2.67C11.52 3.5 10.9 4.82 11.07 6.09C12.31 6.19 13.57 5.46 14.32 4.5Z"/></svg>
+      </button>
+    </div>
+
+    <!-- CTA Area (show cta=false · show link bottom=true) -->
+    <div class="signup-cta">
+      <button type="button" class="ds-link" id="skip-link" data-i18n="다음에 하기">다음에 하기</button>
+    </div>
+  </section>
+</main>
+
+<!-- 소셜계정 중복 연동 Alert (DS Dialog closeButton=false · footer=true) — 버튼으로만 닫힌다
+     기획서 {네이버} = 선택한 소셜 브랜드명으로 치환 (개발) -->
+<dialog class="ds-dialog signup-alert" id="dialog-social-dup" role="alertdialog" aria-labelledby="dialog-social-dup-title" aria-describedby="dialog-social-dup-desc">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-social-dup-title" data-i18n="해당 네이버 계정은 이미 YBM Family 계정에 연결되어 있습니다">해당 네이버 계정은 이미<br>YBM Family 계정에 연결되어 있습니다</h2>
+    <p class="ds-dialog__desc" id="dialog-social-dup-desc" data-i18n="다른 네이버 아이디로 연결하시거나, 연결된 YBM Family 계정에서 연결 해제 후 다시 시도해 주세요.">다른 네이버 아이디로 연결하시거나, 연결된 YBM Family 계정에서 연결 해제 후 다시 시도해 주세요.</p>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-ds-close data-i18n="확인">확인</button>
+  </div>
+</dialog>
+
+<!-- CI 불일치 Alert — 본인인증 정보와 소셜 계정 명의가 다를 때 -->
+<dialog class="ds-dialog signup-alert" id="dialog-social-ci" role="alertdialog" aria-labelledby="dialog-social-ci-title" aria-describedby="dialog-social-ci-desc">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-social-ci-title" data-i18n="본인인증한 정보와 네이버 계정의 본인 정보가 일치하지 않습니다">본인인증한 정보와 네이버 계정의<br>본인 정보가 일치하지 않습니다</h2>
+    <p class="ds-dialog__desc" id="dialog-social-ci-desc" data-i18n="동일한 명의의 소셜 계정으로 다시 로그인해 주세요.">동일한 명의의 소셜 계정으로 다시 로그인해 주세요.</p>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-ds-close data-i18n="확인">확인</button>
+  </div>
+</dialog>
+
+</body>
+</html>

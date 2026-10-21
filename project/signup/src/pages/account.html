@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="회원가입 · 정보입력 | YBM Family">회원가입 · 정보입력 | YBM Family</title>
+<!--
+  SB.15 ~ SB.17  회원가입 > 정보입력 (아이디 → 비밀번호 → 이메일 주소 또는 휴대전화번호)
+  기준: 스토리보드 62슬라이드본(260831) 15~17p
+  본인인증과 달리 누적 스텝이 아니라 한 화면에 필드 하나씩 — [다음]을 누르면 다음 필드로 바뀐다.
+  SB.17 은 앞에서 인증한 수단의 반대: 휴대전화로 인증했으면 이메일 주소, 이메일로 인증했으면(?verified=email) 휴대전화번호
+  바로가기(뷰어·QA용): account.html#sb15 · #sb15-format · #sb15-dup · #sb16 · #sb16-invalid · #sb16-show · #sb16-done
+                       · #sb17 · #sb17-typing · #sb17-error · #sb17-done · #sb17-phone · #sb17-phone-error · #sb17-phone-done
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/account.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title" data-i18n="회원가입">회원가입</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <section class="signup-card" aria-labelledby="account-title">
+    <form id="account-form" novalidate>
+      <div class="signup-content">
+        <h2 class="signup-title" id="account-title" aria-live="polite">아이디를 입력해 주세요</h2>
+
+        <div class="signup-fields">
+
+          <!-- SB.15 아이디 — 추천 아이디가 채워진 채로 시작, 직접 입력 가능 -->
+          <div class="signup-page" data-page="id">
+            <div class="ds-field">
+              <label class="ds-field__label" for="user-id" id="user-id-label">아이디 (추천)</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="user-id" type="text" autocomplete="username" autocapitalize="off" spellcheck="false"
+                       value="hgd00000" placeholder=" " maxlength="20" aria-describedby="user-id-help">
+                <button type="button" class="ds-input__clear" aria-label="아이디 지우기" data-i18n-attr="aria-label:아이디 지우기"></button>
+              </div>
+              <p class="ds-field__help" id="user-id-help"></p>
+            </div>
+          </div>
+
+          <!-- SB.16 비밀번호 — 눈 아이콘으로 표시/숨김, 입력하는 동안 조건 4개를 실시간 체크 -->
+          <div class="signup-page" data-page="password" hidden>
+            <div class="ds-field">
+              <label class="ds-field__label" for="password" data-i18n="비밀번호">비밀번호</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="password" type="password" autocomplete="new-password" maxlength="20"
+                       placeholder="비밀번호 입력" aria-describedby="password-rules password-banned" data-i18n-attr="placeholder:비밀번호 입력">
+                <!-- 가려져 있을 때 eye-off, 보일 때 eye -->
+                <button type="button" class="ds-input__suffix signup-eye" id="password-eye" aria-pressed="false"
+                        aria-label="비밀번호 보기" data-i18n-attr="aria-label:비밀번호 보기">
+                  <i class="ds-icon ds-icon--lg ds-icon--eye-off" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div class="signup-rules-wrap">
+                <ul class="signup-rules" id="password-rules">
+                  <li class="signup-rule" data-rule="letter"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="영문">영문</span></li>
+                  <li class="signup-rule" data-rule="number"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="숫자">숫자</span></li>
+                  <li class="signup-rule" data-rule="special"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="특수문자">특수문자</span></li>
+                  <li class="signup-rule" data-rule="length"><i class="ds-icon ds-icon--sm ds-icon--check" aria-hidden="true"></i><span data-i18n="8~20자">8~20자</span></li>
+                </ul>
+                <!-- 사용불가 문자를 입력했을 때만 -->
+                <p class="signup-banned" id="password-banned" hidden data-i18n="';--<()\/ 사용불가">';--&lt;()\/ 사용불가</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SB.17-A 이메일 주소 (휴대전화로 인증한 경우) -->
+          <div class="signup-page" data-page="email" hidden>
+            <div class="ds-field">
+              <label class="ds-field__label" for="email" data-i18n="이메일 주소">이메일 주소</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="email" type="email" inputmode="email" autocomplete="email" maxlength="100"
+                       placeholder="이메일 주소 입력" aria-describedby="email-help" data-i18n-attr="placeholder:이메일 주소 입력">
+                <button type="button" class="ds-input__clear" aria-label="이메일 주소 지우기" data-i18n-attr="aria-label:이메일 주소 지우기"></button>
+              </div>
+              <!-- 도메인 추천 (DS Chip) — 입력을 시작하면 '@' 입력 전까지 노출 -->
+              <div class="ds-chip-group signup-chips signup-chips--typing" id="email-chips" hidden aria-label="이메일 도메인 추천" data-i18n-attr="aria-label:이메일 도메인 추천">
+                <button type="button" class="ds-chip" data-domain="@naver.com">@naver.com</button>
+                <button type="button" class="ds-chip" data-domain="@gmail.com">@gmail.com</button>
+                <button type="button" class="ds-chip" data-domain="@daum.net">@daum.net</button>
+              </div>
+              <p class="ds-field__help" id="email-help" hidden></p>
+            </div>
+          </div>
+
+          <!-- SB.17-B 휴대전화번호 (이메일로 인증한 경우) — 국내 번호, 자동 하이픈 -->
+          <div class="signup-page" data-page="phone" hidden>
+            <div class="ds-field">
+              <label class="ds-field__label" for="phone" data-i18n="휴대전화번호">휴대전화번호</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="13"
+                       placeholder="휴대전화번호 입력" aria-describedby="phone-help" data-i18n-attr="placeholder:휴대전화번호 입력">
+                <button type="button" class="ds-input__clear" aria-label="휴대전화번호 지우기" data-i18n-attr="aria-label:휴대전화번호 지우기"></button>
+              </div>
+              <p class="ds-field__help" id="phone-help" hidden></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="signup-cta">
+        <button type="submit" class="ds-btn" id="cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled>다음</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+</body>
+</html>

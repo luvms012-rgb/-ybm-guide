@@ -1,0 +1,889 @@
+/* ==========================================================================
+   YBM Family · 고객센터 서비스 전용 CSS — 화면 골격 + 서비스 토큰
+   --------------------------------------------------------------------------
+   · 공통 DS(ybm-ds.css) → cs-components.css → 이 파일 순서로 link 한다.
+     세 파일 모두 레이어 밖(unlayered)이라 선택자 우선순위와 상관없이
+     DS 보다 항상 우선한다 → !important 없이 덮어쓸 수 있다.
+
+       1)   서비스 토큰   — Figma 로컬 컬렉션 `CS · 고객센터` 이식
+       1-1) DS 기본값 예외 — 고객센터에서만 다른 값 (근거 표)
+       2)   레이아웃 기준  — 컨테이너 1080 / 브레이크포인트 변수
+       3)   화면 골격 .cs-page__* — 화면별 블록은 3-1) 부터 SB 번호 순
+       4)   반응형 — 768 / 1024 / 1280 3분기
+       5)   인터랙션 — 글로우 · 호버 · 아코디언 · 모션 줄이기
+       6)   공지사항 반응형 (SB 21~22) — Mobile 전용 덮어쓰기
+
+   · 클래스 접두사
+       .ds-*       DS 공통 컴포넌트            DS 원본 components.css
+       .cs-*       고객센터 전용 컴포넌트      cs-components.css
+       .cs-page__*  화면 골격(섹션·컨테이너)    이 파일
+       .u-*        1회성 여백·정렬             DS 원본 utilities.css
+   ========================================================================== */
+
+
+/* 1) 서비스 토큰 ------------------------------------------------------------
+   Figma 로컬 컬렉션 `CS · 고객센터`(Default 모드)를 그대로 옮긴 값이다.
+   DS 토큰 스케일에 없어서 로컬에 남긴 것만 둔다 — 새 값을 여기 추가하기 전에
+   DS 에 같은 값이 있는지 먼저 확인할 것.
+   -------------------------------------------------------------------------- */
+:root {
+  /* 히어로 배경 그라데이션 (메인) */
+  --cs-gradient-hero-start: #e9f3ff;
+  --cs-gradient-hero-end: #eeeaff;
+
+  /* 검색창 뒤 글로우 — Figma 로컬 `color/gradient/glow-*` 실제 값
+     (brand 그라데이션보다 한 단계 밝다) */
+  --cs-gradient-glow-start: #388eff;
+  --cs-gradient-glow-end: #744aff;
+
+  /* 검색창 테두리 · AI 안내 문구 그라데이션 — DS 팔레트를 가리키는 alias */
+  --cs-gradient-brand-start: var(--ybm-color-palette-brand-600);
+  --cs-gradient-brand-end: var(--ybm-color-palette-purple-800);
+
+  /* 검색 카테고리 패널 그림자 — 0 10px 8px rgba(0,0,0,.1) */
+  --cs-shadow-search-panel: 0 10px 8px rgb(0 0 0 / 10%);
+
+  /* DS radius 스케일에 없는 값 (r5=20, r6=24, r8=32 사이) */
+  --cs-radius-search-panel: 36px;
+
+  /* 로고 ↔ 서비스명 간격 · 글로우 블러 반경 */
+  --cs-logo-gap: 7px;
+  --cs-blur-glow: 40px;
+
+  /* 살짝 튀는 등장용 이징 — DS 에는 overshoot 이징이 없어 여기 둔다
+     끝에서 약 8% 정도만 넘겼다가 돌아온다("아주 약간의 탄성") */
+  --cs-easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 1-1) DS 기본값 예외 — 고객센터에서만 다른 값
+   근거는 Figma 노드 기준. 새 예외는 반드시 여기에 모으고 근거·날짜를 적는다.
+
+   | | DS 기본 | 고객센터 | 근거 |
+   |---|---|---|---|
+   | Action Button(medium) 라벨 | 14/21 SemiBold | 16/24 Regular | 공지바 [전체보기] I2243:816;24:303 (2026.10.08) |
+   | 푸터 약관 링크 | t04 14/21 | 14 / 줄높이 24 | 푸터 링크 줄 높이 24 I2276:584;2243:522 (2026.10.08) |
+   -------------------------------------------------------------------------- */
+/* 공지바·목록형 텍스트 버튼은 본문과 같은 16/24 Regular 로 쓴다 */
+.cs-notice-bar .ds-btn {
+  --ds-btn-font-size: var(--ybm-font-size-t05);
+  --ds-btn-line-height: var(--ybm-line-height-t05);
+  --ds-btn-font-weight: var(--ybm-font-weight-regular);
+}
+
+
+/* 2) 레이아웃 기준 ----------------------------------------------------------
+   기준 시안 = 메인 PC 1920 (컨테이너 x420 / 폭 1080)
+   브레이크포인트는 글로벌 표준 768 / 1024 / 1280 (2026.09.22 확정)
+
+   | 구간    | 범위      | 좌우 padding | 컨테이너         | 카드 열 |
+   |---------|-----------|--------------|------------------|---------|
+   | Mobile  | ~767      | 20           | fluid            | 1열     |
+   | Tablet  | 768~1023  | 32           | fluid            | 2열     |
+   | Laptop  | 1024~1279 | 40           | fluid(최대 1080) | 3열     |
+   | Desktop | 1280~     | —            | 1080 고정 중앙   | 3열     |
+
+   · 태블릿 구간은 디자인 시안이 없다 — 퍼블리싱이 기준이며 여기 값이 원본이다.
+   · 카드 gap 16 은 전 구간 유지한다.
+   -------------------------------------------------------------------------- */
+:root {
+  --cs-container: 1080px;   /* 콘텐츠 최대 폭 */
+  --cs-gutter: 0px;         /* 좌우 여백 — 구간별로 4) 에서 바꾼다 */
+  --cs-card-gap: var(--ybm-space-x4);   /* 16 */
+  --cs-cols: 3;             /* 카드 열 수 — 구간별로 4) 에서 바꾼다 */
+}
+
+body.cs {
+  background: var(--ybm-color-bg-layer-default);
+  color: var(--ybm-color-fg-neutral);
+}
+
+/* 모든 섹션이 쓰는 가운데 컨테이너 */
+.cs-container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--cs-container) + var(--cs-gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--cs-gutter);
+}
+
+/* 카드 그리드 — 열 수만 구간별로 바뀐다 */
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cs-cols), minmax(0, 1fr));
+  gap: var(--cs-card-gap);
+}
+
+/* Figma 에서 손으로 끊어 둔 줄바꿈(텍스트의 \n) — Laptop 이상에서만 적용하고
+   폭이 좁아지면 자연 줄바꿈에 맡긴다. 앞에 공백을 두고 쓴다: `…습니다. <br class="cs-br">변경` */
+.cs-br { display: none; }
+@media (min-width: 1024px) { .cs-br { display: inline; } }
+
+/* 한글 문장은 어절 단위로만 줄바꿈한다 (Figma 에서는 U+2060 으로 구현한 규칙) */
+body.cs :is(h1, h2, h3, h4, p, li, dt, dd, button, a, span) { word-break: keep-all; }
+
+
+/* 3) 화면 골격 .cs-page__* --------------------------------------------------
+   화면 1개 = src/pages/*.html 1개. 공통 골격은 아래, 화면별 블록은 3-1) 부터.
+
+     .cs-page            화면 전체 (세로 스택)
+     .cs-page__body        헤더·푸터 사이 본문
+     .cs-page__section     배경색이 바뀌는 가로 전체 띠
+   -------------------------------------------------------------------------- */
+.cs-page { display: flex; flex-direction: column; min-height: 100vh; }
+.cs-page__body { flex: 1 1 auto; }
+.cs-page__section { width: 100%; }
+
+/* 3-1) 고객센터 메인 (SB 6~7) — Figma 2147:525 (1920×2144)
+   세로 순서: Top bar 72 → 히어로 334 → 공지 64 → 자주 찾는 도움말 → 서비스별 안내 → 푸터 170
+   -------------------------------------------------------------------------- */
+
+/* 공지 — 높이 64 (상하 20) · 아래 1px 구분선 */
+.cs-page__notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  padding-block: var(--ybm-space-x5);
+  border-bottom: 1px solid var(--ybm-color-stroke-neutral-muted);
+}
+
+/* 자주 찾는 도움말 — 흰 배경 · 상 40 / 하 64 */
+.cs-page__faq { padding-block: var(--ybm-space-x10) var(--ybm-space-x16); }
+
+/* 서비스별 고객센터 안내 — 회색 배경 · 상 64 / 하 80 */
+.cs-page__service {
+  padding-block: var(--ybm-space-x16) var(--ybm-space-x20);
+  background: var(--ybm-color-bg-neutral-muted);
+}
+
+/* 섹션 타이틀 ↔ 내용 24 */
+.cs-section-title {
+  margin: 0 0 var(--ybm-space-x6);
+  font-size: var(--ybm-font-size-t11);
+  line-height: var(--ybm-line-height-t11);
+  font-weight: var(--ybm-font-weight-bold);
+  color: var(--ybm-color-fg-neutral);
+}
+
+/* 도움말 카드 2행 — 행 간격 20 (열 간격 16 은 --cs-card-gap) */
+.cs-page__faq .cs-grid { row-gap: var(--ybm-space-x5); }
+
+/* 서비스 카드 그리드 ↔ [전체보기] 48 */
+.cs-page__service .cs-grid + .cs-more { margin-top: var(--ybm-space-x12); }
+.cs-more { display: flex; justify-content: center; }
+
+
+/* 3-2) 검색 결과 상태 (SB 9) — Figma 2330:2823 · 2475:5756
+   헤더 → 히어로(검색어 입력) → 콘텐츠(상태 블록 하나) → 푸터.
+   콘텐츠는 상 96 / 하 120 (두 상태 동일).
+   -------------------------------------------------------------------------- */
+.cs-page__result {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--ybm-space-x24) 120px;   /* 하 120 은 DS space 스케일에 없다 */
+}
+
+
+/* 3-3) 도움말(FAQ) 목록 (SB 12) — Figma 2341:3255 · Mobile 2607:7144
+   헤더 → 히어로(type=Service) → 콘텐츠 → 푸터.
+   본문: 히어로와 콘텐츠 사이 40, 아래 130. 콘텐츠(1080) = 목록 영역 + 48 + 문의 배너.
+   목록 영역 = 중분류 칩 + 32 + FAQ 목록.
+   -------------------------------------------------------------------------- */
+.cs-page__faq-body { padding-bottom: 176px; }   /* SB 12·13·14 공통 176 */
+.cs-page__faq-body > .cs-container { margin-top: var(--ybm-space-x10); }   /* 히어로 ↔ 콘텐츠 40 */
+.cs-faq-content { display: flex; flex-direction: column; gap: var(--ybm-space-x12); }
+.cs-faq-area { display: flex; flex-direction: column; gap: var(--ybm-space-x8); }
+/* 결과 하단 — PC 는 페이지네이션만, 모바일용 더보기는 숨긴다 */
+.cs-result-foot__more { display: none; }
+
+/* 중분류 칩 — PC gap 10 (Figma 2347:1357) */
+.cs-category-chips { display: flex; flex-wrap: wrap; gap: var(--ybm-space-x2_5); }
+/* 중분류에 도움말이 없을 때 — 목록 자리에 빈 상태 하나 (Figma 2744:11279) */
+.cs-faq--empty { display: flex; justify-content: center; padding-block: var(--ybm-space-x32); }
+
+
+/* 3-4) 문의하기 (SB 15~16) — Figma 2366:4906 · Mobile 2664:8779
+   헤더 → 본문(상 48 / 하 120) → 푸터. 본문 안은 컨테이너 1080 + 폼 섹션 4개(gap 56).
+   컴포넌트(.cs-form-*)는 cs-components.css 05 문의 에 있다.
+   -------------------------------------------------------------------------- */
+.cs-page__inquiry-body { padding-block: var(--ybm-space-x12) 120px; }
+
+
+/* 3-5) 내 문의 내역 (SB 17~20) — Figma 2366:5283 · 2405:3532 · Mobile 2677:11782
+   헤더 → 본문(상 48 / 하 120) → 푸터. 본문 안은 컨테이너 1080 + 목록/상세 묶음.
+   목록 gap 24 · 상세 gap 32 (모바일 16 / 24)
+   -------------------------------------------------------------------------- */
+.cs-page__list-body,
+.cs-page__detail-body { padding-block: var(--ybm-space-x12) 120px; }
+.cs-list { display: flex; flex-direction: column; gap: var(--ybm-space-x6); }
+.cs-detail { display: flex; flex-direction: column; gap: var(--ybm-space-x8); }
+/* 페이지 타이틀 우측 ghost 버튼([지난 문의]) — DS 기본 좌우 패딩(large x5=20)을 그대로 둬야
+   호버 면에 좌우 여백이 생긴다. 패딩을 0 으로 지우면 글자에 딱 붙은 면이 떠서 DS 와 어긋난다.
+   라벨 자체는 컨테이너 오른쪽 끝에 맞아야 하므로 패딩만큼 바깥으로 당긴다. */
+.cs-page-heading__action { margin-right: calc(var(--ybm-space-x5) * -1); }
+
+
+/* 4) 반응형 — 768 / 1024 / 1280 --------------------------------------------
+   Desktop(1280~) 을 기본값으로 두고 아래로 내려가며 덮는다.
+   -------------------------------------------------------------------------- */
+
+/* Laptop 1024~1279 — 컨테이너를 폭에 맞추고 좌우 40 */
+@media (max-width: 1279px) {
+  :root { --cs-gutter: var(--ybm-space-x10); }   /* 40 */
+  /* 헤더 좌우 80 → 컨테이너와 같은 여백으로 */
+  .cs-header__inner { padding-inline: var(--cs-gutter); }
+  /* 검색창 720 고정 → 좌우 여백을 뺀 폭 (최대 720) */
+  .cs-hero { padding-inline: var(--cs-gutter); }
+  .cs-hero__inner, .cs-hero__glow { width: 100%; max-width: 720px; }
+  .cs-hero__glow { max-width: min(720px, calc(100% - var(--cs-gutter) * 2)); }
+}
+
+/* Tablet 768~1023 — 좌우 32 · 카드 2열 · 히어로 타이틀 t12
+   이 구간은 시안이 없다 — 아래 값이 원본이다. */
+@media (max-width: 1023px) {
+  :root { --cs-gutter: var(--ybm-space-x8); --cs-cols: 2; }   /* 32 */
+  .cs-hero__title { font-size: var(--ybm-font-size-t12); line-height: var(--ybm-line-height-t12); }
+  /* 서비스 카드는 높이 280 유지 (2열×3행) */
+}
+
+/* Mobile ~767 — Figma 2564:7897 (375) 기준. 좌우 16, 카드 1열
+   PC 와 구조가 다른 두 곳은 마크업 한 벌 + CSS 로 바꾼다
+     · 인기키워드  칩 목록 → 롤링 한 줄(라벨 + 키워드 1개 + chevron)
+     · 서비스 안내 3열 카드 → 흰 카드 하나 안의 리스트 행
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  :root { --cs-gutter: var(--ybm-space-x4); --cs-cols: 1; --cs-card-gap: var(--ybm-space-x3); }   /* 16 / 1열 / 12 */
+
+  /* 헤더 60 */
+  .cs-header { height: 60px; }
+  .cs-header__inner { align-items: center; height: 60px; padding: 0 var(--cs-gutter); }
+  .cs-header__brand { gap: 5.44px; height: 31px; }
+  .cs-header__logo { width: 99.06px; height: 25.74px; }
+  /* 라벨 y7 (Figma 2310:1989 — 로고 99.06×25.74 위 기준) */
+  .cs-header__service { margin-top: 7px; font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+  .cs-header__links { gap: var(--ybm-space-x2); }
+  .cs-header__links a { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+
+  /* 히어로 — 상 24 / 하 32 · 타이틀 t08 · 검색창 48 */
+  .cs-hero {
+    padding: var(--ybm-space-x6) var(--cs-gutter) var(--ybm-space-x8);
+    background: linear-gradient(100.317deg,
+      var(--cs-gradient-hero-start) 39.01%,
+      var(--cs-gradient-hero-end) 87.974%);
+  }
+  .cs-hero__glow {
+    top: 70px;
+    height: 52px;
+    max-width: calc(100% - var(--cs-gutter) * 2);
+    filter: blur(10px);
+    background: linear-gradient(94.613deg,
+      var(--cs-gradient-glow-start) 11.814%,
+      var(--cs-gradient-glow-end) 83.535%);
+  }
+  .cs-hero__inner { gap: var(--ybm-space-x4); }
+  .cs-hero__title { font-size: var(--ybm-font-size-t08); line-height: var(--ybm-line-height-t08); }
+  .cs-hero__search { gap: var(--ybm-space-x4); }
+  .cs-hero__searchbox { gap: var(--ybm-space-x3); }
+  .cs-hero__hint { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+
+  .cs-search {
+    height: auto;
+    padding: var(--ybm-space-x0_5) var(--ybm-space-x2) var(--ybm-space-x0_5) var(--ybm-space-x5);
+    border-width: 2px;
+  }
+  .cs-search__main { gap: var(--ybm-space-x3); }
+  .cs-search__category, .cs-search__input {
+    font-size: var(--ybm-font-size-t05);
+    line-height: var(--ybm-line-height-t05);
+    font-weight: var(--ybm-font-weight-regular);
+  }
+  .cs-search__submit { width: 40px; height: 40px; }
+  .cs-search__submit .ds-icon { --ds-icon-size: 24px; }
+  /* 지우기 버튼 — 모바일 28 (Figma device=Mobile) · 아이콘은 같은 비율로 20 */
+  .cs-search__clear { width: 28px; height: 28px; }
+  .cs-search__clear .ds-icon { --ds-icon-size: 20px; }
+
+  /* 인기키워드 — 롤링 한 줄 */
+  .cs-keywords { gap: var(--ybm-space-x2); padding-inline: var(--ybm-space-x2); overflow: hidden; }
+  .cs-keywords__label { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+  .cs-keywords__list { display: none; }
+  .cs-keywords__rolling { display: flex; }
+
+  /* 공지 — 상하 8 (좌우 16은 .cs-container 가 준다. 여기서 또 주면 32가 된다) */
+  .cs-page__notice { height: auto; padding: var(--ybm-space-x2) 0; }
+  .cs-notice-bar__content { gap: var(--ybm-space-x4); min-width: 0; }
+  .cs-notice-bar__title {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    font-size: var(--ybm-font-size-t05);
+    line-height: var(--ybm-line-height-t05);
+  }
+  .cs-notice-bar .ds-btn {
+    --ds-btn-padding-x: var(--ybm-space-x2_5);
+    min-width: 40px;
+  }
+  .cs-notice-bar .ds-btn > .ds-icon { --ds-icon-size: 20px; }
+  .cs-notice-bar .ds-btn > .cs-notice-bar__more-label { display: none; }
+
+  /* 자주 찾는 도움말 — 상 32 / 하 40 · 타이틀 t07 · 카드 간격 12 · 한 행에 2개 */
+  .cs-page__faq { padding-block: var(--ybm-space-x8) var(--ybm-space-x10); }
+  .cs-section-title {
+    margin-bottom: var(--ybm-space-x4);
+    font-size: var(--ybm-font-size-t07);
+    line-height: var(--ybm-line-height-t07);
+  }
+  .cs-page__faq .cs-grid { --cs-cols: 2; row-gap: var(--ybm-space-x3); }
+  .cs-faq-card {
+    height: auto;
+    gap: var(--ybm-space-x4);
+    padding: var(--ybm-space-x5);
+    border-radius: var(--ybm-radius-r4);
+  }
+  /* PC 와 같이 내용 높이를 고정해 카테고리(경로) 줄 위치를 카드마다 맞춘다.
+     149 = 배지 29 + 간격 8 + 질문 4줄(28×4) */
+  .cs-faq-card__content { height: 149px; gap: var(--ybm-space-x2); }
+  .cs-faq-card__badge {
+    max-width: 120px;
+    min-height: 20px;
+    font-size: var(--ybm-font-size-t01);
+    line-height: var(--ybm-line-height-t01);
+    font-weight: var(--ybm-font-weight-medium);
+  }
+  .cs-faq-card__question {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+    font-size: var(--ybm-font-size-t06);
+    line-height: var(--ybm-line-height-t06);
+  }
+
+  /* 서비스별 안내 — 흰 카드 하나 안의 리스트 행 */
+  .cs-page__service { padding-block: var(--ybm-space-x10) var(--ybm-space-x12); }
+  .cs-page__service .cs-grid {
+    display: block;
+    border-radius: var(--ybm-radius-r4);
+    background: var(--ybm-color-bg-layer-default);
+  }
+  .cs-service-card {
+    position: relative;
+    gap: var(--ybm-space-x5);                      /* 로고 ↔ 연락처 20 */
+    height: auto;
+    /* 오른쪽은 화살표(24) + 간격(12) 자리를 비워 둔다 */
+    padding: var(--ybm-space-x5) calc(var(--ybm-space-x5) + 24px + var(--ybm-space-x3)) var(--ybm-space-x5) var(--ybm-space-x5);
+    border-radius: 0;
+    background: none;
+  }
+  /* 행 사이 구분선 — 아래가 아니라 위에 둔다. 그래야 감춰 둔 [전체보기] 행이
+     있어도 마지막 행 아래에 선이 남지 않는다 */
+  .cs-page__service .cs-grid > .cs-service-card + .cs-service-card {
+    border-top: 1px solid var(--ybm-color-stroke-neutral-muted);
+  }
+  .cs-service-card__details { gap: 0; padding-bottom: 0; border-bottom: 0; }
+  .cs-service-card__link,
+  .cs-service-card__logo { height: 26px; }
+  .cs-service-card__tags { display: none; }          /* 모바일 행에는 분류 배지가 없다 */
+  .cs-service-card__head .ds-icon {                   /* 화살표는 행 오른쪽 세로 가운데 */
+    position: absolute;
+    inset-block: 0;
+    right: var(--ybm-space-x5);
+    margin-block: auto;      /* translate 는 호버 이동(5-3)에 양보한다 */
+  }
+  .cs-service-card__contacts { gap: var(--ybm-space-x1); padding-top: 0; }
+  .cs-chat { padding-block: 0; }                     /* 행 자체 gap(20) 을 쓴다 */
+  .cs-page__service .cs-grid + .cs-more { margin-top: var(--ybm-space-x6); }
+
+  /* 검색 결과 상태 — 본문이 남는 높이를 채우고 블록을 가운데 (Figma 본문 FILL·중앙) */
+  .cs-page--search .cs-page__body { display: flex; flex-direction: column; }
+  .cs-page__result {
+    flex: 1 1 auto;
+    align-items: center;
+    padding: var(--ybm-space-x12) var(--cs-gutter) var(--ybm-space-x16);
+  }
+  /* 빈 상태 — 343 · gap 32 · 타이틀 t07 · 설명 t04 */
+  .cs-empty { gap: var(--ybm-space-x8); width: 100%; }
+  .cs-empty__text { gap: var(--ybm-space-x2); }
+  .cs-empty__title { font-size: var(--ybm-font-size-t07); line-height: var(--ybm-line-height-t07); }
+  .cs-empty__desc { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+  /* 로딩 — 343 · gap 24 · 원 40 · 타이틀 t07 · 설명 t05 */
+  .cs-loading { gap: var(--ybm-space-x6); width: 100%; }
+  .cs-loading__text { gap: var(--ybm-space-x2); }
+  .cs-loading__circle { --ds-pc-size: 40px; --ds-pc-stroke: 5px; }
+  .cs-loading__title { font-size: var(--ybm-font-size-t07); line-height: var(--ybm-line-height-t07); }
+  .cs-loading__desc { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+
+  /* 도움말 목록 — 본문 상 24 / 하 40, 콘텐츠 gap 32, 목록 영역 gap 20, 칩 gap 8 */
+  .cs-page__faq-body { padding-bottom: var(--ybm-space-x10); }
+  .cs-page__faq-body > .cs-container { margin-top: var(--ybm-space-x6); }
+  .cs-faq-content { gap: var(--ybm-space-x8); }
+  .cs-faq-area { gap: var(--ybm-space-x5); }
+  .cs-category-chips { gap: var(--ybm-space-x2); }
+  /* 모바일 칩은 medium — 같은 마크업을 쓰므로 large 토큰만 medium 값으로 바꾼다 */
+  .cs-category-chips .ds-chip[data-size="large"] {
+    --ds-chip-height: 36px;
+    --ds-chip-padding-x: calc(var(--ybm-space-x2) + var(--ybm-space-x1_5));
+    --ds-chip-min-width: var(--ybm-space-x12);
+    font-size: var(--ybm-font-size-t04);
+    line-height: var(--ybm-line-height-t04);
+  }
+  .cs-faq--empty { padding-block: var(--ybm-space-x24); }
+  /* 서비스 히어로 — 타이틀 24/34 (Figma 2607:7146) · 검색 영역은 검색창만 */
+  .cs-hero[data-type="service"] .cs-hero__title { font-size: 24px; line-height: 34px; }
+  /* 아코디언 — 질문 영역 상하 20, 답변 gap·아래 20, 답변 t05
+     질문은 모바일만 t06 18/28 유지 (PC 는 t07 20/29) */
+  .cs-faq-item__q { gap: var(--ybm-space-x6); padding-block: var(--ybm-space-x5); align-items: flex-start; }
+  .cs-faq-item__text {
+    align-items: flex-start;
+    font-size: var(--ybm-font-size-t06);
+    line-height: var(--ybm-line-height-t06);
+  }
+  .cs-faq-item__a-inner { gap: var(--ybm-space-x5); }
+  .cs-faq-item__a-inner > :last-child { padding-bottom: var(--ybm-space-x5); }
+  .cs-faq-item__answer { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+  /* 검색 결과 영역 — 타이틀↔목록 16, 목록 영역 gap 24 (Figma SB 13 Mobile) */
+  .cs-result-area { gap: var(--ybm-space-x4); }
+  .cs-page__faq-body[data-screen="search-result"] .cs-faq-area { gap: var(--ybm-space-x6); }
+
+  /* AI 안내 pill — 36 (패딩 6/16 · gap·아이콘은 PC 와 같다 · 문구만 14) */
+  .cs-ai-notice { padding: var(--ybm-space-x1_5) var(--ybm-space-x4); }
+  .cs-ai-notice__text { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+
+  /* 검색 결과 항목 — 질문 18/28 · 요약 t05 말줄임 없음 · 상하 20 */
+  .cs-result-item__q { gap: var(--ybm-space-x2); padding-block: var(--ybm-space-x5); align-items: flex-start; }
+  .cs-result-item__title { font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); }
+  .cs-result-item__summary {
+    -webkit-line-clamp: unset;
+    padding: 0 0 var(--ybm-space-x5);
+    font-size: var(--ybm-font-size-t05);
+    line-height: var(--ybm-line-height-t05);
+  }
+  /* 펼침 항목의 답변 영역 — gap 32 · 아래 20 · 우측 여백 없음 · 본문 t05 · 이미지 200 */
+  .cs-result-item[data-state="open"] .cs-result-item__a { gap: var(--ybm-space-x8); padding: 0 0 var(--ybm-space-x5); }
+  .cs-result-item__answer { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+  .cs-result-item__image { height: 200px; }
+
+  /* 만족도 평가 — 안내문과 버튼을 세로로, 사유는 한 줄에 하나씩 */
+  .cs-feedback__row { flex-direction: column; align-items: flex-start; gap: var(--ybm-space-x2); }
+  .cs-feedback__reason { gap: var(--ybm-space-x3); padding: var(--ybm-space-x5); }
+  .cs-feedback__reasons { flex-direction: column; gap: var(--ybm-space-x1); }
+
+  /* 하단은 페이지네이션 대신 더보기 */
+  .cs-result-foot__pagination { display: none; }
+  .cs-result-foot__more { display: flex; }
+
+  /* 문의 유도 배너 — 세로 스택 · 패딩 20 · gap 20 · 버튼 전체폭 */
+  .cs-inquiry-banner { flex-direction: column; align-items: stretch; gap: var(--ybm-space-x5); padding: var(--ybm-space-x5); }
+  .cs-inquiry-banner__title { font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); }
+  .cs-inquiry-banner .ds-btn { width: 100%; }
+
+  /* 푸터 — 세로 스택 · 상 24 / 하 32 */
+  .cs-footer { align-items: stretch; padding: var(--ybm-space-x6) var(--cs-gutter) var(--ybm-space-x8); }
+  .cs-footer__inner { flex-direction: column; align-items: stretch; gap: var(--ybm-space-x4); }
+  .cs-footer__text, .cs-footer__aside { width: 100%; gap: var(--ybm-space-x1); }
+  .cs-footer__hours {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ybm-space-x1);
+    white-space: normal;
+    font-size: var(--ybm-font-size-t04);
+    line-height: var(--ybm-line-height-t04);
+  }
+  .cs-footer__copyright { font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
+  .cs-footer__aside { align-items: stretch; gap: var(--ybm-space-x3); }
+  .cs-footer__links { justify-content: center; gap: var(--ybm-space-x2); }
+  .cs-footer__links a { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+  /* 패밀리 사이트 — 모바일은 40 · 좌우 14 · radius sm · 아이콘 16 */
+  .cs-family { width: 100%; }
+  .cs-family__button {
+    width: 100%;
+    height: 40px;
+    gap: var(--ybm-space-x2);
+    padding-inline: var(--ybm-space-x3_5);
+    border-radius: var(--ybm-shape-sm);
+    font-size: var(--ybm-font-size-t04);
+    line-height: var(--ybm-line-height-t04);
+  }
+  .cs-family__button > .ds-icon { --ds-icon-size: 16px; }
+
+  /* 문의하기 — 본문 상 24 / 하 56 · 폼 gap 40 · 섹션 제목 t06 · 항목 gap 28
+     입력이 여럿인 행은 모두 세로로 쌓고, 하단 버튼은 2등분한다 */
+  .cs-page__inquiry-body { padding-block: var(--ybm-space-x6) var(--ybm-space-x14); }
+  .cs-form { gap: var(--ybm-space-x10); }
+  .cs-page-heading__title { font-size: var(--ybm-font-size-t08); line-height: var(--ybm-line-height-t08); }
+  .cs-form-section { gap: var(--ybm-space-x2); }
+  .cs-form-section__title { font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); }
+  .cs-form-section__items { gap: 28px; }        /* 28 은 DS space 스케일에 없다 */
+  .cs-form-section__items--row { flex-direction: column; gap: var(--ybm-space-x5); }
+  .cs-form-section__items--consent { gap: var(--ybm-space-x2); padding-top: var(--ybm-space-x4); }
+  /* 세로로 쌓이므로 flex-basis 0 을 풀어야 버튼·필드 높이(52)가 그대로 남는다 */
+  .cs-field-row { flex-direction: column; gap: var(--ybm-space-x2); }
+  .cs-field-row > * { flex: 0 0 auto; width: 100%; }
+  .cs-form-field-group { gap: var(--ybm-space-x3); }
+  .cs-form__textarea { height: 160px; min-height: 160px; }
+  .cs-form-section__items--reinquiry { gap: var(--ybm-space-x8); }
+
+  /* AI 추천 — 패딩 16/20 · 제목 t05 · 칩은 한 줄에 하나씩(글자 길이만큼) */
+  .cs-ai-recommend { padding: var(--ybm-space-x4) var(--ybm-space-x5); }
+  .cs-ai-recommend__title { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+  .cs-ai-recommend__list { flex-direction: column; align-items: flex-start; }
+  .cs-recommend-chip {
+    padding: var(--ybm-space-x2) var(--ybm-space-x4);
+    font-size: var(--ybm-font-size-t04);
+    line-height: var(--ybm-line-height-t04);
+  }
+
+  /* 약관 동의 — 표를 풀어 라벨/값 세로 스택 (Figma 2661:8525) */
+  .cs-consent__toggle > .ds-icon { --ds-icon-size: 20px; }
+  .cs-consent__table { display: block; border-radius: var(--ybm-shape-sm); }
+  .cs-consent__cell { display: block; padding: var(--ybm-space-x3_5) var(--ybm-space-x4); }
+  .cs-consent__cell + .cs-consent__cell { border-top: 1px solid var(--ybm-color-stroke-neutral-weak); }
+  .cs-consent__table dt { padding: 0; background: none; }
+  .cs-consent__table dd { padding: var(--ybm-space-x1) 0 0; border: 0; }
+  .cs-consent__cell + .cs-consent__cell > :is(dt, dd) { border-left: 0; }
+
+  /* 하단 버튼 — 2등분 · gap 8 */
+  .cs-form-actions { gap: var(--ybm-space-x2); }
+  .cs-form-actions > .ds-btn { flex: 1 1 0; width: auto; }
+
+  /* 내 문의 내역 — 본문 상 24 / 하 56 · 목록 gap 16 · 상세 gap 24 */
+  .cs-page__list-body,
+  .cs-page__detail-body { padding-block: var(--ybm-space-x6) var(--ybm-space-x14); }
+  .cs-list { gap: var(--ybm-space-x4); }
+  .cs-detail { gap: var(--ybm-space-x6); }
+  .cs-page-heading__action {
+    --ds-btn-height: 40px;
+    --ds-btn-font-size: var(--ybm-font-size-t05);
+    --ds-btn-line-height: var(--ybm-line-height-t05);
+    /* 모바일은 좌우 여백이 16 뿐이라 패딩·당기는 폭도 16 으로 맞춘다(가로 넘침 방지) */
+    --ds-btn-padding-x: var(--ybm-space-x4);
+    margin-right: calc(var(--ybm-space-x4) * -1);
+  }
+
+  /* 목록 행 — 세로 스택(배지·유형 / 제목 / 날짜) · 상하 16 */
+  .cs-inquiry-item { flex-direction: column; align-items: stretch; gap: var(--ybm-space-x2); padding-block: var(--ybm-space-x4); }
+  .cs-inquiry-item__content { gap: var(--ybm-space-x2); }
+  .cs-inquiry-item__meta { gap: var(--ybm-space-x2); }
+  .cs-inquiry-item__title {
+    font-size: var(--ybm-font-size-t06);
+    line-height: var(--ybm-line-height-t06);
+    white-space: normal;
+  }
+  /* 모바일은 Figma 값 그대로 — 날짜 14/21 (PC 만 16/24) */
+  .cs-inquiry-item__date { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+  /* 상세 제목도 모바일에서는 목록과 같은 18/28 (PC 만 24/34) */
+  .cs-inquiry-item--static .cs-inquiry-item__title {
+    font-size: var(--ybm-font-size-t06);
+    line-height: var(--ybm-line-height-t06);
+  }
+  /* 빈 화면 — 본문이 남는 높이를 채우고 블록을 가운데 둔다 */
+  .cs-page--list .cs-page__body { display: flex; flex-direction: column; }
+  .cs-page--list .cs-container, .cs-page--list .cs-list { flex: 1 1 auto; }
+  .cs-inquiry-list--empty { flex: 1 1 auto; align-items: center; padding-top: 0; }
+
+  /* 상세 — 본문 t05 · 스레드 패딩 20/16 */
+  .cs-inquiry-body__text { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+  .cs-thread { padding: var(--ybm-space-x5) var(--ybm-space-x4); }
+  .cs-thread__body { gap: var(--ybm-space-x3); }
+  .cs-thread__title { font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); }
+  .cs-thread__text { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+  /* 하단 — 목록으로 / 수정·삭제 한 줄 유지, 캡션은 오른쪽 */
+  .cs-detail-actions__edit { gap: var(--ybm-space-x2); }
+}
+
+
+/* 5) 인터랙션 ----------------------------------------------------------------
+   원칙
+     · 움직임은 DS 모션 토큰만 쓴다 — 200ms(normal) / 320ms(slow) + emphasized 이징
+     · 호버 효과는 `@media (hover: hover)` 안에만 둔다. 터치 기기는 프레스(:active)만
+     · 모션 줄이기 설정이면 전부 꺼진다 (맨 아래)
+   -------------------------------------------------------------------------- */
+
+/* 5-1) 검색창 글로우 — 진입 1회 → 완전히 사라짐 → 그 뒤엔 호버에만 반응
+   ① 바탕 글로우 페이드인 → ② 테두리 빛이 한 바퀴 → ③ 둘 다 페이드아웃, 쉬는 상태는 아무것도 없음
+   ④ 이후 검색창에 마우스를 올리면 바탕 글로우만 페이드인, 벗어나면 페이드아웃
+      (호버가 없는 터치 환경에서는 포커스로 대신한다)
+   · 인트로 애니메이션은 fill-mode 를 두지 않는다(끝나면 선언값 opacity:0 으로 돌아옴).
+     그래야 끝난 뒤 호버 상태가 transition 으로 이어받을 수 있다.
+   · 호버 판정은 검색창 래퍼 기준 — 서비스 선택 레이어가 열려 검색창을 덮어도 글로우가 유지된다.
+   -------------------------------------------------------------------------- */
+.cs-hero__glow--base {
+  opacity: 0;
+  background: linear-gradient(90deg,
+    var(--cs-gradient-brand-start),
+    var(--cs-gradient-brand-end));
+  border-radius: var(--ybm-shape-pill);
+  filter: blur(16px);
+  transition: opacity var(--ybm-duration-slow) var(--ybm-easing-standard);
+  animation: cs-glow-intro 1820ms linear 80ms 1;
+}
+/* 검색창에 마우스를 올린 동안만 바탕 글로우 (인트로가 끝난 뒤부터 적용된다) */
+@media (hover: hover) {
+  .cs-hero:has(.cs-hero__searchbox:hover) .cs-hero__glow--base { opacity: 0.5; }
+}
+/* 호버가 없는 환경(터치)에서는 포커스로 대신한다 */
+@media (hover: none) {
+  .cs-hero:has(.cs-hero__searchbox:focus-within) .cs-hero__glow--base { opacity: 0.5; }
+}
+
+.cs-hero__glow--orbit {
+  opacity: 0;
+  overflow: visible;
+  background: none;
+  border-radius: 0;
+  filter: blur(7px);
+  animation: cs-glow-lifecycle 1050ms linear 680ms 1 both;
+}
+.cs-hero__glow-line {
+  fill: none;
+  stroke: url(#cs-hero-glow-gradient);
+  stroke-width: 8px;
+  stroke-linecap: round;
+  stroke-dasharray: 360 640;
+  stroke-dashoffset: 0;
+  animation: cs-glow-orbit 800ms ease-in-out 680ms 1 forwards;
+}
+@keyframes cs-glow-orbit {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -1500; }
+}
+@keyframes cs-glow-lifecycle {      /* 680 → 1730ms */
+  0%    { opacity: 0; }
+  14.3% { opacity: 0.8; }
+  100%  { opacity: 0; }
+}
+@keyframes cs-glow-intro {          /* 80 → 1900ms : 페이드인 480 → 유지 → 페이드아웃 400 */
+  0%     { opacity: 0; }
+  26.4%  { opacity: 0.5; }
+  78%    { opacity: 0.5; }
+  100%   { opacity: 0; }
+}
+
+/* 5-2) 자주 찾는 도움말 카드 — 면만 한 단계 어두워지고 아주 약간 커진다
+   글자·배지는 건드리지 않는다 (카드를 통째로 scale 하면 글자가 뭉개진다) */
+.cs-faq-card::before {
+  transition:
+    background-color var(--ybm-duration-normal) var(--ybm-easing-standard),
+    scale var(--ybm-duration-normal) var(--ybm-easing-emphasized);
+}
+@media (hover: hover) {
+  .cs-faq-card:hover::before {
+    background: var(--ybm-color-bg-neutral-weak-pressed);
+    scale: 1.02;
+  }
+}
+
+/* 5-3) 서비스별 고객센터 안내 — 우측 화살표가 오른쪽으로 살짝 */
+.cs-service-card { transition: background-color var(--ybm-duration-normal) var(--ybm-easing-standard); }
+.cs-chat-btn { transition: background-color var(--ybm-duration-normal) var(--ybm-easing-standard); }
+@media (hover: hover) { .cs-chat-btn:hover { background: var(--ybm-color-bg-neutral-weak-pressed); } }
+.cs-chat-btn:active { background: var(--ybm-color-bg-neutral-weak-pressed); }
+.cs-service-card__head .ds-icon { transition: translate var(--ybm-duration-normal) var(--ybm-easing-emphasized); }
+@media (hover: hover) {
+  .cs-service-card:hover .cs-service-card__head .ds-icon { translate: 4px 0; }
+}
+
+/* 5-4) [전체보기] — 누르면 행이 하나 더 나오고 버튼은 접히며 사라진다
+   (실제로는 서버가 다음 묶음을 내려준다. 여기서는 동작을 보여주기 위한 더미 행) */
+.cs-service-card--more { animation: cs-reveal var(--ybm-duration-slow) var(--ybm-easing-emphasized) both; }
+@keyframes cs-reveal {
+  from { opacity: 0; translate: 0 8px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+.cs-more {
+  overflow: hidden;
+  transition:
+    opacity var(--ybm-duration-normal) var(--ybm-easing-standard),
+    height var(--ybm-duration-slow) var(--ybm-easing-emphasized),
+    margin-top var(--ybm-duration-slow) var(--ybm-easing-emphasized);
+}
+.cs-more[data-state="gone"] { opacity: 0; height: 0; margin-top: 0; pointer-events: none; }
+
+/* 5-5) 패밀리 사이트 — 누르면 위로 열리는 목록 (구조는 cs-components.css 01) */
+.cs-family__button[aria-expanded="true"] { border-color: var(--ybm-color-stroke-neutral); }
+.cs-family__button > .ds-icon { transition: rotate var(--ybm-duration-normal) var(--ybm-easing-emphasized); }
+.cs-family__button[aria-expanded="true"] > .ds-icon { rotate: 45deg; }   /* + → × */
+.cs-family__menu { animation: cs-menu-in var(--ybm-duration-normal) var(--ybm-easing-emphasized) both; }
+@keyframes cs-menu-in {
+  from { opacity: 0; translate: 0 6px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+.cs-family__menu a { transition: background-color var(--ybm-duration-fast) var(--ybm-easing-standard); }
+@media (hover: hover) {
+  .cs-family__menu a:hover { background: var(--ybm-color-bg-neutral-muted); }
+}
+
+/* 5-6) 그 밖의 호버
+   · 인기키워드 칩 — 배경은 그대로 두고 테두리만 진해진다
+   · 텍스트 링크 — 밑줄 */
+.cs-keywords__item { transition: border-color var(--ybm-duration-fast) var(--ybm-easing-standard); }
+.cs-search__clear { transition: color var(--ybm-duration-fast) var(--ybm-easing-standard); }
+.cs-notice-bar__title,
+.cs-header__links a,
+.cs-footer__links a {
+  transition:
+    background-color var(--ybm-duration-fast) var(--ybm-easing-standard),
+    color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+@media (hover: hover) {
+  .cs-keywords__item:hover { border-color: var(--ybm-color-stroke-neutral); }
+  .cs-search__clear:hover { color: var(--ybm-color-fg-neutral); }
+  .cs-notice-bar__title:hover,
+  .cs-header__links a:hover,
+  .cs-footer__links a:hover { text-decoration: underline; }
+  .cs-family__button:hover { background: var(--ybm-color-bg-neutral-muted); }
+}
+
+/* 5-7) 터치 기기 — 프레스(:active)만. 호버로 생기는 이동·확대는 쓰지 않는다 */
+@media (hover: none) {
+  .cs-faq-card:active::before { background: var(--ybm-color-bg-neutral-weak-pressed); }
+  .cs-service-card:active { background: var(--ybm-color-bg-neutral-muted); }
+  .cs-keywords__item:active { border-color: var(--ybm-color-stroke-neutral); }
+  .cs-keywords__rolling:active,
+  .cs-family__button:active,
+  .cs-family__menu a:active { background: var(--ybm-color-bg-neutral-weak-pressed); }
+  .cs-notice-bar__title:active { opacity: 0.6; }
+  .cs-search__submit:active,
+  .cs-search__clear:active,
+  .cs-search__category:active { opacity: 0.6; }
+}
+
+/* 5-8) 검색창 포커스 — 입력칸에 생기는 파란 네모를 끈다
+   DS base.css 의 `:focus-visible { outline: 2px … }` 가 텍스트 입력에는 마우스로 눌러도
+   걸리기 때문에, 검색창 안에서만 끈다. 포커스 피드백은 진입 글로우가 대신한다. */
+.cs-search__input:focus,
+.cs-search__input:focus-visible { outline: none; }
+
+
+/* 5-9) 아코디언 — 답변이 높이로 열리고 화살표가 반 바퀴 돈다
+   모션은 DS 토큰(320ms slow · emphasized). */
+.cs-faq-item__a { transition: grid-template-rows var(--ybm-duration-slow) var(--ybm-easing-emphasized); }
+/* 닫히는 동안에는 내용이 읽히지 않게(접근성) — 다 닫힌 뒤 숨긴다 */
+.cs-faq-item__a-inner { visibility: hidden; transition: visibility 0s var(--ybm-duration-slow); }
+.cs-faq-item[data-state="open"] .cs-faq-item__a-inner { visibility: visible; transition-delay: 0s; }
+/* 답변 글자는 조금 늦게 또렷해진다 */
+.cs-faq-item__a-inner > * {
+  opacity: 0;
+  transition: opacity var(--ybm-duration-normal) var(--ybm-easing-standard);
+}
+.cs-faq-item[data-state="open"] .cs-faq-item__a-inner > * { opacity: 1; transition-delay: 80ms; }
+/* 화살표 — 누르면 반 바퀴 */
+.cs-faq-item__q > .ds-icon { transition: rotate var(--ybm-duration-slow) var(--ybm-easing-emphasized); }
+.cs-faq-item[data-state="open"] .cs-faq-item__q > .ds-icon { rotate: 180deg; }
+
+
+/* 5-9-1) 검색 결과 항목 — 화살표만 반 바퀴 (요약은 말줄임이 풀린다) */
+.cs-result-item__q > .ds-icon { transition: rotate var(--ybm-duration-slow) var(--ybm-easing-emphasized); }
+.cs-result-item[data-state="open"] .cs-result-item__q > .ds-icon { rotate: 180deg; }
+
+
+/* 5-9-2) 약관 동의 펼침 — 아코디언과 같은 높이 전환 + 화살표 반 바퀴 */
+.cs-consent__body { transition: grid-template-rows var(--ybm-duration-slow) var(--ybm-easing-emphasized); }
+.cs-consent__body-inner { visibility: hidden; transition: visibility 0s var(--ybm-duration-slow); }
+.cs-consent[data-state="open"] .cs-consent__body-inner { visibility: visible; transition-delay: 0s; }
+.cs-consent__toggle > .ds-icon { transition: rotate var(--ybm-duration-slow) var(--ybm-easing-emphasized); }
+.cs-consent[data-state="open"] .cs-consent__toggle > .ds-icon { rotate: 180deg; }
+
+
+/* 5-10) 검색 로딩 원호 — Figma 2475:5882 의 호는 단색이 아니라 브랜드 그라데이션이다
+   (brand-start #2563eb → glow-end #744aff). DS 는 단색이라 여기서 stroke 만 덮어쓴다.
+   그라데이션 정의는 각 SVG 안의 <defs> 에 있다. */
+.cs-loading__circle .ds-progress-circle__range { stroke: url(#cs-progress-gradient); }
+.cs-loading-dialog .ds-progress-circle__range { stroke: url(#cs-progress-gradient-dialog); }
+
+
+/* 5-11) AI 안내 pill — 검색 결과가 뜰 때 아래에서 위로 떠오른다 (Figma 2362:1730)
+   투명 + 10 아래에서 시작해 제자리로. 끝에서 아주 약간만 튀도록 --cs-easing-spring 사용.
+   -------------------------------------------------------------------------- */
+@keyframes cs-ai-notice-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cs-ai-notice {
+  animation: cs-ai-notice-in var(--ybm-duration-slow) var(--cs-easing-spring) both;
+}
+
+/* 5-12) 모션 줄이기 — 위 전환·애니메이션을 전부 끈다 */
+@media (prefers-reduced-motion: reduce) {
+  /* 인트로·회전 없음. 포커스 글로우는 전환 없이 즉시 */
+  .cs-hero__glow--base { animation: none; transition: none; }
+  .cs-hero__glow--orbit { display: none; }
+  .cs-faq-card::before,
+  .cs-service-card,
+  .cs-chat-btn,
+  .cs-service-card__head .ds-icon,
+  .cs-more,
+  .cs-family__button > .ds-icon,
+  .cs-family__menu a { transition: none; }
+  .cs-consent__body,
+  .cs-consent__toggle > .ds-icon { transition: none; }
+  .cs-service-card--more,
+  .cs-family__menu,
+  .cs-ai-notice { animation: none; }
+}
+
+
+/* ==========================================================================
+   6) 공지사항 반응형 (SB 21~22) — Mobile ~767
+   목록 행 세로 스택 · 상세 헤더 세로 스택 · 페이징 1~4 · 첨부 세로
+   ========================================================================== */
+@media (max-width: 767px) {
+  /* 페이지 타이틀 아래로 검색 전체폭 */
+  .cs-page--notice .cs-page-heading { flex-direction: column; align-items: stretch; gap: var(--ybm-space-x4); }
+  .cs-notice-search { width: 100%; }
+
+  /* 목록 행 — 세로 스택(제목 영역 / 게시일) · 패딩 16 (PC 처럼 좌우에도 준다)
+     [중요] 행은 bg 가 깔려 있어 좌우 여백이 없으면 글자가 면에 붙는다 */
+  .cs-notice-item { flex-direction: column; align-items: stretch; gap: var(--ybm-space-x2); padding: var(--ybm-space-x4); }
+  /* 제목 영역은 글자 흐름(인라인)으로 둔다 — [중요] 배지·N 배지·첨부 아이콘이 PC 처럼
+     제목과 '같은 줄'에 붙고, 제목이 길면 그 뒤로 자연스럽게 줄바꿈된다.
+     flex + wrap 으로 두면 배지가 제목 윗줄로 떨어진다.
+     block 으로 바꾸면서 `flex: 1 1 0` + overflow:hidden 조합도 함께 풀린다 */
+  .cs-notice-item__head {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+    font-size: var(--ybm-font-size-t05);
+    line-height: var(--ybm-line-height-t05);
+  }
+  .cs-notice-item__badge { margin-right: var(--ybm-space-x2); vertical-align: middle; }
+  .cs-notice-item__n,
+  .cs-notice-item__clip { margin-left: var(--ybm-space-x2); vertical-align: middle; }
+  .cs-notice-item__title {
+    display: inline;
+    overflow: visible;
+    white-space: normal;
+    text-overflow: clip;
+    font-size: var(--ybm-font-size-t05);
+    line-height: var(--ybm-line-height-t05);
+  }
+  .cs-notice-item__date { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+
+  /* 페이징 — 1~4 페이지만 노출 */
+  .cs-pageno--wide { display: none; }
+
+  /* 상세 헤더 — 세로 스택(제목 영역 / 게시일) · 제목 t07
+     제목 영역도 목록 행과 같이 글자 흐름(인라인)으로 둔다 — N 배지·첨부 아이콘이 PC 처럼
+     제목 '마지막 줄 뒤'에 붙는다. flex + wrap 이면 제목이 한 줄을 다 쓸 때 아랫줄로 떨어진다.
+     (margin·vertical-align 은 위 목록 행 규칙에서 함께 적용된다) */
+  .cs-notice-header { flex-direction: column; align-items: stretch; gap: var(--ybm-space-x2); }
+  .cs-notice-header__title-area {
+    display: block;
+    flex: 0 0 auto;
+    overflow: visible;
+    font-size: var(--ybm-font-size-t07);
+    line-height: var(--ybm-line-height-t07);
+  }
+  .cs-notice-header__title {
+    display: inline;
+    font-size: var(--ybm-font-size-t07);
+    line-height: var(--ybm-line-height-t07);
+  }
+  /* 공지 본문 — 모바일 t05 */
+  .cs-notice-body__text { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+  /* 첨부 세로 스택 */
+  .cs-notice-body .cs-attachments { flex-direction: column; align-items: flex-start; }
+  /* 이전·다음 글 — 게시일 숨김(라벨 + 제목 1줄) */
+  .cs-postnav-item__date { display: none; }
+}

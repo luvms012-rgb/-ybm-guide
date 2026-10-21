@@ -1,0 +1,497 @@
+/* ==========================================================================
+   YBM Family · 회원가입 서비스 전용 CSS
+   --------------------------------------------------------------------------
+   · 공통 DS(ybm-ds.css) 다음에 link 한다. 이 파일은 레이어 밖(unlayered)이라
+     선택자 우선순위와 상관없이 DS 보다 항상 우선한다 → 덮어쓰기가 단순하다.
+   · 회원가입 · 아이디 찾기 · 비밀번호 재설정 화면에서만 쓰는 것만 둔다.
+       1)   서비스 토큰 오버라이드 — DS 변수 값만 바꾼다
+       1-1) 회원가입 전용 예외     — DS 기본값과 다른 규칙
+       2)   화면 골격 .signup-*    — 헤더 · 카드 · 타이틀 · 필드 스택 · CTA 영역
+       2-1)~2-8) 화면별 블록 (SB 번호 기준)
+       3)   누적 스텝 .signup-step — 점진적 공개(Progressive Disclosure) 상태
+       4)   반응형 (1024 단일 브레이크포인트)
+       5)   한/영 — data-ko-only / data-en-only · :lang(en) 전용 규칙
+   · 다른 서비스는 services/{서비스}/ 에 같은 구조로 자기 파일을 만든다.
+   ========================================================================== */
+
+
+/* 1) 서비스 토큰 오버라이드 ------------------------------------------------
+   DS 기본값을 이 서비스에서만 바꿀 때 여기서 변수만 재정의한다.
+     :root { --ybm-color-bg-brand-solid: …; }                         서비스 브랜드색
+     .signup-card .ds-btn { --ds-btn-radius: var(--ybm-radius-r3); }  특정 영역 버튼만
+   -------------------------------------------------------------------------- */
+:root {
+  --signup-screen-width: 500px;           /* 화면 폭 (PC) */
+  --signup-cta-gap: 60px;                 /* CTA 위 여백 — 화면별로 이 변수만 바꿔 조절한다 */
+}
+body.signup { background: var(--ybm-color-bg-layer-default); }
+
+
+/* 1-1) 회원가입 전용 예외 — DS 기본값과 다른 5가지 --------------------------
+   DS 는 전 서비스 공용이므로 DS 기본값은 건드리지 않고 여기서만 덮는다.
+     ① 포커스 언더라인  브랜드색 (DS 기본 stroke/neutral-contrast)
+     ② 필드 라벨        16/24 Regular fg/neutral-subtle (DS 기본 Medium fg/neutral)
+     ③ 안내·오류 문구   16/24 (DS 기본 14/21)
+     ④ 라벨 ↔ 입력 4 (DS 기본 8) · 입력 ↔ 안내문 14
+     ⑤ 선택 목록 행    선택된 행에 회색 배경 + 체크는 브랜드색 (DS 기본 배경 없음 · 체크 fg/neutral)
+   -------------------------------------------------------------------------- */
+.signup .ds-input { --ds-input-line-active: var(--ybm-color-stroke-brand-solid); }
+.signup .ds-input:has([aria-invalid="true"]) { --ds-input-line-active: var(--ybm-color-stroke-critical-solid); }   /* 오류는 DS 그대로 */
+.signup .ds-field__label { color: var(--ybm-color-fg-neutral-subtle); font-weight: var(--ybm-font-weight-regular); }
+.signup :is(.ds-field__help, .ds-field__error) { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+/* ④ 안내문은 라벨보다 간격이 넓으므로 차이만큼만 margin 으로 더한다
+   (--ds-field-help-gap 은 DS 에 없고 이 파일에서 정의하는 변수) */
+.signup .ds-field { --ds-field-gap: var(--ybm-space-x1); --ds-field-help-gap: var(--ybm-space-x3_5); }
+.signup .ds-field > :is(.ds-field__help, .ds-field__error, .ds-field__footer) { margin-top: calc(var(--ds-field-help-gap) - var(--ds-field-gap)); }
+
+
+/* ⑤ 선택 목록(성별·통신사·국가번호 레이어팝업)의 선택된 행
+   DS 기본은 "우측 체크만" 이지만, 선택된 항목이 한눈에 보이도록 행 배경을 깔고
+   체크는 브랜드색으로 올린다. 배경은 hover(투명 pressed)보다 뒤에 와야 이기므로 순서 주의. */
+.signup .ds-select-item[aria-selected="true"] { background: var(--ybm-color-bg-neutral-muted); }
+.signup .ds-select-item[aria-selected="true"]:is(:hover:not(:disabled), :focus-visible, [data-highlighted]) { background: var(--ybm-color-bg-neutral-weak-pressed); }
+.signup .ds-select-item[aria-selected="true"]::after { background: var(--ybm-color-fg-brand); }
+
+
+/* 2) 화면 골격 ---------------------------------------------------------------
+   화면 = [Header, Card] 세로 배치 · gap 32 · 폭 500
+   -------------------------------------------------------------------------- */
+.signup-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x8);
+  width: var(--signup-screen-width);
+  margin-inline: auto;
+  padding-block: var(--ybm-space-x16) var(--ybm-space-x20);
+}
+
+/* Header — 로고 / 타이틀(중앙) / 우측 슬롯. 좌우 슬롯 폭을 같게 해 타이틀을 정중앙에 */
+.signup-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 36px;
+}
+.signup-header__logo { display: inline-flex; justify-self: start; }
+.signup-header__logo img { width: 140px; height: 36px; }
+.signup-header__title {
+  font-size: var(--ybm-font-size-t09);
+  line-height: var(--ybm-line-height-t09);
+  font-weight: var(--ybm-font-weight-semibold);
+}
+.signup-header__end { justify-self: end; }
+
+/* Card — padding 40 · radius 20 · bg/layer-default · stroke/neutral-weak 1px */
+.signup-card {
+  padding: var(--ybm-space-x10);
+  border-radius: var(--ybm-radius-r5);
+  background: var(--ybm-color-bg-layer-default);
+  box-shadow: inset 0 0 0 1px var(--ybm-color-stroke-neutral-weak);
+}
+
+/* Content — Screen Title ↔ Fields gap 32 */
+.signup-content { display: flex; flex-direction: column; gap: var(--ybm-space-x8); }
+
+/* Screen Title — t09 SemiBold · 설명문 t05 subtle */
+.signup-title {
+  font-size: var(--ybm-font-size-t09);
+  line-height: var(--ybm-line-height-t09);
+  font-weight: var(--ybm-font-weight-semibold);
+  text-wrap: balance;
+}
+.signup-title__desc {
+  margin-top: var(--ybm-space-x4);
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+}
+
+/* Fields — 누적 필드 스택 gap 32. 활성 스텝이 맨 위, 입력을 마친 스텝은 아래로 */
+.signup-fields { display: flex; flex-direction: column; gap: var(--ybm-space-x8); }
+
+/* CTA Area — 위 여백 = --signup-cta-gap, 링크 ↔ 버튼 40 */
+.signup-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ybm-space-x10);
+  padding-top: var(--signup-cta-gap);
+}
+.signup-cta > .ds-btn { align-self: stretch; }
+/* 버튼 2개 — gap 12, 같은 폭. 보조 버튼 라벨만 16/24 */
+.signup-cta__buttons { display: flex; gap: var(--ybm-space-x3); align-self: stretch; }
+.signup-cta__buttons > .ds-btn { flex: 1 1 0; min-width: 0; }
+.signup-cta__secondary { --ds-btn-font-size: var(--ybm-font-size-t05); --ds-btn-line-height: var(--ybm-line-height-t05); }
+
+/* 레이어팝업 — DS Dialog medium(480)을 회원가입에서는 360 으로 좁힌다.
+   선택 목록 팝업(성별·통신사·국가번호)은 타이틀 22/32 (DS 기본 20/29) */
+.signup-dialog { --ds-dialog-width: 360px; --ds-dialog-title-size: var(--ybm-font-size-t08); --ds-dialog-title-line: var(--ybm-line-height-t08); }
+/* Alert — 닫기 버튼 없음 · 폭 360 · 타이틀은 DS 기본 20/29 (SB.10 정보 불일치 등) */
+.signup-alert { --ds-dialog-width: 360px; }
+#dialog-gender { --ds-dialog-width: 400px; }   /* 성별 팝업만 400 */
+
+
+/* 3) 누적 스텝 (점진적 공개) --------------------------------------------------
+   data-state="active" : 지금 입력 중 — 라벨 숨김, 안내문·추가 옵션 노출
+   data-state="done"   : 입력 완료 — 라벨 노출, 라인 회색, 안내문 숨김(오류일 때만 노출)
+   hidden              : 아직 차례가 아님
+   -------------------------------------------------------------------------- */
+.signup-step { display: flex; flex-direction: column; gap: var(--ybm-space-x6); }
+.signup-step:not([hidden]) { animation: signup-step-in var(--ybm-duration-slow) var(--ybm-easing-emphasized); }
+@keyframes signup-step-in { from { opacity: 0; transform: translateY(-12px); } }
+
+/* 활성 스텝은 라벨을 시각적으로만 숨긴다(스크린리더는 읽음) */
+.signup-step[data-state="active"] .ds-field__label {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.signup-step[data-state="done"] .ds-field:not(:has([aria-invalid="true"])) .ds-field__help,
+.signup-step[data-state="done"] .signup-step__extra { display: none; }
+
+/* 입력형 팝업 (SB.11 본인확인 약관동의 · SB.12 인증번호) — 타이틀 DS 기본 20/29 */
+.signup-modal { --ds-dialog-width: 360px; }
+.signup-modal .ds-dialog__body { padding: var(--ybm-space-x3) var(--ybm-space-x5) var(--ybm-space-x4); }
+.signup-modal--otp { --ds-dialog-width: 400px; }          /* 입력칸 55×6 + gap 6×5 = 360 이 들어가야 해서 넓다 */
+
+/* SB.11 본인확인 약관 — 전체 동의 행 + 펼침 목록(필수 5종, gap 6) · 행 ↔ 목록 8 */
+.signup-auth-terms { display: flex; flex-direction: column; gap: var(--ybm-space-x2); }
+.signup-auth-terms__all { display: flex; align-items: center; justify-content: space-between; gap: var(--ybm-space-x2); }
+.signup-auth-terms__all .ds-checkbox { min-height: 36px; font-weight: var(--ybm-font-weight-semibold); }   /* 라벨 16/24 SemiBold */
+.signup-auth-terms__toggle { display: grid; place-items: center; width: 40px; height: 40px; margin: -8px -8px -8px 0; border-radius: var(--ybm-radius-full); color: var(--ybm-color-fg-neutral); }
+.signup-auth-terms__toggle:hover { background: var(--ybm-color-bg-neutral-weak-alpha); }
+.signup-auth-terms__list { gap: var(--ybm-space-x1_5); }
+
+/* SB.12 인증번호 — Code Input ↔ 안내문 ↔ 시간 줄 gap 14 */
+.signup-otp { display: flex; flex-direction: column; gap: var(--ybm-space-x3_5); }
+.signup-otp__error { color: var(--ybm-color-fg-critical); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.signup-otp__meta { display: flex; align-items: center; justify-content: space-between; gap: var(--ybm-space-x2); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.signup-otp__timer { display: inline-flex; align-items: center; gap: var(--ybm-space-x2); color: var(--ybm-color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+.signup-otp__divider { color: var(--ybm-color-fg-disabled); }
+.signup-otp__extend { color: var(--ybm-color-fg-neutral-subtle); text-decoration: underline; text-underline-offset: 3px; }
+.signup-otp__extend:hover { color: var(--ybm-color-fg-neutral); }
+.signup-otp__resend { color: var(--ybm-color-fg-brand); }
+
+/* 이메일 도메인 추천 칩 (SB.9) — 입력 ↔ 칩 12. 입력을 마치면 숨긴다 */
+.signup-chips { margin-top: calc(var(--ybm-space-x3) - var(--ds-field-gap)); }
+.signup-step[data-state="done"] .signup-chips { display: none; }
+
+/* 휴대전화 — 한 언더라인 안에 DS Prefix Select(통신사·국가번호) + 입력값 */
+.signup-phone .ds-input { --ds-input-gap: var(--ybm-space-x2); }  /* 셀렉트 ↔ 입력값 8 */
+.signup-phone .ds-input__prefix .ds-icon { --ds-icon-size: 24px; }
+
+
+/* 2-1) 약관동의 (SB.3) -----------------------------------------------------
+   Card gap 40(= CTA 위 여백 40) · 동의 블록 gap 28
+   -------------------------------------------------------------------------- */
+.signup-screen--terms .signup-cta { --signup-cta-gap: var(--ybm-space-x10); }
+.signup-body { display: flex; flex-direction: column; gap: var(--ybm-space-x4); }   /* Card ↔ 카드 밖 하단 안내문 16 */
+
+.signup-agree { display: flex; flex-direction: column; gap: var(--ybm-space-x7); }
+.signup-agree__all { display: flex; flex-direction: column; gap: var(--ybm-space-x3); }
+.signup-agree__box {                     /* 전체 동의 박스 */
+  display: flex;
+  align-items: center;
+  padding: var(--ybm-space-x3) var(--ybm-space-x5);
+  border-radius: var(--ybm-radius-r2_5);
+  background: var(--ybm-color-bg-neutral);
+}
+.signup-agree__box .ds-checkbox {        /* 라벨 18/28 SemiBold */
+  min-height: 36px;
+  font-size: var(--ybm-font-size-t06);
+  line-height: var(--ybm-line-height-t06);
+  font-weight: var(--ybm-font-weight-semibold);
+}
+.signup-agree__desc {
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+}
+
+.signup-terms { display: flex; flex-direction: column; gap: var(--ybm-space-x1); }   /* 행 간격 10 */
+.signup-terms__item { display: flex; align-items: center; gap: var(--ybm-space-x2); }
+.signup-terms__item > .ds-checkbox { flex: 1 1 auto; min-width: 0; }
+.signup-terms__tag { font-style: normal; color: var(--ybm-color-fg-brand); }             /* '필수' */
+.signup-terms__tag[data-tone="optional"] { color: var(--ybm-color-fg-neutral-subtle); }  /* '선택' */
+.signup-terms__view {                    /* '보기' 링크 */
+  flex: none;
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+}
+.signup-terms__view:hover { color: var(--ybm-color-fg-neutral); }
+
+/* 하단 안내문 — circle-alert 아이콘 + 본문(강조구는 <em> = critical) */
+.signup-note {                           /* 두 줄이 돼도 아이콘은 첫 줄 높이에 고정 */
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ybm-space-x1);
+  color: var(--ybm-color-fg-neutral-muted);
+  font-size: var(--ybm-font-size-t04);
+  line-height: var(--ybm-line-height-t04);
+}
+.signup-note > .ds-icon { margin-top: 0.5px; color: var(--ybm-color-fg-neutral-subtle); }   /* 아이콘 20 ↔ 줄높이 21 보정 */
+.signup-note em { font-style: normal; color: var(--ybm-color-fg-critical); }
+
+/* 헤더 우측 언어 전환 버튼 (SB.3) */
+.signup-header__end .ds-btn { justify-self: end; }
+
+
+/* 2-2) 기존 회원 조회 (SB.13·14) ------------------------------------------
+   계정 박스 — SB.13 은 라벨(72 고정) + 값 행, SB.14 는 라디오 아이디 목록
+   -------------------------------------------------------------------------- */
+.signup-member { display: flex; flex-direction: column; gap: var(--ybm-space-x4); }
+.signup-account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x4);
+  margin: 0;
+  padding: var(--ybm-space-x6);
+  border: 0;
+  border-radius: var(--ybm-radius-r3);
+  background: var(--ybm-color-bg-neutral);
+}
+.signup-account__row { display: flex; align-items: center; gap: var(--ybm-space-x6); }
+.signup-account__row dt { flex: none; width: 72px; color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.signup-account__row dd { flex: 1 1 auto; min-width: 0; margin: 0; font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); overflow-wrap: anywhere; }
+.signup-account--list { gap: var(--ybm-space-x2); }
+.signup-account__option { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ybm-space-x1_5); }
+
+
+/* 2-3) 정보입력 (SB.15~17) — 한 화면에 필드 하나, 라벨 항상 노출 ------------------
+   -------------------------------------------------------------------------- */
+.signup-chips--typing { margin-top: calc(var(--ybm-space-x3_5) - var(--ds-field-gap)); }   /* SB.17 입력 ↔ 칩 14 (SB.9 는 12) */
+
+/* 비밀번호 보기/숨기기 — 입력 suffix 아이콘 24 */
+.signup-eye { display: grid; place-items: center; width: 24px; height: 24px; color: var(--ybm-color-fg-neutral); position: relative; }
+.signup-eye::after { content: ""; position: absolute; inset: -8px; }                  /* 터치 영역 40 */
+
+/* 비밀번호 조건 체크리스트 — 충족하면 data-met="true" 로 브랜드색 */
+.signup-rules-wrap { display: flex; flex-direction: column; gap: var(--ybm-space-x2); margin-top: calc(var(--ds-field-help-gap) - var(--ds-field-gap)); }
+.signup-rules { display: flex; flex-wrap: wrap; gap: var(--ybm-space-x1) var(--ybm-space-x3); margin: 0; padding: 0; list-style: none; }
+.signup-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ybm-space-x1);
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t04);
+  line-height: 20px;                     /* 14/20 — 토큰(t04=21)과 달라 직접 지정 */
+  transition: color var(--ybm-duration-fast) var(--ybm-easing-standard);
+}
+.signup-rule[data-met="true"] { color: var(--ybm-color-fg-brand); }
+.signup-banned { color: var(--ybm-color-fg-critical); font-size: var(--ybm-font-size-t04); line-height: 20px; }
+
+
+/* 2-4) 가입완료 — 간편계정 연결 (SB.18 · SB.29) ------------------------------
+   Card = [Content, 소셜 아이콘 행(위 48), CTA Area(링크만, 위 60)]
+   소셜 브랜드색은 각 사의 고정 자산이므로 DS 토큰이 아닌 서비스 변수로 둔다
+   -------------------------------------------------------------------------- */
+:root {
+  --signup-social-naver: #03C75A;
+  --signup-social-kakao: #FEE500;
+  --signup-social-kakao-symbol: #000000;
+  --signup-social-google-bg: #FFFFFF;
+  --signup-social-google-border: #E5E5E5;
+  --signup-social-google-blue: #4285F4;
+  --signup-social-google-green: #34A853;
+  --signup-social-google-yellow: #FBBC05;
+  --signup-social-google-red: #EA4335;
+  --signup-social-apple: #000000;
+  --signup-social-on-solid: #FFFFFF;
+}
+.signup-title em { font-style: normal; color: var(--ybm-color-fg-brand); }   /* 타이틀 속 아이디 강조 */
+
+.signup-social { display: flex; justify-content: center; gap: var(--ybm-space-x3); padding-top: var(--ybm-space-x12); }
+.signup-social__btn {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--ybm-radius-full);
+  cursor: pointer;
+}
+.signup-social__btn[data-brand="naver"]  { background: var(--signup-social-naver); }
+.signup-social__btn[data-brand="kakao"]  { background: var(--signup-social-kakao); }
+.signup-social__btn[data-brand="google"] { background: var(--signup-social-google-bg); box-shadow: inset 0 0 0 1px var(--signup-social-google-border); }
+.signup-social__btn[data-brand="apple"]  { background: var(--signup-social-apple); }
+.signup-social__on       { fill: var(--signup-social-on-solid); }
+.signup-social__kakao    { fill: var(--signup-social-kakao-symbol); }
+.signup-social__g-blue   { fill: var(--signup-social-google-blue); }
+.signup-social__g-green  { fill: var(--signup-social-google-green); }
+.signup-social__g-yellow { fill: var(--signup-social-google-yellow); }
+.signup-social__g-red    { fill: var(--signup-social-google-red); }
+
+
+/* 2-5) 보호자(법정대리인) 동의 (SB.22) --------------------------------------
+   인증수단 라디오(휴대전화 / 아이핀) 2분기 + 회색 동의 박스
+   -------------------------------------------------------------------------- */
+.signup-agree-area { display: flex; flex-direction: column; gap: var(--ybm-space-x4); }
+.signup-auth-method { display: flex; margin: 0; padding: 0; border: 0; }
+.signup-auth-method .ds-radio { width: 160px; }                 /* 라디오 폭 160 고정 */
+
+.signup-agree-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x3);
+  padding: var(--ybm-space-x5) var(--ybm-space-x6);
+  border-radius: var(--ybm-radius-r3);
+  background: var(--ybm-color-bg-neutral);
+}
+/* 모두 동의 — 라벨 18/28 SemiBold */
+.signup-agree-box__all {
+  min-height: 36px;
+  font-size: var(--ybm-font-size-t06);
+  line-height: var(--ybm-line-height-t06);
+  font-weight: var(--ybm-font-weight-semibold);
+}
+/* 아이핀 — 체크박스 + 여러 줄 안내문. 행 높이는 글줄이 정하고 체크박스만 6 내린다 */
+.signup-agree-box__notice { align-items: flex-start; gap: var(--ybm-space-x3); min-height: 36px; padding-top: 0; }
+.signup-agree-box__notice .ds-checkbox__control { margin-top: var(--ybm-space-x1_5); }
+
+
+/* 2-6) 부모·자녀 계정 연동 동의 (SB.28) -------------------------------------
+   사전 개발 후 비노출 화면 (플로우에 연결되지 않는다)
+   계정 박스는 SB.13 과 같은 규격, 라벨 폭만 96
+   -------------------------------------------------------------------------- */
+.signup-link-body { display: flex; flex-direction: column; gap: var(--ybm-space-x5); }   /* 계정 박스 ↔ 동의 행 20 */
+.signup-account--wide .signup-account__row dt { width: auto; min-width: 96px; white-space: nowrap; }   /* '보호자 아이디'가 줄바꿈되지 않게 */
+
+
+/* 4) 반응형 — 단일 브레이크포인트 1024 ---------------------------------------
+   폰트·버튼·필드 크기는 PC 그대로, 가로만 100% + 카드 테두리 제거 + 모바일 헤더
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .signup-screen {
+    width: 100%;
+    max-width: 600px;
+    gap: 0;
+    padding-block: 0 var(--ybm-space-x10);
+  }
+  .signup-header { min-height: 54px; padding-inline: var(--ybm-space-x5); }
+  .signup-header__logo img { width: auto; height: 24px; }
+  .signup-header__title { font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); }
+  .signup-card { padding: 30px var(--ybm-space-x5) var(--ybm-space-x10); border-radius: 0; box-shadow: none; }
+  .u-br-pc { display: none; }
+  /* 카드 밖 안내문(약관동의) — 모바일은 카드 테두리가 없어 PC 의 '카드 아래 16'이
+     버튼에서 56 떨어져 보인다. 카드 하단 padding 을 빼고 버튼 아래 24 로 붙인다 */
+  .signup-body { gap: var(--ybm-space-x6); }
+  .signup-body > .signup-card { padding-bottom: 0; }
+  .signup-body > .signup-note { padding-inline: var(--ybm-space-x5); }
+}
+
+
+/* 5) 한/영 (i18n/i18n.js) — HTML 한 벌, <html lang> 으로 전환 ----------------
+   · data-ko-only : 한국어에서만 보이는 요소 (실명인증 체크박스 등)
+   · data-en-only : 영문에서만 보이는 요소
+   · 영문에서만 다른 모양은 :lang(en) 규칙으로 추가한다
+   -------------------------------------------------------------------------- */
+html[lang="en"] [data-ko-only],
+html:not([lang="en"]) [data-en-only] { display: none !important; }
+
+
+/* 2-7) 아이디 찾기 · 비밀번호 재설정 (SB.45~57) ------------------------------
+   · 탭 = DS Tabs medium · 폭 채움 (Screen Title 다음)
+   · 필드 = [라벨 + 언더라인 입력] + 안내문(16/24). 값이 비어 있으면 라벨을 숨기고
+     placeholder 만 보이고, 값이 들어오면 라벨이 올라온다
+     (data-label="always" 를 주면 항상 노출 — SB.54 새 비밀번호)
+   · 필드 + 버튼 한 줄: 미입력은 위 정렬, 값이 있으면 가운데 정렬
+   -------------------------------------------------------------------------- */
+.signup-tabs { --ds-tabs-height: 44px; }
+.signup-tabs .ds-tabs__trigger { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }   /* 탭 라벨 16/24 */
+
+.signup-recover-field { display: flex; flex-direction: column; gap: var(--ybm-space-x3_5); min-width: 0; }   /* 입력 ↔ 안내문 14 */
+.signup-recover-field .ds-field { --ds-field-gap: 0px; }
+.signup-recover-field[data-role="otp-field"] { gap: var(--ybm-space-x3); }   /* 인증번호 ↔ 남은 시간 12 (안내문 14 와 다르다) */
+.signup-recover-field:not([data-label="always"]) .ds-field:has(.ds-input__control:placeholder-shown) .ds-field__label {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+/* SB.54 새 비밀번호 — SB.16 과 같은 필드 (라벨 항상 노출) */
+.signup-recover-field--password .ds-field { --ds-field-gap: var(--ybm-space-x1); }
+.signup-recover-field--password .ds-field__label { line-height: var(--ybm-line-height-t05); }
+.signup-recover-field--password .signup-rules-wrap { margin-top: 0; }
+
+.signup-help {                            /* 안내문 — 오류일 때 critical 로 바뀐다 */
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+}
+.signup-recover-field:has([aria-invalid="true"]) .signup-help { color: var(--ybm-color-fg-critical); }
+
+.signup-row { display: flex; align-items: flex-start; gap: var(--ybm-space-x3); }
+.signup-row > .signup-recover-field { flex: 1 1 auto; }
+.signup-row > .ds-btn { flex: none; }
+.signup-row:has(.ds-input__control:not(:placeholder-shown)) { align-items: center; }
+
+.signup-timer {
+  color: var(--ybm-color-fg-brand);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 본인인증 수단 선택 (SB.50 · SB.57 · SB.59 · SB.60)
+   수단 버튼 = DS Action Button neutralOutline large 폭 채움 + 앞 아이콘 24 */
+.signup-methods { display: flex; flex-direction: column; gap: var(--ybm-space-x6); }
+.signup-methods--note { gap: var(--ybm-space-x5); }
+.signup-method-list { display: flex; flex-direction: column; gap: var(--ybm-space-x3); }
+
+/* 회원정보 변경 동의 — 체크박스 + 라벨 16/24 */
+.signup-consent { padding-top: 0; font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+.signup-consent .ds-checkbox__control { margin-top: 6px; }
+.signup-consent em { font-style: normal; color: var(--ybm-color-fg-brand); }
+
+/* 한/영 — 영문은 탭 라벨이 길어 14 로 줄인다 */
+:lang(en) .signup-tabs .ds-tabs__trigger { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+
+
+/* 2-8) 연계 페이지 (SB.58~62) ------------------------------------------------
+   -------------------------------------------------------------------------- */
+/* SB.58 소셜 로그인 — 소셜 아이콘(48) ⋯ YBM Family 로고(140×36) */
+.signup-link-logos { display: flex; align-items: center; gap: var(--ybm-space-x3); }
+.signup-link-logos .signup-social__btn { cursor: default; }
+.signup-link-logos > .ds-icon { color: var(--ybm-color-fg-neutral-subtle); }
+.signup-link-logos img { width: 140px; height: 36px; }
+.signup-fields--login { gap: var(--ybm-space-x5); }                /* 아이디 ↔ 비밀번호 20 */
+.signup-cta__links {                                                 /* 아이디 찾기 | 비밀번호 재설정 */
+  display: flex;
+  justify-content: center;
+  gap: var(--ybm-space-x3);
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+}
+.signup-card > .signup-note--after { margin-top: var(--ybm-space-x8); }   /* 카드 안 안내문 — 위 32 */
+
+/* SB.60 비회원 — CTA 위 안내문 (가운데) */
+.signup-cta__text {
+  color: var(--ybm-color-fg-neutral-subtle);
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+  text-align: center;
+}
+
+/* SB.61 사이트 추가 가입 — 계정 정보 + 약관 동의 */
+.signup-site { display: flex; flex-direction: column; gap: var(--ybm-space-x4); }
+.signup-site__heading { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); font-weight: var(--ybm-font-weight-medium); }
+.signup-site__body { display: flex; flex-direction: column; gap: var(--ybm-space-x5); }
+.signup-site__agree { display: flex; flex-direction: column; gap: var(--ybm-space-x4); }
+.signup-site .signup-terms__tag { font-weight: var(--ybm-font-weight-medium); }   /* 여기선 '필수·선택'이 Medium (SB.3 은 Regular) */
+.signup-site .signup-terms .ds-checkbox { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }   /* 약관명 16/24 */
+
+/* SB.62 가입 완료 — 이용 가능 서비스 목록 박스 */
+.signup-cta--40 { --signup-cta-gap: var(--ybm-space-x10); }
+.signup-services {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ybm-space-x3);
+  margin: var(--ybm-space-x10) 0 0;
+  padding: var(--ybm-space-x6);
+  border-radius: var(--ybm-radius-r3);
+  background: var(--ybm-color-bg-neutral);
+  list-style: none;
+  font-size: var(--ybm-font-size-t05);
+  line-height: var(--ybm-line-height-t05);
+}
+.signup-services__item { display: flex; flex-direction: column; gap: var(--ybm-space-x2); }
+.signup-services__label { display: flex; gap: var(--ybm-space-x1_5); }
+.signup-services__label::before { content: "•"; width: 9px; color: var(--ybm-color-fg-neutral-subtle); }
+.signup-services__links { display: flex; flex-wrap: wrap; gap: var(--ybm-space-x2) var(--ybm-space-x4); margin: 0; padding: 0 0 0 15px; list-style: none; }
+.signup-services .ds-link { --ds-link-color: var(--ybm-color-fg-neutral); --ds-link-color-hover: var(--ybm-color-fg-brand); }

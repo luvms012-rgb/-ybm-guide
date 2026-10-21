@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-i18n="회원가입 · 약관동의 | YBM Family">회원가입 · 약관동의 | YBM Family</title>
+<!--
+  SB.3  회원가입 > 약관동의
+  기준: 스토리보드 62슬라이드본(260831) 3p
+  · 전체 동의 ↔ 개별 약관 연동, 필수 4종이 모두 체크되면 [다음] 활성
+  · 6번째 '실명 인증된 아이디로 가입'은 한국어 전용(data-ko-only) — 체크값은 본인인증 화면으로 넘어간다(?real=1)
+  바로가기(뷰어·QA용): terms.html#sb3 · #sb3-agreed
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/terms.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen signup-screen--terms">
+
+  <!-- Header — 약관동의 화면에만 언어 전환 버튼이 있다 -->
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title" data-i18n="회원가입">회원가입</h1>
+    <span class="signup-header__end">
+      <!-- 한국어 화면에서는 'English', 영문 화면에서는 'Korean' -->
+      <button type="button" class="ds-btn" id="lang-switch" data-variant="neutralOutline" data-size="small" lang="en" data-i18n="English">English</button>
+    </span>
+  </header>
+
+  <div class="signup-body">
+    <!-- Card -->
+    <section class="signup-card" aria-labelledby="terms-title">
+      <form id="terms-form" action="identity.html" novalidate>
+        <div class="signup-content">
+          <h2 class="signup-title" id="terms-title" data-i18n="서비스 약관에 동의해 주세요.">서비스 약관에 동의해 주세요.</h2>
+
+          <div class="signup-agree">
+            <!-- 전체 동의 -->
+            <div class="signup-agree__all">
+              <div class="signup-agree__box">
+                <label class="ds-checkbox" data-size="large">
+                  <input type="checkbox" class="ds-checkbox__control" id="agree-all" aria-describedby="agree-all-desc">
+                  <span data-i18n="전체 동의합니다.">전체 동의합니다.</span>
+                </label>
+              </div>
+              <p class="signup-agree__desc" id="agree-all-desc" data-i18n="전체 동의 시 필수 및 선택 항목 모두에 대해 동의 처리되며, 선택 항목 동의를 거부하시더라도 서비스 이용이 가능합니다.">전체 동의 시 필수 및 선택 항목 모두에 대해 동의 처리되며, 선택 항목 동의를 거부하시더라도 서비스 이용이 가능합니다.</p>
+            </div>
+
+            <!-- 개별 약관 (순서 고정) — data-required 가 붙은 항목이 모두 체크되어야 [다음] 활성 -->
+            <ul class="signup-terms">
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="terms" value="ybm-family" data-required>
+                  <span><em class="signup-terms__tag" data-i18n="필수">필수</em> <span data-i18n="YBM Familiy 회원 이용약관">YBM Familiy 회원 이용약관</span></span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="YBM Familiy 회원 이용약관" data-i18n="보기">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="terms" value="ybm" data-required>
+                  <span><em class="signup-terms__tag" data-i18n="필수">필수</em> <span data-i18n="㈜와이비엠 이용약관">㈜와이비엠 이용약관</span></span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="㈜와이비엠 이용약관" data-i18n="보기">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="terms" value="privacy" data-required>
+                  <span><em class="signup-terms__tag" data-i18n="필수">필수</em> <span data-i18n="개인정보 수집 및 이용">개인정보 수집 및 이용</span></span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="개인정보 수집 및 이용" data-i18n="보기">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="terms" value="ybm-money" data-required>
+                  <span><em class="signup-terms__tag" data-i18n="필수">필수</em> <span data-i18n="YBM머니 이용을 위한 개인정보 제3자 제공">YBM머니 이용을 위한 개인정보 제3자 제공</span></span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="YBM머니 이용을 위한 개인정보 제3자 제공" data-i18n="보기">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="terms" value="ybm-third-party">
+                  <span><em class="signup-terms__tag" data-tone="optional" data-i18n="선택">선택</em> <span data-i18n="㈜와이비엠 제3자 제공">㈜와이비엠 제3자 제공</span></span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="㈜와이비엠 제3자 제공" data-i18n="보기">보기</button>
+              </li>
+              <!-- 한국어 전용 — 체크값이 본인인증 화면의 같은 체크박스로 넘어간다 -->
+              <li class="signup-terms__item" data-ko-only>
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="terms" value="real-name" id="term-real-name">
+                  <span><em class="signup-terms__tag" data-tone="optional">선택</em> 실명 인증된 아이디로 가입</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="실명 인증된 아이디로 가입">보기</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="signup-cta">
+          <button type="submit" class="ds-btn" id="cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled data-i18n="다음 (2)">다음</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 하단 안내 — 한국어 전용 (실명인증 개념은 영문 가입에 없음) -->
+    <p class="signup-note" data-ko-only>
+      <i class="ds-icon ds-icon--circle-alert" aria-hidden="true"></i>
+      <span>시험 접수 등 일부 서비스는 <em>실명인증된 1개 아이디만</em> 이용 가능합니다</span>
+    </p>
+  </div>
+</main>
+
+</body>
+</html>

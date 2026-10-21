@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>내 문의 내역 | YBM Family 고객센터</title>
+<!--
+  SB.17  고객센터 → 내 문의 내역 (목록)
+  Figma: 2366:5283 (PC 1920×1279) · Mobile 2677:11782 (375×1225)
+         빈 화면 2387:3197 · Mobile 2680:10035
+  · 로그인 상태 화면 · 최신순 · 행을 누르면 상세로 간다
+  · 상태 배지 — 답변대기 neutral / 답변완료 positive / 재문의 warning (DS Badge weak)
+  바로가기(뷰어·QA용): #sb17 · #sb17-empty
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../cs-components.css">
+<link rel="stylesheet" href="../cs.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/common.js" defer></script>
+<script src="../js/inquiry-list.js" defer></script>
+</head>
+<body class="cs" data-auth="in">
+
+<div class="cs-page cs-page--list">
+
+  <!-- Top bar — CS/Header -->
+  <header class="cs-header">
+    <div class="cs-header__inner">
+      <div class="cs-header__brand">
+        <a href="main.html"><img class="cs-header__logo" src="../assets/ybm-family-logo.svg" alt="YBM Family" width="127" height="33"></a>
+        <p class="cs-header__service">고객센터</p>
+      </div>
+      <nav class="cs-header__links" aria-label="회원">
+        <a href="#">홍길동님</a>
+        <span class="cs-divider" aria-hidden="true"></span>
+        <a href="#">로그아웃</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cs-page__body cs-page__list-body">
+    <div class="cs-container">
+      <div class="cs-list">
+
+        <!-- CS/Page Heading (우측=버튼) -->
+        <div class="cs-page-heading">
+          <h1 class="cs-page-heading__title">내 문의 내역</h1>
+          <button type="button" class="ds-btn cs-page-heading__action" data-variant="ghost" data-size="large" id="past-inquiry">지난 문의</button>
+        </div>
+
+        <!-- 문의 목록 — CS/Inquiry List Item ×6 (행 클릭 → 상세) -->
+        <div class="cs-inquiry-list" id="inquiry-list">
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large">답변대기</span>
+                <span class="cs-inquiry-item__type">YBM 회원정보<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>가입/탈퇴</span>
+              </span>
+              <span class="cs-inquiry-item__title">가입한 내역이 사라졌어요.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2026.07.22 09:17</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large">답변대기</span>
+                <span class="cs-inquiry-item__type">YBM 인강<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>결제/취소/환불</span>
+              </span>
+              <span class="cs-inquiry-item__title">환불 신청은 어떻게 하나요?</span>
+            </span>
+            <span class="cs-inquiry-item__date">2026.07.20 14:02</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb20">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="warning">재문의</span>
+                <span class="cs-inquiry-item__type">TOEIC<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>성적 확인</span>
+              </span>
+              <span class="cs-inquiry-item__title">성적표 재발급 신청 후 언제 받을 수 있나요?</span>
+            </span>
+            <span class="cs-inquiry-item__date">2026.07.15 10:41</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">YBM 머니<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>충전/사용</span>
+              </span>
+              <span class="cs-inquiry-item__title">YBM 머니 충전 내역이 보이지 않아요.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2026.07.08 18:25</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">YBM 회원정보<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>정보변경</span>
+              </span>
+              <span class="cs-inquiry-item__title">휴대폰 번호 변경 후 인증이 되지 않아요.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2026.06.30 11:03</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">TOEIC Speaking<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>시험 접수</span>
+              </span>
+              <span class="cs-inquiry-item__title">시험 접수 후 고사장을 변경할 수 있나요?</span>
+            </span>
+            <span class="cs-inquiry-item__date">2026.06.21 09:48</span>
+          </a>
+        </div>
+
+        <!-- 빈 화면 — CS/Empty State (Figma 2366:5537) -->
+        <div class="cs-inquiry-list cs-inquiry-list--empty" id="inquiry-empty" hidden>
+          <div class="cs-empty">
+            <div class="cs-empty__text">
+              <p class="cs-empty__title">문의 내역이 없습니다.</p>
+              <p class="cs-empty__desc">궁금한 점이 있으시면 언제든지 문의하기를 이용해 주세요.</p>
+            </div>
+            <a class="ds-btn" data-variant="neutralSolid" data-size="large" href="inquiry.html">문의하기</a>
+          </div>
+        </div>
+
+        <!-- 지난 문의 내역 — [지난 문의] 로 진입 (기획서 SB 17: 새 창 · 세션 유지)
+             Figma 에 화면이 없어 내 문의 내역 구조를 그대로 썼다 — 디자인 확인 필요 -->
+        <div class="cs-past" id="past-list" hidden>
+          <p class="cs-info-caption">
+            <i class="ds-icon ds-icon--info" aria-hidden="true"></i>2024년 이전에 접수하신 문의입니다.
+          </p>
+          <div class="cs-inquiry-list">
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">YBM 인강<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>결제/취소/환불</span>
+              </span>
+              <span class="cs-inquiry-item__title">수강권 환불 처리 일정을 알고 싶습니다.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2024.11.12 14:20</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">TOEIC<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>성적 확인</span>
+              </span>
+              <span class="cs-inquiry-item__title">성적표 영문 이름 표기를 변경하고 싶어요.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2024.08.03 10:05</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">YBM 회원정보<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>정보변경</span>
+              </span>
+              <span class="cs-inquiry-item__title">이메일 주소 변경이 반영되지 않습니다.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2024.05.21 16:47</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">YBM 머니<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>충전/사용</span>
+              </span>
+              <span class="cs-inquiry-item__title">적립금 소멸 예정 안내를 확인하고 싶습니다.</span>
+            </span>
+            <span class="cs-inquiry-item__date">2024.02.09 09:33</span>
+          </a>
+          <a class="cs-inquiry-item" href="inquiry-detail.html#sb18-answered">
+            <span class="cs-inquiry-item__content">
+              <span class="cs-inquiry-item__meta">
+                <span class="ds-badge" data-size="large" data-tone="positive">답변완료</span>
+                <span class="cs-inquiry-item__type">어학원<i class="ds-icon ds-icon--chevron-right" aria-hidden="true"></i>수강 신청</span>
+              </span>
+              <span class="cs-inquiry-item__title">종로센터 주말반 대기 신청이 가능한가요?</span>
+            </span>
+            <span class="cs-inquiry-item__date">2023.12.18 13:10</span>
+          </a>
+          </div>
+        </div>
+
+        <!-- 더보기 — 10건씩 이어서 보여 준다 (실제로는 서버가 내려준다) -->
+        <div class="cs-more" id="list-more">
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" id="more-btn">
+            더보기<i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <!-- 페이징 — 더보기로 10건을 넘기면 더보기 대신 페이지네이션으로 바뀐다 (10건/페이지) -->
+        <nav class="ds-pagination cs-pager" id="list-pager" aria-label="페이지" hidden>
+          <a class="ds-pagination__item" data-type="first" aria-label="첫 페이지" aria-disabled="true"></a>
+          <a class="ds-pagination__item" data-type="prev" aria-label="이전 페이지" aria-disabled="true"></a>
+          <a class="ds-pagination__item" href="#" aria-current="page">1</a>
+          <a class="ds-pagination__item" href="#">2</a>
+          <a class="ds-pagination__item" data-type="next" href="#" aria-label="다음 페이지"></a>
+          <a class="ds-pagination__item" data-type="last" href="#" aria-label="마지막 페이지"></a>
+        </nav>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer — CS/Footer -->
+  <footer class="cs-footer">
+    <div class="cs-footer__inner cs-container">
+      <div class="cs-footer__text">
+        <p class="cs-footer__hours"><b>평일 09:00-18:00</b><span>(점심시간 12:30~13:30 / 주말, 공휴일 휴무)</span></p>
+        <p class="cs-footer__copyright">Copyright © (주)와이비엠넷. All rights reserved.</p>
+      </div>
+      <div class="cs-footer__aside">
+        <nav class="cs-footer__links" aria-label="약관">
+          <a href="#">회사소개</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">개인정보 처리방침</a>
+          <span class="cs-divider" aria-hidden="true"></span>
+          <a href="#">이용약관</a>
+        </nav>
+        <div class="cs-family">
+          <button type="button" class="cs-family__button" id="family-site" aria-expanded="false" aria-controls="family-menu">
+            <span>패밀리 사이트</span>
+            <i class="ds-icon ds-icon--plus" aria-hidden="true"></i>
+          </button>
+          <div class="cs-family__menu" id="family-menu" role="menu" hidden>
+            <a href="#" role="menuitem">YBM 어학시험</a>
+            <a href="#" role="menuitem">YBM 인강</a>
+            <a href="#" role="menuitem">YBM 어학원</a>
+            <a href="#" role="menuitem">YBM 교과서</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

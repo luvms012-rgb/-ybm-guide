@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>소셜 로그인 · YBM 계정 연결 | YBM Family</title>
+<!--
+  SB.58  연계 페이지 > 소셜 로그인 — YBM 아이디 입력 (YBM 계정 로그인 연동)
+  기준: 스토리보드 62슬라이드본(260831) 58p
+  · 소셜 로그인(예: 네이버)한 이메일로 확인된 YBM Family 계정이 있을 때 — 로그인하면 소셜 계정과 연결된다
+  · 아이디·비밀번호가 모두 입력되면 [로그인] 활성. 링크: 아이디 찾기 · 비밀번호 재설정
+  · 연계 페이지는 영문 없음 (한국어 전용 — 2026-09-26 결정)
+  · 네이버 아이콘 = 로컬 컴포넌트 Social Login Icon(brand=naver). 로그인한 소셜 브랜드로 바뀐다 (개발)
+  바로가기(뷰어·QA용): #sb58 · #sb58-filled
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/social-link.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title">소셜 로그인</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <form class="signup-card" id="login-form" aria-labelledby="login-title" novalidate>
+    <div class="signup-content">
+      <!-- Link Logos — 소셜(48) · ellipsis(24) · YBM Family 로고 -->
+      <div class="signup-link-logos" aria-hidden="true">
+        <span class="signup-social__btn" data-brand="naver">
+          <svg width="16" height="16" viewBox="0 0 16 16"><path class="signup-social__on" d="M10.8492 8.56216L4.92308 0H0V16H5.15077V7.43662L11.077 16H16V0H10.8492V8.56216Z"/></svg>
+        </span>
+        <i class="ds-icon ds-icon--lg ds-icon--ellipsis"></i>
+        <img src="../assets/YBMFamily.svg" alt="" width="140" height="36">
+      </div>
+
+      <div>
+        <h2 class="signup-title" id="login-title">이메일로 확인된 계정이 존재합니다.</h2>
+        <p class="signup-title__desc">YBM Family 계정과 연결을 원하시면 로그인해 주세요.<br class="u-br-pc">이후, 네이버 계정으로 간편 로그인할 수 있습니다.</p>
+      </div>
+
+      <div class="signup-fields signup-fields--login">
+        <div class="signup-recover-field">
+          <div class="ds-field">
+            <label class="ds-field__label" for="login-id">아이디</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="login-id" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="20" placeholder="아이디">
+              <button type="button" class="ds-input__clear" aria-label="아이디 지우기"></button>
+            </div>
+          </div>
+        </div>
+        <div class="signup-recover-field">
+          <div class="ds-field">
+            <label class="ds-field__label" for="login-pw">비밀번호</label>
+            <div class="ds-input">
+              <input class="ds-input__control" id="login-pw" type="password" autocomplete="current-password" maxlength="20" placeholder="비밀번호">
+              <button type="button" class="ds-input__suffix signup-eye" id="login-eye" aria-pressed="false" aria-label="비밀번호 보기">
+                <i class="ds-icon ds-icon--lg ds-icon--eye-off" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Area (show link bottom) — 버튼 아래 링크 -->
+    <div class="signup-cta">
+      <button type="submit" class="ds-btn" id="login-cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled>로그인</button>
+      <p class="signup-cta__links">
+        <a class="ds-link" href="find-id.html">아이디 찾기</a>
+        <span aria-hidden="true">|</span>
+        <a class="ds-link" href="reset-pw.html">비밀번호 재설정</a>
+      </p>
+    </div>
+
+    <p class="signup-note signup-note--after">
+      <i class="ds-icon ds-icon--circle-alert" aria-hidden="true"></i>
+      <span>시험 접수 등 일부 서비스는 <em>실명인증된 1개 아이디만 이용 가능</em>합니다.</span>
+    </p>
+  </form>
+</main>
+
+</body>
+</html>

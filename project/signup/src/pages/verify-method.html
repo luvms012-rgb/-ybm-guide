@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>본인인증 | YBM Family</title>
+<!--
+  SB.59 ~ SB.60  연계 페이지 > 어학시험 본인인증
+  기준: 스토리보드 62슬라이드본(260831) 59~60p
+  두 화면은 같은 수단 목록을 쓰므로 한 파일에 둔다 (data-case).
+    · member = SB.59 회원 — 회원정보 변경 동의(필수) + 수단 4종 + 만14세 미만 안내. 미동의로 누르면 Alert
+    · guest  = SB.60 비회원 접수 — 수단 4종 + 회원 혜택 안내 + [회원가입] [로그인]
+  수단 버튼 → 각 인증 기관 팝업 (개발 — 퍼블리싱은 스낵바)
+  연계 페이지는 영문 없음 (한국어 전용)
+  바로가기(뷰어·QA용): #sb59 · #sb59-agreed · #sb59-alert · #sb60
+-->
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/recover.js" defer></script>
+<script src="../js/verify-method.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title">본인인증</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <section class="signup-card" aria-labelledby="method-title">
+    <div class="signup-content">
+      <h2 class="signup-title" id="method-title">아래의 인증방법 중 하나를 선택하여<br>인증을 진행해 주세요.</h2>
+
+      <div class="signup-methods" id="methods">
+        <!-- SB.59 회원 전용 — 회원정보 변경 동의(필수) -->
+        <label class="ds-checkbox signup-consent" data-case-only="member">
+          <input type="checkbox" class="ds-checkbox__control" id="consent">
+          <span><em>필수</em> 본인확인 결과에 따라 회원정보(이름, 생년월일, 휴대전화번호)가 최신 정보로 변경될 수 있음에 동의합니다.</span>
+        </label>
+        <div class="signup-method-list">
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" data-width="fill" data-method="phone">
+            <i class="ds-icon ds-icon--smartphone" aria-hidden="true"></i><span>휴대전화 인증</span>
+          </button>
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" data-width="fill" data-method="ipin">
+            <i class="ds-icon ds-icon--id-card" aria-hidden="true"></i><span>아이핀 인증</span>
+          </button>
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" data-width="fill" data-method="card">
+            <i class="ds-icon ds-icon--credit-card" aria-hidden="true"></i><span>신용카드 인증</span>
+          </button>
+          <button type="button" class="ds-btn" data-variant="neutralOutline" data-size="large" data-width="fill" data-method="foreigner">
+            <i class="ds-icon ds-icon--globe" aria-hidden="true"></i><span>외국인 인증</span>
+          </button>
+        </div>
+        <!-- SB.59 회원 전용 — 만14세 미만 안내 (fg/neutral-muted, 강조 없음) -->
+        <p class="signup-note" data-case-only="member">
+          <i class="ds-icon ds-icon--circle-alert" aria-hidden="true"></i>
+          <span>만 14세 미만 회원 중 본인 명의 휴대전화가 없는 경우 아이핀 인증을<br class="u-br-pc">이용해 주세요.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- SB.60 비회원 전용 — CTA Area (show link · show secondary): 안내문 + [회원가입](brandSolid) [로그인](neutralOutline) -->
+    <div class="signup-cta" data-case-only="guest">
+      <p class="signup-cta__text">회원가입(로그인) 후 서비스를 이용하시면,<br>할인·적립 등 YBM의 다양한 회원 혜택을 받을 수 있습니다.</p>
+      <div class="signup-cta__buttons">
+        <button type="button" class="ds-btn" id="guest-signup" data-variant="brandSolid" data-size="large">회원가입</button>
+        <button type="button" class="ds-btn" id="guest-login" data-variant="neutralOutline" data-size="large">로그인</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+
+<!-- Alert — 문구는 recover.js 가 채운다 -->
+<dialog class="ds-dialog signup-alert" id="dialog-alert" role="alertdialog" aria-labelledby="dialog-alert-title" aria-describedby="dialog-alert-desc">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-alert-title"></h2>
+    <p class="ds-dialog__desc" id="dialog-alert-desc" hidden></p>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-ds-close>확인</button>
+  </div>
+</dialog>
+
+</body>
+</html>

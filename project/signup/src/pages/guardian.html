@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>회원가입 · 보호자 동의 | YBM Family</title>
+<!--
+  SB.22 ~ SB.25  회원가입 > 만14세 미만 — 보호자(법정대리인) 절차
+  기준: 스토리보드 62슬라이드본(260831) 22~25p
+  화면 2개가 한 파일에 있다 (data-case) — 실제 흐름이 끊기지 않고 이어진다.
+    · consent  = SB.22 보호자 동의 (인증수단 라디오 2분기) → [동의하고 인증하기]
+    · identity = SB.23 이름 → SB.24 생년월일 → 성별 → 휴대전화번호 → SB.25 입력 정보 확인 (누적 스텝)
+      성별·휴대전화 스텝은 기획서에 화면이 없다 ("나머지 프로세스 같음") — 일반 가입 실명인증 경로와 같은 모양에
+      타이틀에만 '보호자'를 붙였다. (기획 확인 필요)
+    · [확인했어요] → 인증번호 입력 팝업(SB.12 공통) → 인증 성공 시 아동 휴대전화번호 입력(child-phone.html)
+      ※ 보호자 YBM 아이디가 조회되면 그 사이에 SB.28 계정 연동(account-link.html)이 들어가지만 비노출 화면이다
+  만14세 미만 경로는 한국어 전용 (기획서에 영문 없음)
+  바로가기(뷰어·QA용): #sb22 · #sb22-agreed · #sb22-ipin · #sb23 · #sb24 · #guardian-gender · #guardian-phone
+                       · #sb25 · #sb25-alert · #sb25-otp
+-->
+<script src="../i18n/en.js"></script>
+<script src="../i18n/i18n.js"></script>
+<link rel="stylesheet" href="../../../../ds/ybm-ds/ybm-ds.css">
+<link rel="stylesheet" href="../signup.css">
+<script src="../../../../ds/ybm-ds/ybm-ds.js" defer></script>
+<script src="../js/verify.js" defer></script>
+<script src="../js/guardian.js" defer></script>
+</head>
+<body class="signup">
+
+<main class="signup-screen">
+
+  <header class="signup-header">
+    <a class="signup-header__logo" href="#" aria-label="YBM Family 홈">
+      <img src="../assets/YBMFamily.svg" alt="YBM Family" width="140" height="36">
+    </a>
+    <h1 class="signup-header__title">회원가입</h1>
+    <span class="signup-header__end"></span>
+  </header>
+
+  <!-- ============ SB.22 · 보호자(법정대리인) 동의 ============ -->
+  <section class="signup-card" data-case="consent" aria-labelledby="consent-title">
+    <form id="consent-form" novalidate>
+      <div class="signup-content">
+        <h2 class="signup-title" id="consent-title">만 14세 미만은<br>보호자(법정대리인) 동의가 필요합니다.</h2>
+
+        <div class="signup-agree-area">
+          <!-- 인증 수단 — 기본값 보호자 휴대전화 -->
+          <fieldset class="signup-auth-method">
+            <legend class="ds-sr-only">보호자 인증 수단 선택</legend>
+            <label class="ds-radio">
+              <input type="radio" class="ds-radio__control" name="auth-method" value="phone" checked>
+              <span>보호자 휴대전화</span>
+            </label>
+            <label class="ds-radio">
+              <input type="radio" class="ds-radio__control" name="auth-method" value="ipin">
+              <span>보호자 아이핀</span>
+            </label>
+          </fieldset>
+
+          <!-- 보호자 휴대전화 — 필수 약관 5종 (순서 고정) -->
+          <div class="signup-agree-box" data-method="phone">
+            <label class="ds-checkbox signup-agree-box__all" data-size="large">
+              <input type="checkbox" class="ds-checkbox__control" id="guardian-all">
+              <span>보호자 휴대전화 인증을 위한 동의</span>
+            </label>
+            <ul class="signup-terms">
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="guardian-terms">
+                  <span><em class="signup-terms__tag">필수</em> 개인정보 수집 및 이용 안내</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="개인정보 수집 및 이용 안내">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="guardian-terms">
+                  <span><em class="signup-terms__tag">필수</em> 인증시 고유식별정보처리</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="인증시 고유식별정보처리">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="guardian-terms">
+                  <span><em class="signup-terms__tag">필수</em> 통신사 이용약관</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="통신사 이용약관">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="guardian-terms">
+                  <span><em class="signup-terms__tag">필수</em> 인증사 이용약관</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="인증사 이용약관">보기</button>
+              </li>
+              <li class="signup-terms__item">
+                <label class="ds-checkbox" data-variant="ghost">
+                  <input type="checkbox" class="ds-checkbox__control" name="guardian-terms">
+                  <span><em class="signup-terms__tag">필수</em> YBM 개인정보 수집</span>
+                </label>
+                <button type="button" class="signup-terms__view" data-term="YBM 개인정보 수집">보기</button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- 보호자 아이핀 — 동의 영역이 통째로 저장·파기 안내 1건으로 바뀐다 -->
+          <div class="signup-agree-box" data-method="ipin" hidden>
+            <label class="ds-checkbox signup-agree-box__notice" data-size="large">
+              <input type="checkbox" class="ds-checkbox__control" id="guardian-ipin">
+              <span>보호자 인증이 완료되면 보호자 이름, 생년월일, 성별, 중복가입 확인 정보(DI,CI)가 보호자 동의 확인을 위하여 아동의 정보와 함께 저장되며, 아동이 성년이 되는 시점에 파기됩니다.</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="signup-cta">
+        <button type="submit" class="ds-btn" id="consent-cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled>동의하고 인증하기</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ============ SB.23~25 · 보호자 정보 입력 (누적 스텝) ============ -->
+  <section class="signup-card" data-case="identity" aria-labelledby="step-title" hidden>
+    <form id="guardian-form" novalidate>
+      <div class="signup-content">
+        <h2 class="signup-title" id="step-title" aria-live="polite">보호자 이름을 입력해 주세요</h2>
+
+        <!-- 누적 필드: DOM 순서 = 화면 순서 (새 스텝이 위, 이전 스텝은 아래로) -->
+        <div class="signup-fields">
+
+          <!-- 휴대전화번호 (통신사 prefix — 보호자는 실명인증 경로) -->
+          <div class="signup-step signup-phone" data-step="phone" hidden>
+            <div class="ds-field">
+              <label class="ds-field__label" for="phone">휴대전화번호</label>
+              <div class="ds-input">
+                <button type="button" class="ds-input__prefix" id="phone-prefix" aria-haspopup="dialog" data-ds-open="dialog-carrier">
+                  <span id="phone-prefix-label">통신사</span><i class="ds-icon ds-icon--chevron-down" aria-hidden="true"></i>
+                </button>
+                <input class="ds-input__control" id="phone" type="tel" inputmode="numeric" autocomplete="tel-national"
+                       value="010" placeholder=" " maxlength="13" aria-describedby="phone-help">
+                <button type="button" class="ds-input__clear" aria-label="휴대전화번호 지우기"></button>
+              </div>
+              <p class="ds-field__help" id="phone-help" hidden></p>
+            </div>
+          </div>
+
+          <!-- 성별 (레이어팝업) -->
+          <div class="signup-step" data-step="gender" hidden>
+            <div class="ds-field">
+              <label class="ds-field__label" for="gender">성별</label>
+              <div class="ds-input">
+                <button type="button" class="ds-input__control" id="gender" data-placeholder="성별"
+                        aria-haspopup="dialog" data-ds-open="dialog-gender"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SB.24 보호자 생년월일 -->
+          <div class="signup-step" data-step="birth" hidden>
+            <div class="ds-field">
+              <label class="ds-field__label" for="birth">생년월일</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="birth" type="text" inputmode="numeric" autocomplete="bday"
+                       placeholder="0000.00.00" maxlength="10" aria-describedby="birth-help">
+                <button type="button" class="ds-input__clear" aria-label="생년월일 지우기"></button>
+              </div>
+              <p class="ds-field__help" id="birth-help">생년월일은 8자리 숫자로 입력해 주세요.</p>
+            </div>
+          </div>
+
+          <!-- SB.23 보호자 이름 -->
+          <div class="signup-step" data-step="name" data-state="active">
+            <div class="ds-field">
+              <label class="ds-field__label" for="name">이름</label>
+              <div class="ds-input">
+                <input class="ds-input__control" id="name" type="text" autocomplete="name"
+                       placeholder="이름" maxlength="50" aria-describedby="name-help">
+                <button type="button" class="ds-input__clear" aria-label="이름 지우기"></button>
+              </div>
+              <p class="ds-field__help" id="name-help">실제 명의를 입력해 주세요. (특수기호, 공백 사용 불가)</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="signup-cta">
+        <button type="submit" class="ds-btn" id="cta" data-variant="brandSolid" data-size="large" data-width="fill" disabled>다음</button>
+      </div>
+    </form>
+  </section>
+</main>
+
+
+<!-- ================= 레이어팝업 ================= -->
+
+<!-- 성별 선택 — 보호자는 실명인증 경로라 '선택안함' 없음 -->
+<dialog class="ds-dialog signup-dialog" id="dialog-gender" aria-labelledby="dialog-gender-title">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-gender-title">성별을 선택해 주세요</h2>
+    <button type="button" class="ds-dialog__close" data-ds-close aria-label="닫기"></button>
+  </div>
+  <div class="ds-dialog__body">
+    <ul class="ds-select-list" role="listbox" aria-labelledby="dialog-gender-title" data-target="gender">
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="남성">남성</button></li>
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="여성">여성</button></li>
+    </ul>
+  </div>
+</dialog>
+
+<!-- 통신사 선택 -->
+<dialog class="ds-dialog signup-dialog" id="dialog-carrier" aria-labelledby="dialog-carrier-title">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-carrier-title">통신사를 선택해 주세요</h2>
+    <button type="button" class="ds-dialog__close" data-ds-close aria-label="닫기"></button>
+  </div>
+  <div class="ds-dialog__body">
+    <ul class="ds-select-list" role="listbox" aria-labelledby="dialog-carrier-title" data-target="carrier">
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="SKT">SKT</button></li>
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="KT">KT</button></li>
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="LG U+">LG U+</button></li>
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="SKT 알뜰폰">SKT 알뜰폰</button></li>
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="KT 알뜰폰">KT 알뜰폰</button></li>
+      <li><button type="button" class="ds-select-item" role="option" aria-selected="false" data-value="LG U+ 알뜰폰">LG U+ 알뜰폰</button></li>
+    </ul>
+  </div>
+</dialog>
+
+<!-- SB.25 정보 불일치 Alert (서버 판정) — 버튼으로만 닫힌다 -->
+<dialog class="ds-dialog signup-alert" id="dialog-mismatch" role="alertdialog" aria-labelledby="dialog-mismatch-title" aria-describedby="dialog-mismatch-desc">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-mismatch-title">입력하신 정보와 실명인증 정보가<br>일치하지 않습니다</h2>
+    <p class="ds-dialog__desc" id="dialog-mismatch-desc">다시 확인 후 인증을 시도해 주세요.</p>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" data-variant="neutralWeak" data-ds-close>확인</button>
+  </div>
+</dialog>
+
+<!-- 인증번호 입력 (SB.12 공통) -->
+<dialog class="ds-dialog signup-modal signup-modal--otp" id="dialog-otp" aria-labelledby="dialog-otp-title">
+  <div class="ds-dialog__header">
+    <h2 class="ds-dialog__title" id="dialog-otp-title">010-1234-5678로 전송된<br>인증번호를 입력해 주세요</h2>
+    <button type="button" class="ds-dialog__close" data-ds-close aria-label="닫기"></button>
+  </div>
+  <div class="ds-dialog__body">
+    <div class="signup-otp">
+      <div class="ds-code-input" id="otp-code">
+        <input class="ds-code-input__control" id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+               aria-label="인증번호 6자리" aria-describedby="otp-error">
+        <span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span>
+        <span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span><span class="ds-code-input__cell"></span>
+      </div>
+      <p class="signup-otp__error" id="otp-error" hidden>인증번호를 다시 입력해 주세요.</p>
+      <div class="signup-otp__meta">
+        <span class="signup-otp__timer">
+          <span id="otp-remaining" role="timer">남은 시간 05:00</span>
+          <span class="signup-otp__divider" aria-hidden="true">|</span>
+          <button type="button" class="signup-otp__extend" id="otp-extend">시간연장</button>
+        </span>
+        <button type="button" class="signup-otp__resend" id="otp-resend">재전송</button>
+      </div>
+    </div>
+  </div>
+  <div class="ds-dialog__footer">
+    <button type="button" class="ds-btn" id="otp-submit" data-variant="brandSolid" disabled>인증번호 확인</button>
+  </div>
+</dialog>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+/* ==========================================================================
+   YBM Design System — 진입 파일 (서비스는 이 파일 하나만 link 한다)
+   --------------------------------------------------------------------------
+   <link rel="stylesheet" href="…/ybm-ds/ybm-ds.css">   ← 공통 DS
+   <link rel="stylesheet" href="…/services/{서비스}/{서비스}.css">  ← 서비스 전용
+
+   ▣ Cascade Layers
+     DS 전체를 이름 붙은 레이어(ybm.*) 안에 넣는다. 레이어 밖에 쓴 CSS(=서비스 CSS)는
+     선택자 우선순위와 상관없이 항상 DS보다 이긴다. 그래서 서비스에서는
+       .signup-cta .ds-btn { … }   처럼 평범하게 써도 DS 를 안전하게 덮어쓸 수 있고
+     !important 나 선택자 길이 경쟁이 필요 없다.
+
+     ybm.tokens     색·간격·타이포 변수
+     ybm.base       리셋·폰트·접근성
+     ybm.icons      Lucide 아이콘
+     ybm.components .ds-* 컴포넌트
+     ybm.utilities  .u-* 1회성 유틸리티 (가장 마지막 → 컴포넌트보다 우선)
+   ========================================================================== */
+
+@layer ybm.tokens, ybm.base, ybm.icons, ybm.components, ybm.utilities;
+
+@import url("tokens.css") layer(ybm.tokens);
+@import url("base.css") layer(ybm.base);
+@import url("icons.css") layer(ybm.icons);
+@import url("components.css") layer(ybm.components);
+@import url("utilities.css") layer(ybm.utilities);
