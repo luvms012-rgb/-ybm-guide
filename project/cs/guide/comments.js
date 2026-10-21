@@ -229,18 +229,18 @@
     var root = host.attachShadow({ mode: "open" });
     root.innerHTML = "<style>" + PIN_CSS + '</style><div class="hover" hidden></div><div class="pins"></div>';
     doc.documentElement.appendChild(host);
+    // 위치 지정 중에는 화면 전체 커서를 십자로 (버튼·링크 위에서도)
+    var cur = doc.createElement("style");
+    cur.setAttribute("data-guide-comments", "");
+    cur.textContent = "html[data-gc-place], html[data-gc-place] * { cursor: crosshair !important; }";
+    (doc.head || doc.documentElement).appendChild(cur);
     layer = { doc: doc, win: win, host: host, root: root, pins: root.querySelector(".pins"), hover: root.querySelector(".hover") };
 
     function inLayer(e) { return e.composedPath && e.composedPath().indexOf(host) > -1; }
     function block(e) { if (mode === "comments" && !inLayer(e)) { e.preventDefault(); e.stopImmediatePropagation(); } }
     function hideHover() { if (layer) layer.hover.hidden = true; }
-    function onMove(e) {
-      if (mode !== "comments" || inLayer(e) || draft) { layer.hover.hidden = true; return; }
-      var t = e.target; if (!t || t === doc.documentElement || t === doc.body) { layer.hover.hidden = true; return; }
-      var r = t.getBoundingClientRect();
-      layer.hover.style.cssText = "left:" + (r.left + win.scrollX) + "px;top:" + (r.top + win.scrollY) + "px;width:" + r.width + "px;height:" + r.height + "px";
-      layer.hover.hidden = false;
-    }
+    // 요소 테두리 표시는 하지 않는다 — 어느 위치든 남길 수 있다는 걸 커서(십자)로만 알린다 (2026-10-21)
+    function onMove() { layer.hover.hidden = true; }
     function onClick(e) {
       if (mode !== "comments") return;
       if (inLayer(e)) {                                  // 핀 클릭
@@ -279,6 +279,7 @@
       win.removeEventListener("resize", hideHover);
       mo.disconnect();
     };
+    doc.documentElement.toggleAttribute("data-gc-place", mode === "comments");
     body.setAttribute("data-gc-frame", "ok");
     paintHint();
     renderAll();
@@ -398,7 +399,7 @@
     addBtn.querySelector("span").textContent = mode ? "취소" : "코멘트 남기기";
     paintHint();
     if (!mode) draftCancel();
-    if (layer) layer.hover.hidden = true;
+    if (layer) { layer.hover.hidden = true; layer.doc.documentElement.toggleAttribute("data-gc-place", !!mode); }
     renderAll();
   }
   addBtn.addEventListener("click", function () {

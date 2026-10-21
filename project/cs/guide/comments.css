@@ -47,14 +47,18 @@ body.guide { --gc-panel-width: 360px; }
 
 .gc-panel__body {
   flex: 1 1 auto; min-height: 0; overflow-y: auto;
-  padding: var(--ybm-space-x3);
-  display: flex; flex-direction: column; gap: var(--ybm-space-x2);
+  padding: 0 0 var(--ybm-space-x3);
+  display: flex; flex-direction: column;
 }
+/* 빈 상태 · 안내 · 해결된 코멘트 보기는 목록 여백 안쪽에 */
+.gc-panel__body > :not(.gc-thread) { margin: var(--ybm-space-x3) var(--ybm-space-x3) 0; }
 
 /* ---- 코멘트 카드 (.ds-card) -------------------------------------------- */
-.gc-thread { cursor: pointer; }
+/* 카드 테두리 없이 목록으로 — 항목 사이만 1px 구분선 (2026-10-21)
+   선택된 항목은 굵은 선 대신 옅은 배경으로 구분 */
+.gc-thread { cursor: pointer; border-radius: 0; box-shadow: none; border-bottom: 1px solid var(--ybm-color-stroke-neutral-weak); }
 .gc-thread:hover { background: var(--ybm-color-bg-neutral-muted); }
-.gc-thread[aria-current="true"] { cursor: default; background: var(--ybm-color-bg-layer-default); box-shadow: inset 0 0 0 2px var(--ybm-color-stroke-neutral-contrast); }
+.gc-thread[aria-current="true"] { cursor: default; background: var(--ybm-color-bg-neutral-muted); box-shadow: none; }
 .gc-thread[data-status="resolved"] .gc-text-body { color: var(--ybm-color-fg-neutral-subtle); }
 .gc-thread__head { display: flex; align-items: center; gap: var(--ybm-space-x1_5); min-width: 0; font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
 .gc-author { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: var(--ybm-font-weight-semibold); }
