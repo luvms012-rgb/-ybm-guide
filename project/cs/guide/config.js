@@ -30,7 +30,7 @@ window.GUIDE_CONFIG = {
   figmaFile: "5uZaHIZW4c5oN0Ct0bPpc0",
   comments: {
     project: "cs",
-    endpoint: "",
+    endpoint: "https://script.google.com/macros/s/AKfycbzhGGrZZBvL6oNyVH7xeqd4qlfszO-WfElY8dyOBIswMAajd9QgcCkhakO7U9ut5h_LhQ/exec",
     key: ""
   }
 };

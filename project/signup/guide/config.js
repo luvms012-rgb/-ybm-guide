@@ -22,7 +22,7 @@ window.GUIDE_CONFIG = {
   figmaFile: "etsLv4DqIAlXp9QiC4hwLw",
   comments: {                     // 코멘트 — 자세한 설정은 project/_publish/README.md
     project: "signup",
-    endpoint: "",                 // Google Apps Script 웹앱 URL (…/exec). 비우면 이 브라우저에만 저장
+    endpoint: "https://script.google.com/macros/s/AKfycbzhGGrZZBvL6oNyVH7xeqd4qlfszO-WfElY8dyOBIswMAajd9QgcCkhakO7U9ut5h_LhQ/exec",                 // Google Apps Script 웹앱 URL (…/exec). 비우면 이 브라우저에만 저장
     key: ""
   }
 };

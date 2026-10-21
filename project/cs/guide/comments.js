@@ -3,9 +3,10 @@
    --------------------------------------------------------------------------
    기획·개발·디자인이 로그인 없이 화면의 특정 위치에 코멘트를 남긴다.
 
-     하단 도구막대   [코멘트 n] [화면 정보]   — 단축키 C 로 코멘트 모드 전환
-     코멘트 모드     화면을 누르면 그 위치에 핀 + 작성창. 오른쪽 패널에 목록
-                    (모바일은 아래에서 올라오는 시트)
+     코멘트 창      오른쪽에 항상 열려 있다 (모바일은 아래 시트 — 머리를 눌러 펼침)
+                    핀도 항상 보인다
+     코멘트 남기기   창 위 [코멘트 남기기] 또는 단축키 C → 화면에서 위치를 누르면 핀 + 작성창
+                    퍼블리싱 전 화면은 위치 없이 바로 작성창
      핀 위치        누른 요소(selector) + 요소 안 비율로 저장한다 → PC/MO 폭이 바뀌거나
                     레이아웃이 움직여도 같은 요소를 따라간다. 요소를 못 찾으면 같은 기기
                     보기일 때만 저장한 좌표로 보여준다.
@@ -34,10 +35,9 @@
   var ROLES = [
     { id: "plan", label: "기획" },
     { id: "dev", label: "개발" },
-    { id: "design", label: "디자인" },
-    { id: "etc", label: "기타" }
+    { id: "design", label: "디자인" }
   ];
-  function roleLabel(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].label; return "기타"; }
+  function roleLabel(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].label; return ""; }
 
   var body = document.body;
   var frame = G.frame, stage = G.stage, content = G.content;
@@ -63,6 +63,7 @@
 
   /* ---- 나 (비로그인 — 이 브라우저를 구분하는 임의 id + 이름) -------------- */
   var me = { cid: store("cid"), name: store("name") || "", role: store("role") || "plan" };
+  if (me.role === "etc") me.role = "plan";
   if (!me.cid) { me.cid = uid(); store("cid", me.cid); }
 
   /* ======================================================================
@@ -129,7 +130,7 @@
      ====================================================================== */
   var items = [];           // 이 프로젝트의 모든 코멘트(삭제 제외)
   var sig = "";             // 목록 변경 감지용
-  var mode = "";            // "" | "comments" | "info"
+  var mode = "";            // "comments" = 위치 지정 중(화면을 누르면 작성창) · "" = 보기만
   var showResolved = false;
   var selected = null;      // 선택된 스레드 id
   var draft = null;         // 작성 중인 새 코멘트 {anchor..}
@@ -308,9 +309,6 @@
 
   function renderPins() {
     if (!layer) return;
-    var on = mode === "comments";
-    layer.host.style.display = on ? "" : "none";
-    if (!on) return;
     var inv = (1 / frameScale()).toFixed(3);
     var html = "";
     threadsHere().forEach(function (c, i) {
@@ -331,34 +329,24 @@
   function onFrameState() { draftCancel(); renderAll(); }
 
   /* ======================================================================
-     뷰어 쪽 UI — 하단 도구막대 · 패널(목록/화면 정보) · 작성창 · 토스트
+     뷰어 쪽 UI — 코멘트 창 · 작성창 · 토스트
      ====================================================================== */
-  var bar = el(
-    '<div class="gc-bar" role="toolbar" aria-label="코멘트">' +
-      '<button type="button" class="gc-bar__btn" data-mode="comments" aria-pressed="false" title="코멘트 (C)">' + ICON_MSG +
-        '<span>코멘트</span><span class="gc-count" hidden></span></button>' +
-      '<button type="button" class="gc-bar__btn" data-mode="info" aria-pressed="false" title="화면 정보">' +
-        '<i class="ds-icon ds-icon--info" aria-hidden="true"></i><span>화면 정보</span></button>' +
-    "</div>");
-  var hint = el('<div class="gc-hint" hidden>화면에서 코멘트를 남길 위치를 누르세요 · <kbd>Esc</kbd> 종료</div>');
-  stage.appendChild(bar);
+  var hint = el('<div class="gc-hint" hidden>코멘트를 남길 위치를 누르세요 · <kbd>Esc</kbd> 취소</div>');
   stage.appendChild(hint);
 
+  // 오른쪽 코멘트 창 — 항상 열려 있다 (모바일은 아래 시트, 머리를 누르면 펼침/접힘)
   var panel = el(
-    '<aside class="gc-panel" id="gc-panel" aria-label="코멘트 패널" hidden>' +
+    '<aside class="gc-panel" id="gc-panel" aria-label="코멘트">' +
       '<div class="gc-panel__head">' +
-        '<div class="ds-segmented gc-tabs" data-layout="fill" role="group" aria-label="패널 보기">' +
-          '<button type="button" class="ds-segmented__item" data-tab="comments" aria-pressed="true">코멘트</button>' +
-          '<button type="button" class="ds-segmented__item" data-tab="info" aria-pressed="false">화면 정보</button>' +
-        "</div>" +
-        '<button type="button" class="g-icon-btn gc-close"><i class="ds-icon ds-icon--x ds-icon--lg" aria-hidden="true"></i><span class="ds-sr-only">패널 닫기</span></button>' +
+        '<button type="button" class="gc-panel__title" aria-expanded="false">코멘트<span class="gc-count" hidden></span></button>' +
+        '<button type="button" class="ds-btn gc-add" data-variant="neutralSolid" data-size="small" aria-pressed="false" title="코멘트 남기기 (C)">' + ICON_MSG + "<span>코멘트 남기기</span></button>" +
       "</div>" +
       '<div class="gc-panel__body"></div>' +
-      '<div class="gc-panel__foot"></div>' +
     "</aside>");
   content.appendChild(panel);
   var pbody = panel.querySelector(".gc-panel__body");
-  var pfoot = panel.querySelector(".gc-panel__foot");
+  var addBtn = panel.querySelector(".gc-add");
+  var titleBtn = panel.querySelector(".gc-panel__title");
 
   var composer = el(
     '<form class="gc-composer" hidden>' +
@@ -389,27 +377,28 @@
   // 안내 띠 — 핀을 찍을 수 있는 상태에서만 (file:// 로 연 화면에서는 감춘다)
   function paintHint() { hint.hidden = mode !== "comments" || !!draft || (!layer && !frame.hidden); }
   function setMode(m) {
-    mode = m || "";
-    body.setAttribute("data-gc", mode || "off");
-    panel.hidden = !mode;
-    Array.prototype.forEach.call(bar.querySelectorAll("[data-mode]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-mode") === mode)); });
-    Array.prototype.forEach.call(panel.querySelectorAll("[data-tab]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-tab") === mode)); });
+    mode = m === "comments" ? "comments" : "";
+    body.setAttribute("data-gc", mode ? "place" : "view");
+    addBtn.setAttribute("aria-pressed", String(!!mode));
+    addBtn.querySelector("span").textContent = mode ? "취소" : "코멘트 남기기";
     paintHint();
-    if (mode !== "comments") draftCancel();
+    if (!mode) draftCancel();
     if (layer) layer.hover.hidden = true;
-    store("mode", mode);
-    G.fit();
     renderAll();
   }
-  bar.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-mode]"); if (!b) return;
-    var m = b.getAttribute("data-mode");
-    setMode(mode === m ? "" : m);
+  addBtn.addEventListener("click", function () {
+    if (mode) { setMode(""); return; }
+    setMode("comments");
+    // 퍼블리싱 전 화면은 찍을 화면이 없으니 바로 작성창
+    if (frame.hidden) startDraft(null);
   });
-  panel.querySelector(".gc-tabs").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-tab]"); if (b) setMode(b.getAttribute("data-tab"));
+  // 모바일 시트 — 머리를 누르면 펼침/접힘
+  titleBtn.addEventListener("click", function () {
+    if (!G.isMobile()) return;
+    var open = body.getAttribute("data-gc-sheet") !== "open";
+    body.setAttribute("data-gc-sheet", open ? "open" : "closed");
+    titleBtn.setAttribute("aria-expanded", String(open));
   });
-  panel.querySelector(".gc-close").addEventListener("click", function () { setMode(""); });
 
   function typing(t) { return t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable); }
   function onKey(e) {
@@ -457,6 +446,7 @@
     if (!draft) return;
     draft = null; composer.hidden = true;
     body.removeAttribute("data-gc-draft");
+    if (mode) { setMode(""); return; }          // 한 번 남기거나 취소하면 보기 상태로
     paintHint();
     renderPins();
   }
@@ -496,8 +486,8 @@
     items.push(c); selected = c.id;
     draft = null; composer.hidden = true;
     body.removeAttribute("data-gc-draft");
-    paintHint();
-    renderAll(); scrollToSelected();
+    setMode("");
+    scrollToSelected();
     DB.add(c).then(function () { say(DB.shared ? "코멘트를 남겼어요" : "이 브라우저에만 저장했어요"); refresh(); })
       .catch(function (err) { items = items.filter(function (i) { return i !== c; }); renderAll(); say(err.message || "저장하지 못했어요", true); });
   }
@@ -573,7 +563,6 @@
       else if (act === "reopen") setStatus(id, "open");
       else if (act === "delete") removeItem(id);
       else if (act === "link") copyLink(id);
-      else if (act === "general") startDraft(null);
       else if (act === "resolved-toggle") { showResolved = !showResolved; renderAll(); }
       return;
     }
@@ -611,7 +600,7 @@
   }
   function renderBadges() {
     var here = threadsHere().filter(function (c) { return c.status !== "resolved"; }).length;
-    var cnt = bar.querySelector(".gc-count");
+    var cnt = panel.querySelector(".gc-count");
     cnt.textContent = here; cnt.hidden = !here;
     Array.prototype.forEach.call(G.menu.children, function (a) {
       var n = openCount(a.getAttribute("data-id"));
@@ -666,11 +655,9 @@
   }
 
   function renderPanel() {
-    if (panel.hidden) return;
     var it = G.current();
     var ae = document.activeElement;
-    if (ae && ae.closest && ae.closest(".gc-reply") && ae.value) { renderFoot(); return; }   // 답글을 쓰는 중이면 목록을 다시 그리지 않는다
-    if (mode === "info") { pbody.innerHTML = infoHTML(it); renderFoot(); return; }
+    if (ae && ae.closest && ae.closest(".gc-reply") && ae.value) return;   // 답글을 쓰는 중이면 목록을 다시 그리지 않는다
 
     var list = threadsHere();
     list.forEach(function (c, i) { c._n = i + 1; if (layer && c._placed === undefined) c._placed = !!place(c); });
@@ -679,49 +666,14 @@
     var html = "";
     if (loadError) html += '<p class="gc-notice" data-bad="true">' + esc(loadError) + "</p>";
     if (!layer && it && it.page && !frame.hidden && location.protocol === "file:")
-      html += '<p class="gc-notice">파일(file://)로 열면 화면 위에 핀을 찍을 수 없어요. 배포 주소나 로컬 서버로 열어 주세요. 위치 없는 코멘트는 남길 수 있어요.</p>';
-    if (!list.length) html += '<div class="gc-empty"><p>이 화면에 남긴 코멘트가 없어요.</p><p>화면을 누르면 그 위치에 코멘트를 남길 수 있어요.</p></div>';
+      html += '<p class="gc-notice">파일(file://)로 열면 화면 위에 핀을 찍을 수 없어요. 배포 주소나 로컬 서버로 열어 주세요.</p>';
+    if (!list.length) html += '<div class="gc-empty"><p>이 화면에 남긴 코멘트가 없어요.</p><p>[코멘트 남기기]를 누르고 화면에서 위치를 고르세요.</p></div>';
     html += open.map(threadHTML).join("");
     if (done.length) {
       html += '<button type="button" class="gc-resolved-toggle" data-act="resolved-toggle" aria-expanded="' + showResolved + '">해결된 코멘트 ' + done.length + "개 " + (showResolved ? "숨기기" : "보기") + "</button>";
       if (showResolved) html += done.map(threadHTML).join("");
     }
     pbody.innerHTML = html;
-    renderFoot();
-  }
-
-  function renderFoot() {
-    if (mode === "info") { pfoot.innerHTML = ""; pfoot.hidden = true; return; }
-    pfoot.hidden = false;
-    pfoot.innerHTML =
-      '<button type="button" class="ds-btn" data-variant="neutralOutline" data-size="small" data-width="fill" data-act="general">위치 없이 코멘트 남기기</button>' +
-      '<p class="gc-store" data-shared="' + DB.shared + '">' +
-        (DB.shared ? "공유 저장소에 저장 · 모두에게 보여요" : "⚠ 이 브라우저에만 저장돼요 — config.js 에 comments.endpoint 를 넣으면 공유됩니다") +
-        (me.name ? ' · <button type="button" class="gc-mini gc-rename">' + esc(me.name) + " 이름 바꾸기</button>" : "") +
-      "</p>";
-  }
-  pfoot.addEventListener("click", function (e) {
-    if (e.target.closest("[data-act=general]")) startDraft(null);
-    if (e.target.closest(".gc-rename")) {
-      var n = window.prompt("코멘트에 표시할 이름", me.name);
-      if (n && n.trim()) { me.name = n.trim(); store("name", me.name); renderFoot(); }
-    }
-  });
-
-  function infoHTML(it) {
-    if (!it) return "";
-    var f = G.cfg.figmaFile, url = function (n) { return "https://www.figma.com/design/" + f + "/?node-id=" + n; };
-    var page = it.page ? it.page + (it.hash ? "#" + it.hash : "") : "";
-    return '<div class="gc-info">' +
-      '<p class="gc-info__title">' + esc(G.cfg.srcLabel + it.sb + " " + it.name) + "</p>" +
-      '<dl class="gc-info__dl">' +
-        "<dt>상태</dt><dd>" + (it.page ? "퍼블리싱 완료" : "퍼블리싱 예정") + "</dd>" +
-        (page ? '<dt>파일</dt><dd><a href="' + esc(page) + '" target="_blank" rel="noopener">' + esc(page.replace(/^(\.\.\/)+/, "")) + "</a></dd>" : "") +
-        (f && it.figma ? '<dt>피그마</dt><dd><a href="' + url(it.figma) + '" target="_blank" rel="noopener">PC ' + esc(it.figma) + "</a>" +
-          (it.figmaMo ? ' · <a href="' + url(it.figmaMo) + '" target="_blank" rel="noopener">MO ' + esc(it.figmaMo) + "</a>" : "") + "</dd>" : "") +
-      "</dl>" +
-      (it.notes && it.notes.length ? '<p class="gc-info__sub">확인 포인트</p><ul class="gc-info__notes">' + it.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "") +
-    "</div>";
   }
 
   /* ---- 불러오기 · 주기적 갱신 ------------------------------------------- */
@@ -772,8 +724,8 @@
     if (selected !== c.id) select(c.id);
   }
 
-  setMode(store("mode") === "comments" || store("mode") === "info" ? store("mode") : "");
+  setMode("");
   if (frameDoc()) attach();
   refresh().then(openFromHash);
-  setInterval(function () { if (mode === "comments") schedule(); }, 1000);   // 애니메이션·지연 로딩 대비
+  setInterval(schedule, 1000);   // 애니메이션·지연 로딩 대비
 })();
