@@ -212,7 +212,7 @@
     ".pin[data-role=etc]{--c:var(--ybm-color-bg-neutral-solid)}" +
     ".pin[data-status=resolved]{--c:var(--ybm-color-bg-disabled);color:var(--ybm-color-fg-disabled)}" +
     ".pin[aria-current=true]{box-shadow:0 0 0 3px var(--c),var(--ybm-elevation-floating);z-index:2}" +
-    ".pin[data-draft]{--c:var(--ybm-color-bg-neutral-solid);animation:pop var(--ybm-duration-normal) var(--ybm-easing-standard)}" +
+    ".pin[data-draft]{width:28px;animation:pop var(--ybm-duration-normal) var(--ybm-easing-standard)}" +
     "@keyframes pop{from{transform:translateY(-100%) scale(0)}}" +
     ".hover{position:absolute;pointer-events:none;outline:2px solid var(--ybm-color-stroke-neutral-contrast);outline-offset:-1px;background:var(--ybm-color-bg-transparent-pressed);border-radius:var(--ybm-shape-2xs)}" +
     ".hover[hidden]{display:none}";
@@ -348,7 +348,7 @@
     });
     if (draft && draft.anchor) {
       var dp = place(draft.anchor);
-      if (dp) html += '<span class="pin" data-draft style="left:' + dp.x + "px;top:" + dp.y + "px;--inv:" + inv + '">+</span>';
+      if (dp) html += '<span class="pin" data-draft data-role="' + esc(me.role) + '" style="left:' + dp.x + "px;top:" + dp.y + "px;--inv:" + inv + '"></span>';
     }
     if (layer.last !== html) { layer.last = html; layer.pins.innerHTML = html; }   // 바뀔 때만 다시 그린다
   }
@@ -376,13 +376,14 @@
   var titleBtn = panel.querySelector(".gc-panel__title");
 
   var composer = el(
-    '<form class="ds-card gc-composer" data-variant="elevated" data-size="small" hidden>' +
-      whoHTML() +
-      '<textarea class="ds-textarea gc-text" data-size="medium" name="text" rows="3" maxlength="2000" placeholder="코멘트 입력 · @로 멘션 (Ctrl+Enter 등록)"></textarea>' +
-      '<div class="gc-actions gc-actions--end">' +
-        '<button type="button" class="ds-btn gc-cancel" data-variant="ghost" data-size="small">취소</button>' +
-        '<button type="submit" class="ds-btn" data-variant="neutralSolid" data-size="small">등록</button>' +
+    // 피그마식 작성창 — 핀 바로 옆 한 줄 입력 + 보내기(↑). 처음 한 번만 이름·역할 카드가 위에 붙는다
+    '<form class="gc-composer" hidden>' +
+      '<div class="ds-card gc-composer__who" data-variant="elevated" data-size="small">' + whoHTML() + "</div>" +
+      '<div class="ds-input gc-bubble" data-variant="outline" data-size="medium">' +
+        '<textarea class="ds-input__control gc-text" name="text" rows="1" maxlength="2000" placeholder="코멘트 입력 · @멘션" aria-label="코멘트"></textarea>' +
+        '<button type="submit" class="ds-btn gc-send" data-variant="neutralSolid" data-size="xsmall" data-layout="iconOnly" aria-label="등록" disabled><i class="ds-icon ds-icon--arrow-up" aria-hidden="true"></i></button>' +
       "</div>" +
+      '<button type="button" class="ds-link gc-whoedit" hidden></button>' +
     "</form>");
   stage.appendChild(composer);
   // 알림 — DS Snackbar (ybm-ds.js 의 YBM.snackbar)
@@ -442,7 +443,7 @@
   }
   composer.querySelector(".gc-roles").addEventListener("click", function (e) {
     var b = e.target.closest("[data-role]"); if (!b) return;
-    me.role = b.getAttribute("data-role"); store("role", me.role); paintRole();
+    me.role = b.getAttribute("data-role"); store("role", me.role); paintRole(); renderPins();
   });
 
   function startDraft(anchor) {
@@ -452,15 +453,33 @@
     body.setAttribute("data-gc-draft", "true");
     if (layer) layer.hover.hidden = true;
     nameInput.value = me.name;
-    textInput.value = "";
+    textInput.value = ""; growText(); sendBtn.disabled = true;
     paintRole();
+    paintWho(!me.name);
       composer.hidden = false;
     paintHint();
     composer.setAttribute("data-floating", anchor && layer ? "true" : "false");
     renderAll();
     placeComposer();
-    setTimeout(function () { (me.name ? textInput : nameInput).focus({ preventScroll: true }); }, 0);
+    setTimeout(function () { (me.name ? textInput : nameInput).focus({ preventScroll: true }); placeComposer(); }, 0);
   }
+  var sendBtn = composer.querySelector(".gc-send");
+  var whoBox = composer.querySelector(".gc-composer__who");
+  var whoEdit = composer.querySelector(".gc-whoedit");
+  // 이름을 이미 아는 사람은 입력칸만 — 아래 작은 링크로 이름·역할을 바꿀 수 있다
+  function paintWho(show) {
+    whoBox.hidden = !show;
+    whoEdit.hidden = show || !me.name;
+    whoEdit.textContent = me.name + " · " + roleLabel(me.role) + " 변경";
+  }
+  whoEdit.addEventListener("click", function () { paintWho(true); nameInput.focus(); placeComposer(); });
+  // 내용에 맞춰 입력칸이 늘어난다 (최대 160). 비었거나 숨겨져 있으면 기본 한 줄
+  function growText() {
+    textInput.style.height = "";
+    if (!textInput.value || !textInput.offsetParent) return;
+    textInput.style.height = Math.min(textInput.scrollHeight, 160) + "px";
+  }
+  textInput.addEventListener("input", function () { growText(); sendBtn.disabled = !textInput.value.trim(); placeComposer(); });
   function draftCancel() {
     if (!draft) return;
     draft = null; composer.hidden = true;
@@ -469,23 +488,31 @@
     paintHint();
     renderPins();
   }
-  composer.querySelector(".gc-cancel").addEventListener("click", draftCancel);
   composer.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submit(); }
+    // Enter 등록 · Shift+Enter 줄바꿈 (멘션 목록이 열려 있으면 멘션 선택이 먼저)
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing && e.target === textInput && !mstate) { e.preventDefault(); submit(); }
+    else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submit(); }
     if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); draftCancel(); }
   });
   composer.addEventListener("submit", function (e) { e.preventDefault(); submit(); });
+  document.addEventListener("pointerdown", function (e) {
+    if (!draft || composer.hidden || composer.contains(e.target) || e.target.closest(".gc-mention-menu, .gc-add")) return;
+    if (!textInput.value.trim()) draftCancel();
+  });
 
   // 작성창을 핀 옆에 띄운다 (iframe 축소 비율 반영). 모바일·위치 없는 코멘트는 고정 위치
   function placeComposer() {
     if (!draft || composer.hidden || composer.getAttribute("data-floating") !== "true" || G.isMobile()) { composer.style.left = composer.style.top = ""; return; }
     var p = place(draft.anchor); if (!p || !layer) return;
     var k = frameScale(), fr = frame.getBoundingClientRect(), sr = stage.getBoundingClientRect();
-    var x = fr.left - sr.left + (p.x - layer.win.scrollX) * k + 44;
-    var y = fr.top - sr.top + (p.y - layer.win.scrollY) * k - 20;
+    var bubble = composer.querySelector(".gc-bubble");
+    var px = fr.left - sr.left + (p.x - layer.win.scrollX) * k;        // 핀이 꽂힌 점 (핀은 점에서 오른쪽 위로 28)
+    var py = fr.top - sr.top + (p.y - layer.win.scrollY) * k;
+    var x = px + 28 + 8;
+    var y = py - 14 - (bubble.offsetTop + bubble.offsetHeight / 2);      // 입력칸 가운데 = 핀 가운데
     var w = composer.offsetWidth, h = composer.offsetHeight;
-    if (x + w > sr.width - 12) x = Math.max(12, x - w - 56);
-    y = Math.min(Math.max(12, y), sr.height - h - 72);
+    if (x + w > sr.width - 12) x = Math.max(12, px - w - 8);
+    y = Math.min(Math.max(12, y), sr.height - h - 12);
     composer.style.left = x + "px"; composer.style.top = y + "px";
   }
 
