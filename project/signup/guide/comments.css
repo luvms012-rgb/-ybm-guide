@@ -90,7 +90,8 @@ body.guide { --gc-panel-width: 360px; }
 .gc-composer[hidden], .gc-composer__who[hidden], .gc-whoedit[hidden] { display: none; }
 .gc-bubble {
   align-items: flex-end;
-  padding: var(--ybm-space-x1) var(--ybm-space-x1) var(--ybm-space-x1) var(--ybm-space-x4);
+  /* 보내기 버튼(32)이 위·아래·오른쪽 모두 6 떨어진 원이 되도록 — 한 줄일 때 입력칸 높이도 32 로 맞춘다 */
+  padding: var(--ybm-space-x1_5) var(--ybm-space-x1_5) var(--ybm-space-x1_5) var(--ybm-space-x4);
   border-radius: var(--ybm-radius-r5);
   background: var(--ybm-color-bg-layer-floating);
   box-shadow: inset 0 0 0 1px var(--ds-input-line), var(--ybm-elevation-overlay);
@@ -100,7 +101,7 @@ body.guide { --gc-panel-width: 360px; }
 .gc-bubble .gc-text {
   flex: 1 1 auto; min-width: 0;
   align-self: center;
-  padding: var(--ybm-space-x1_5) 0;
+  padding: var(--ybm-space-x1) 0;
   border: 0; outline: 0; background: none; resize: none; overflow-y: auto;
   color: var(--ybm-color-fg-neutral);
   font: inherit; font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05);
