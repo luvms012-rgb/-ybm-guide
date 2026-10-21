@@ -38,6 +38,21 @@
     { id: "design", label: "디자인", tone: "warning" }
   ];
   function roleTone(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].tone; return ""; }
+  // 멘션 대상 = 역할 3개 + 이 프로젝트에 코멘트를 남긴 사람들
+  function mentionables() {
+    var seen = {}, out = [];
+    ROLES.forEach(function (r) { seen[r.label] = 1; out.push({ name: r.label, role: true, tone: r.tone }); });
+    (typeof items !== "undefined" ? items : []).concat(me.name ? [{ author: me.name, role: me.role }] : []).forEach(function (i) {
+      var n = (i.author || "").trim();
+      if (n && !seen[n]) { seen[n] = 1; out.push({ name: n, tone: roleTone(i.role) }); }
+    });
+    return out;
+  }
+  function isMe(n) { return !!me.name && (n === me.name || n === roleLabel(me.role)); }
+  function mentionsMe(text) {
+    if (!me.name) return false;
+    return [me.name, roleLabel(me.role)].some(function (n) { return n && new RegExp("@" + n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\w가-힣])").test(text || ""); });
+  }
   function roleLabel(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].label; return ""; }
 
   var body = document.body;
@@ -47,7 +62,17 @@
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); }
   function richText(t) {
-    return esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, "<br>");
+    var h = esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+    // @멘션 — 코멘트를 남긴 사람 이름 · 역할(@기획 @개발 @디자인). 긴 이름부터 맞춘다
+    var names = mentionables().map(function (m) { return m.name; }).sort(function (a, b) { return b.length - a.length; });
+    if (names.length) {
+      var re = new RegExp("@(" + names.map(function (n) { return esc(n).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")(?![\\w가-힣])", "g");
+      h = h.replace(re, function (all, n) {
+        var mine = isMe(n);
+        return '<span class="gc-mention"' + (mine ? ' data-me="true"' : "") + ">@" + n + "</span>";
+      });
+    }
+    return h.replace(/\n/g, "<br>");
   }
   function ago(iso) {
     var t = new Date(iso).getTime(); if (!t) return "";
@@ -179,7 +204,7 @@
     ".pins{position:absolute;left:0;top:0}" +
     ".pin{--c:var(--ybm-color-bg-brand-solid);position:absolute;display:grid;place-items:center;min-width:28px;height:28px;padding:0 var(--ybm-space-x1_5);box-sizing:border-box;" +
     "border:2px solid var(--ybm-color-palette-static-white);border-radius:var(--ybm-shape-pill) var(--ybm-shape-pill) var(--ybm-shape-pill) var(--ybm-radius-r0_5);" +
-    "background:var(--c);color:var(--ybm-color-palette-static-white);font-family:var(--ybm-font-family-base);font-size:var(--ybm-font-size-t03);line-height:1;font-weight:var(--ybm-font-weight-semibold);cursor:pointer;" +
+    "background:var(--c);color:var(--ybm-color-palette-static-white);font-family:var(--ybm-font-family-base);font-size:var(--ybm-font-size-t05);line-height:1;font-weight:var(--ybm-font-weight-semibold);cursor:pointer;" +
     "box-shadow:var(--ybm-elevation-raised);transform-origin:0 100%;transform:translateY(-100%) scale(var(--inv,1));transition:transform var(--ybm-duration-fast) var(--ybm-easing-standard)}" +
     ".pin:hover{transform:translateY(-100%) scale(calc(var(--inv,1)*1.12))}" +
     ".pin[data-role=dev]{--c:var(--ybm-color-bg-positive-solid)}" +
@@ -353,7 +378,7 @@
   var composer = el(
     '<form class="ds-card gc-composer" data-variant="elevated" data-size="small" hidden>' +
       whoHTML() +
-      '<textarea class="ds-textarea gc-text" data-size="medium" name="text" rows="3" maxlength="2000" placeholder="코멘트를 입력하세요 (Ctrl+Enter 등록)"></textarea>' +
+      '<textarea class="ds-textarea gc-text" data-size="medium" name="text" rows="3" maxlength="2000" placeholder="코멘트 입력 · @로 멘션 (Ctrl+Enter 등록)"></textarea>' +
       '<div class="gc-actions gc-actions--end">' +
         '<button type="button" class="ds-btn gc-cancel" data-variant="ghost" data-size="small">취소</button>' +
         '<button type="submit" class="ds-btn" data-variant="neutralSolid" data-size="small">등록</button>' +
@@ -361,8 +386,11 @@
     "</form>");
   stage.appendChild(composer);
   // 알림 — DS Snackbar (ybm-ds.js 의 YBM.snackbar)
-  function say(msg, bad) {
-    if (window.YBM && YBM.snackbar) YBM.snackbar(msg, { variant: bad ? "critical" : "positive", duration: 2600 });
+  function say(msg, bad, more) {
+    if (!(window.YBM && YBM.snackbar)) return;
+    var o = { variant: bad ? "critical" : "positive", duration: more ? 4000 : 2600 };
+    if (more) { o.action = more.action; o.onAction = more.onAction; }
+    YBM.snackbar(msg, o);
   }
 
   /* ---- 모드 ------------------------------------------------------------- */
@@ -494,9 +522,14 @@
   function setStatus(id, status) {
     var c = find(id); if (!c) return;
     var prev = c.status; c.status = status;
-    if (status === "resolved" && selected === id) selected = null;
+    // 해결하면 바로 목록·화면에서 숨긴다 (해결된 코멘트 n개 보기 를 열어야 보인다)
+    if (status === "resolved") { if (selected === id) selected = null; showResolved = false; }
     renderAll();
-    DB.update(id, { status: status }).then(function () { say(status === "resolved" ? "해결됨으로 표시했어요" : "다시 열었어요"); refresh(); })
+    DB.update(id, { status: status }).then(function () {
+      if (status === "resolved") say("해결됨으로 숨겼어요", false, { action: "실행 취소", onAction: function () { setStatus(id, "open"); } });
+      else say("다시 열었어요");
+      refresh();
+    })
       .catch(function (err) { c.status = prev; renderAll(); say(err.message, true); });
   }
   function removeItem(id) {
@@ -612,6 +645,7 @@
   }
   function threadHTML(c) {
     var rs = repliesOf(c.id), open = c.id === selected, mine = c.cid === me.cid;
+    var mentioned = c.status !== "resolved" && [c].concat(rs).some(function (x) { return x.cid !== me.cid && mentionsMe(x.text); });
     var whereNote = "";
     if (c.state.indexOf("screen:") !== 0 && c.sel !== undefined) {
       if (!c.sel && c.x === "") whereNote = '<span class="gc-where">위치 없음</span>';
@@ -626,7 +660,9 @@
       "</div>" +
       '<div class="gc-text-body">' + richText(c.text) + "</div>" +
       whereNote +
-      (rs.length && !open ? '<div class="gc-meta">답글 ' + rs.length + "개</div>" : "") +
+      ((rs.length && !open) || mentioned ? '<div class="gc-meta">' +
+        (mentioned ? '<span class="ds-badge" data-tone="brand">나를 언급</span>' : "") +
+        (rs.length && !open ? "<span>답글 " + rs.length + "개</span>" : "") + "</div>" : "") +
       (open ?
         '<div class="gc-replies">' + rs.map(function (r) {
           return '<div class="gc-replyitem"><div class="gc-thread__head"><span class="gc-author">' + esc(r.author) + '</span>' + (roleLabel(r.role) ? '<span class="ds-badge" data-tone="' + roleTone(r.role) + '">' + roleLabel(r.role) + "</span>" : "") +
@@ -634,7 +670,7 @@
             (r.cid === me.cid ? '<button type="button" class="ds-link gc-mini" data-act="delete" data-id="' + esc(r.id) + '">삭제</button>' : "") +
             '</div><div class="gc-text-body">' + richText(r.text) + "</div></div>";
         }).join("") + "</div>" +
-        '<form class="gc-reply" data-id="' + esc(c.id) + '">' + (me.name ? "" : whoHTML()) + '<textarea class="ds-textarea" data-size="medium" rows="2" maxlength="2000" placeholder="답글 (Ctrl+Enter)"></textarea>' +
+        '<form class="gc-reply" data-id="' + esc(c.id) + '">' + (me.name ? "" : whoHTML()) + '<textarea class="ds-textarea" data-size="medium" rows="2" maxlength="2000" placeholder="답글 · @로 멘션 (Ctrl+Enter)"></textarea>' +
           '<button type="submit" class="ds-btn" data-variant="neutralWeak" data-size="xsmall">답글</button></form>' +
         '<div class="gc-actions">' +
           (c.status === "resolved"
@@ -716,6 +752,63 @@
     if (mode !== "comments") setMode("comments");
     if (selected !== c.id) select(c.id);
   }
+
+  /* ---- @멘션 자동완성 — DS Menu ------------------------------------------
+     작성창·답글 textarea 에서 @ 를 치면 후보(역할 3개 + 코멘트 남긴 사람)를 띄운다.
+     ↑↓ 이동 · Enter/Tab 선택 · Esc 닫기 */
+  var mmenu = el('<div class="ds-menu gc-mention-menu" role="listbox" aria-label="멘션" hidden></div>');
+  var mstate = null;   // { ta, start, list, idx }
+  function mentionQuery(ta) {
+    var before = ta.value.slice(0, ta.selectionStart);
+    var m = /(^|[\s(])@([^\s@]{0,20})$/.exec(before);
+    return m ? { start: before.length - m[2].length - 1, q: m[2] } : null;
+  }
+  function closeMention() { mstate = null; mmenu.hidden = true; }
+  function paintMention() {
+    mmenu.innerHTML = mstate.list.map(function (m, i) {
+      return '<button type="button" class="ds-menu-item" role="option" data-i="' + i + '" aria-selected="' + (i === mstate.idx) + '">' +
+        '<span class="ds-badge" data-variant="solid" data-tone="' + (m.tone || "") + '">' + (m.role ? "역할" : esc(m.name.slice(0, 1))) + "</span>" + esc(m.name) + "</button>";
+    }).join("");
+  }
+  function openMention(ta) {
+    var q = mentionQuery(ta);
+    if (!q) { closeMention(); return; }
+    var k = q.q.toLowerCase();
+    var list = mentionables().filter(function (m) { return !k || m.name.toLowerCase().indexOf(k) > -1; }).slice(0, 8);
+    if (!list.length) { closeMention(); return; }
+    mstate = { ta: ta, start: q.start, list: list, idx: 0 };
+    var box = ta.closest("form");
+    if (mmenu.parentNode !== box) box.appendChild(mmenu);
+    mmenu.style.top = (ta.offsetTop + ta.offsetHeight + 4) + "px";
+    mmenu.hidden = false;
+    paintMention();
+  }
+  function pickMention(i) {
+    var m = mstate && mstate.list[i]; if (!m) return;
+    var ta = mstate.ta, caret = ta.selectionStart;
+    ta.value = ta.value.slice(0, mstate.start) + "@" + m.name + " " + ta.value.slice(caret);
+    var pos = mstate.start + m.name.length + 2;
+    ta.focus(); ta.setSelectionRange(pos, pos);
+    closeMention();
+  }
+  function isMentionField(t) { return t && t.tagName === "TEXTAREA" && t.closest && t.closest(".gc-composer, .gc-reply"); }
+  document.addEventListener("input", function (e) { if (isMentionField(e.target)) openMention(e.target); });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".gc-mention-menu [data-i]");
+    if (b) { e.preventDefault(); pickMention(+b.getAttribute("data-i")); return; }
+    if (mstate && e.target !== mstate.ta) closeMention();
+  }, true);
+  document.addEventListener("keydown", function (e) {
+    if (!mstate || e.target !== mstate.ta) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      mstate.idx = (mstate.idx + (e.key === "ArrowDown" ? 1 : -1) + mstate.list.length) % mstate.list.length;
+      paintMention(); e.preventDefault(); e.stopPropagation();
+    } else if ((e.key === "Enter" && !e.ctrlKey && !e.metaKey) || e.key === "Tab") {
+      pickMention(mstate.idx); e.preventDefault(); e.stopPropagation();
+    } else if (e.key === "Escape") {
+      closeMention(); e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
 
   setMode("");
   if (frameDoc()) attach();

@@ -38,7 +38,7 @@ body.guide { --gc-panel-width: 360px; }
 .gc-panel__title {
   display: inline-flex; align-items: center; gap: var(--ybm-space-x1_5);
   color: var(--ybm-color-fg-neutral); cursor: default;
-  font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); font-weight: var(--ybm-font-weight-bold);
+  font-size: var(--ybm-font-size-t06); line-height: var(--ybm-line-height-t06); font-weight: var(--ybm-font-weight-bold);
 }
 .gc-count[hidden] { display: none; }
 /* 위치 지정 중 — 버튼이 [취소] 로 바뀐다 (DS neutralWeak 와 같은 값) */
@@ -56,12 +56,12 @@ body.guide { --gc-panel-width: 360px; }
 .gc-thread:hover { background: var(--ybm-color-bg-neutral-muted); }
 .gc-thread[aria-current="true"] { cursor: default; background: var(--ybm-color-bg-layer-default); box-shadow: inset 0 0 0 2px var(--ybm-color-stroke-neutral-contrast); }
 .gc-thread[data-status="resolved"] .gc-text-body { color: var(--ybm-color-fg-neutral-subtle); }
-.gc-thread__head { display: flex; align-items: center; gap: var(--ybm-space-x1_5); min-width: 0; font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
+.gc-thread__head { display: flex; align-items: center; gap: var(--ybm-space-x1_5); min-width: 0; font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
 .gc-author { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: var(--ybm-font-weight-semibold); }
-.gc-time { margin-left: auto; flex: none; color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t02); line-height: var(--ybm-line-height-t02); }
-.gc-text-body { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); word-break: keep-all; overflow-wrap: anywhere; }
+.gc-time { margin-left: auto; flex: none; color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
+.gc-text-body { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); word-break: keep-all; overflow-wrap: anywhere; }
 .gc-text-body a { color: var(--ybm-color-fg-informative); text-decoration: underline; }
-.gc-meta, .gc-where { color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t02); line-height: var(--ybm-line-height-t02); }
+.gc-meta, .gc-where { color: var(--ybm-color-fg-neutral-subtle); font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
 
 .gc-replies { display: grid; gap: var(--ybm-space-x2); padding-left: var(--ybm-space-x3); border-left: 2px solid var(--ybm-color-stroke-neutral-weak); }
 .gc-replies:empty { display: none; }
@@ -71,7 +71,7 @@ body.guide { --gc-panel-width: 360px; }
 .gc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ybm-space-x1); }
 .gc-actions--end { justify-content: flex-end; }
 /* .ds-link 를 작은 텍스트 버튼으로 (크기만 조정) */
-.gc-mini, .gc-resolved-toggle { font-size: var(--ybm-font-size-t02); line-height: var(--ybm-line-height-t02); }
+.gc-mini, .gc-resolved-toggle { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }
 .gc-resolved-toggle { align-self: flex-start; padding-block: var(--ybm-space-x2); }
 
 /* ---- 이름 · 역할 (작성창과 첫 답글에서 공용) ---------------------------- */
@@ -132,3 +132,14 @@ body.guide { --gc-panel-width: 360px; }
   .gc-hint { white-space: normal; max-width: calc(100% - var(--ybm-space-x8)); }
   .guide .ds-snackbar { bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
+
+/* ---- @멘션 ------------------------------------------------------------- */
+.gc-mention { color: var(--ybm-color-fg-brand); font-weight: var(--ybm-font-weight-semibold); white-space: nowrap; }
+.gc-mention[data-me="true"] { padding-inline: var(--ybm-space-x0_5); border-radius: var(--ybm-shape-2xs); background: var(--ybm-color-bg-brand-weak); }
+.gc-meta { display: flex; align-items: center; gap: var(--ybm-space-x1_5); }
+/* 자동완성 — DS Menu 를 입력칸 바로 아래에 띄운다 */
+.gc-reply { position: relative; }               /* 작성창은 이미 absolute · fixed */
+.gc-mention-menu { position: absolute; z-index: var(--ybm-z-tooltip); left: 0; right: 0; min-width: 0; max-height: 280px; overflow-y: auto; }
+.gc-mention-menu[hidden] { display: none; }
+.gc-mention-menu .ds-menu-item[aria-selected="true"] { background: var(--ybm-color-bg-neutral-weak-alpha); }
+.gc-mention-menu .ds-badge { min-width: var(--ybm-space-x6); }
