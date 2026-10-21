@@ -33,10 +33,11 @@
   var POLL = Math.max(5000, CC.poll || 15000);
 
   var ROLES = [
-    { id: "plan", label: "기획" },
-    { id: "dev", label: "개발" },
-    { id: "design", label: "디자인" }
+    { id: "plan", label: "기획", tone: "brand" },
+    { id: "dev", label: "개발", tone: "positive" },
+    { id: "design", label: "디자인", tone: "warning" }
   ];
+  function roleTone(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].tone; return ""; }
   function roleLabel(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].label; return ""; }
 
   var body = document.body;
@@ -59,7 +60,6 @@
   }
   function store(k, v) { return G.store("cmt-" + k, v); }
   function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
-  var ICON_MSG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>';
 
   /* ---- 나 (비로그인 — 이 브라우저를 구분하는 임의 id + 이름) -------------- */
   var me = { cid: store("cid"), name: store("name") || "", role: store("role") || "plan" };
@@ -173,21 +173,23 @@
   /* ======================================================================
      화면(iframe) 안 핀 레이어 — Shadow DOM 이라 화면 CSS 와 섞이지 않는다
      ====================================================================== */
+  // 핀은 화면(iframe) 안 Shadow DOM 에 그린다 — DS 토큰은 화면 문서(ybm-ds.css)에서 상속받는다
   var PIN_CSS =
     ":host{all:initial}" +
     ".pins{position:absolute;left:0;top:0}" +
-    ".pin{--c:var(--ybm-color-bg-magic-solid,#8969ea);position:absolute;display:grid;place-items:center;min-width:28px;height:28px;padding:0 6px;box-sizing:border-box;" +
-    "border:2px solid #fff;border-radius:14px 14px 14px 2px;background:var(--c);color:#fff;font:600 13px/1 Pretendard,system-ui,sans-serif;cursor:pointer;" +
-    "box-shadow:0 2px 8px rgba(0,0,0,.25);transform-origin:0 100%;transform:translateY(-100%) scale(var(--inv,1));transition:transform .15s}" +
+    ".pin{--c:var(--ybm-color-bg-brand-solid);position:absolute;display:grid;place-items:center;min-width:28px;height:28px;padding:0 var(--ybm-space-x1_5);box-sizing:border-box;" +
+    "border:2px solid var(--ybm-color-palette-static-white);border-radius:var(--ybm-shape-pill) var(--ybm-shape-pill) var(--ybm-shape-pill) var(--ybm-radius-r0_5);" +
+    "background:var(--c);color:var(--ybm-color-palette-static-white);font-family:var(--ybm-font-family-base);font-size:var(--ybm-font-size-t03);line-height:1;font-weight:var(--ybm-font-weight-semibold);cursor:pointer;" +
+    "box-shadow:var(--ybm-elevation-raised);transform-origin:0 100%;transform:translateY(-100%) scale(var(--inv,1));transition:transform var(--ybm-duration-fast) var(--ybm-easing-standard)}" +
     ".pin:hover{transform:translateY(-100%) scale(calc(var(--inv,1)*1.12))}" +
-    ".pin[data-role=dev]{--c:var(--ybm-color-bg-informative-solid,#1d6ef0)}" +
-    ".pin[data-role=design]{--c:var(--ybm-color-bg-positive-solid,#16a34a)}" +
-    ".pin[data-role=etc]{--c:var(--ybm-color-bg-neutral-solid,#222)}" +
-    ".pin[data-status=resolved]{--c:#9aa0a6;opacity:.85}" +
-    ".pin[aria-current=true]{box-shadow:0 0 0 3px var(--c),0 4px 12px rgba(0,0,0,.3);z-index:2}" +
-    ".pin[data-draft]{--c:var(--ybm-color-bg-neutral-solid,#222);animation:pop .2s}" +
+    ".pin[data-role=dev]{--c:var(--ybm-color-bg-positive-solid)}" +
+    ".pin[data-role=design]{--c:var(--ybm-color-bg-warning-solid)}" +
+    ".pin[data-role=etc]{--c:var(--ybm-color-bg-neutral-solid)}" +
+    ".pin[data-status=resolved]{--c:var(--ybm-color-bg-disabled);color:var(--ybm-color-fg-disabled)}" +
+    ".pin[aria-current=true]{box-shadow:0 0 0 3px var(--c),var(--ybm-elevation-floating);z-index:2}" +
+    ".pin[data-draft]{--c:var(--ybm-color-bg-neutral-solid);animation:pop var(--ybm-duration-normal) var(--ybm-easing-standard)}" +
     "@keyframes pop{from{transform:translateY(-100%) scale(0)}}" +
-    ".hover{position:absolute;pointer-events:none;outline:2px solid rgba(137,105,234,.9);outline-offset:-1px;background:rgba(137,105,234,.06);border-radius:4px}" +
+    ".hover{position:absolute;pointer-events:none;outline:2px solid var(--ybm-color-stroke-neutral-contrast);outline-offset:-1px;background:var(--ybm-color-bg-transparent-pressed);border-radius:var(--ybm-shape-2xs)}" +
     ".hover[hidden]{display:none}";
 
   function frameDoc() { try { var d = frame.contentDocument; return d && d.documentElement && frame.contentWindow.location.href !== "about:blank" ? d : null; } catch (e) { return null; } }
@@ -331,15 +333,15 @@
   /* ======================================================================
      뷰어 쪽 UI — 코멘트 창 · 작성창 · 토스트
      ====================================================================== */
-  var hint = el('<div class="gc-hint" hidden>코멘트를 남길 위치를 누르세요 · <kbd>Esc</kbd> 취소</div>');
+  var hint = el('<span class="ds-badge gc-hint" data-variant="solid" data-size="large" hidden>코멘트를 남길 위치를 누르세요 · Esc 취소</span>');
   stage.appendChild(hint);
 
   // 오른쪽 코멘트 창 — 항상 열려 있다 (모바일은 아래 시트, 머리를 누르면 펼침/접힘)
   var panel = el(
     '<aside class="gc-panel" id="gc-panel" aria-label="코멘트">' +
       '<div class="gc-panel__head">' +
-        '<button type="button" class="gc-panel__title" aria-expanded="false">코멘트<span class="gc-count" hidden></span></button>' +
-        '<button type="button" class="ds-btn gc-add" data-variant="neutralSolid" data-size="small" aria-pressed="false" title="코멘트 남기기 (C)">' + ICON_MSG + "<span>코멘트 남기기</span></button>" +
+        '<button type="button" class="gc-panel__title" aria-expanded="false">코멘트<span class="ds-badge gc-count" hidden></span></button>' +
+        '<button type="button" class="ds-btn gc-add" data-variant="neutralSolid" data-size="small" aria-pressed="false" title="코멘트 남기기 (C)"><i class="ds-icon ds-icon--message-circle" aria-hidden="true"></i><span>코멘트 남기기</span></button>' +
       "</div>" +
       '<div class="gc-panel__body"></div>' +
     "</aside>");
@@ -349,28 +351,18 @@
   var titleBtn = panel.querySelector(".gc-panel__title");
 
   var composer = el(
-    '<form class="gc-composer" hidden>' +
-      '<div class="gc-composer__who">' +
-        '<input class="gc-name" name="name" maxlength="20" placeholder="이름" autocomplete="name" aria-label="이름">' +
-        '<div class="gc-roles" role="radiogroup" aria-label="역할">' +
-          ROLES.map(function (r) { return '<button type="button" class="gc-role" data-role="' + r.id + '" role="radio" aria-checked="false">' + r.label + "</button>"; }).join("") +
-        "</div>" +
-      "</div>" +
+    '<form class="ds-card gc-composer" data-variant="elevated" data-size="small" hidden>' +
+      whoHTML() +
       '<textarea class="ds-textarea gc-text" data-size="medium" name="text" rows="3" maxlength="2000" placeholder="코멘트를 입력하세요 (Ctrl+Enter 등록)"></textarea>' +
-      '<div class="gc-composer__actions">' +
-        '<span class="gc-composer__where"></span>' +
+      '<div class="gc-actions gc-actions--end">' +
         '<button type="button" class="ds-btn gc-cancel" data-variant="ghost" data-size="small">취소</button>' +
         '<button type="submit" class="ds-btn" data-variant="neutralSolid" data-size="small">등록</button>' +
       "</div>" +
     "</form>");
   stage.appendChild(composer);
-  var toast = el('<div class="gc-toast" role="status" aria-live="polite" hidden></div>');
-  body.appendChild(toast);
-
-  var toastTimer = 0;
+  // 알림 — DS Snackbar (ybm-ds.js 의 YBM.snackbar)
   function say(msg, bad) {
-    toast.textContent = msg; toast.hidden = false; toast.setAttribute("data-bad", bad ? "true" : "false");
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toast.hidden = true; }, 2600);
+    if (window.YBM && YBM.snackbar) YBM.snackbar(msg, { variant: bad ? "critical" : "positive", duration: 2600 });
   }
 
   /* ---- 모드 ------------------------------------------------------------- */
@@ -418,10 +410,10 @@
   var nameInput = composer.querySelector(".gc-name");
   var textInput = composer.querySelector(".gc-text");
   function paintRole() {
-    Array.prototype.forEach.call(composer.querySelectorAll(".gc-role"), function (b) { b.setAttribute("aria-checked", String(b.getAttribute("data-role") === me.role)); });
+    Array.prototype.forEach.call(composer.querySelectorAll(".gc-roles [data-role]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-role") === me.role)); });
   }
   composer.querySelector(".gc-roles").addEventListener("click", function (e) {
-    var b = e.target.closest(".gc-role"); if (!b) return;
+    var b = e.target.closest("[data-role]"); if (!b) return;
     me.role = b.getAttribute("data-role"); store("role", me.role); paintRole();
   });
 
@@ -434,8 +426,7 @@
     nameInput.value = me.name;
     textInput.value = "";
     paintRole();
-    composer.querySelector(".gc-composer__where").textContent = anchor ? "" : "위치 없는 코멘트";
-    composer.hidden = false;
+      composer.hidden = false;
     paintHint();
     composer.setAttribute("data-floating", anchor && layer ? "true" : "false");
     renderAll();
@@ -488,7 +479,7 @@
     body.removeAttribute("data-gc-draft");
     setMode("");
     scrollToSelected();
-    DB.add(c).then(function () { say(DB.shared ? "코멘트를 남겼어요" : "이 브라우저에만 저장했어요"); refresh(); })
+    DB.add(c).then(function () { say("코멘트를 남겼어요"); refresh(); })
       .catch(function (err) { items = items.filter(function (i) { return i !== c; }); renderAll(); say(err.message || "저장하지 못했어요", true); });
   }
 
@@ -550,10 +541,10 @@
   }
 
   pbody.addEventListener("click", function (e) {
-    var rb = e.target.closest(".gc-role");
+    var rb = e.target.closest(".gc-roles [data-role]");
     if (rb) {
       me.role = rb.getAttribute("data-role"); store("role", me.role);
-      Array.prototype.forEach.call(rb.parentNode.children, function (x) { x.setAttribute("aria-checked", String(x === rb)); });
+      Array.prototype.forEach.call(rb.parentNode.children, function (x) { x.setAttribute("aria-pressed", String(x === rb)); });
       return;
     }
     var b = e.target.closest("[data-act]");
@@ -606,16 +597,17 @@
       var n = openCount(a.getAttribute("data-id"));
       var b = a.querySelector(".gc-nav-count");
       if (!n) { if (b) b.remove(); return; }
-      if (!b) { b = document.createElement("span"); b.className = "gc-nav-count"; a.appendChild(b); }
+      if (!b) { b = document.createElement("span"); b.className = "ds-badge gc-nav-count"; a.appendChild(b); }
       b.textContent = n; b.title = "진행 중인 코멘트 " + n + "개";
     });
   }
 
   // 이름이 아직 없을 때(처음 답글) 이름 + 역할을 같이 받는다
   function whoHTML() {
-    return '<div class="gc-composer__who" data-width="fill"><input class="gc-name" maxlength="20" placeholder="이름" aria-label="이름">' +
-      '<div class="gc-roles" role="radiogroup" aria-label="역할">' + ROLES.map(function (r) {
-        return '<button type="button" class="gc-role" data-role="' + r.id + '" role="radio" aria-checked="' + (r.id === me.role) + '">' + r.label + "</button>";
+    return '<div class="gc-who">' +
+      '<div class="ds-input" data-variant="outline" data-size="medium"><input class="ds-input__control gc-name" maxlength="20" placeholder="이름" autocomplete="name" aria-label="이름" value="' + esc(me.name) + '"></div>' +
+      '<div class="ds-segmented gc-roles" data-layout="fill" role="group" aria-label="역할">' + ROLES.map(function (r) {
+        return '<button type="button" class="ds-segmented__item" data-role="' + r.id + '" aria-pressed="' + (r.id === me.role) + '">' + r.label + "</button>";
       }).join("") + "</div></div>";
   }
   function threadHTML(c) {
@@ -625,11 +617,11 @@
       if (!c.sel && c.x === "") whereNote = '<span class="gc-where">위치 없음</span>';
       else if (!c._placed && layer) whereNote = '<span class="gc-where">이 보기에서 위치 없음 · ' + (c.device === "mo" ? "MO" : "PC") + "에서 작성</span>";
     }
-    return '<article class="gc-thread" data-thread="' + esc(c.id) + '" data-status="' + esc(c.status) + '"' + (open ? ' aria-current="true"' : "") + ">" +
+    return '<article class="ds-card gc-thread" data-size="small" data-thread="' + esc(c.id) + '" data-status="' + esc(c.status) + '"' + (open ? ' aria-current="true"' : "") + ">" +
       '<div class="gc-thread__head">' +
-        '<span class="gc-num" data-role="' + esc(c.role) + '">' + (c._n || "·") + "</span>" +
+        '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : roleTone(c.role)) + '">' + (c._n || "·") + "</span>" +
         '<span class="gc-author">' + esc(c.author) + "</span>" +
-        '<span class="gc-role-tag" data-role="' + esc(c.role) + '">' + roleLabel(c.role) + "</span>" +
+        (roleLabel(c.role) ? '<span class="ds-badge" data-tone="' + roleTone(c.role) + '">' + roleLabel(c.role) + "</span>" : "") +
         '<time class="gc-time" datetime="' + esc(c.at) + '">' + ago(c.at) + "</time>" +
       "</div>" +
       '<div class="gc-text-body">' + richText(c.text) + "</div>" +
@@ -637,9 +629,9 @@
       (rs.length && !open ? '<div class="gc-meta">답글 ' + rs.length + "개</div>" : "") +
       (open ?
         '<div class="gc-replies">' + rs.map(function (r) {
-          return '<div class="gc-replyitem"><div class="gc-thread__head"><span class="gc-author">' + esc(r.author) + '</span><span class="gc-role-tag" data-role="' + esc(r.role) + '">' + roleLabel(r.role) +
-            '</span><time class="gc-time">' + ago(r.at) + "</time>" +
-            (r.cid === me.cid ? '<button type="button" class="gc-mini" data-act="delete" data-id="' + esc(r.id) + '">삭제</button>' : "") +
+          return '<div class="gc-replyitem"><div class="gc-thread__head"><span class="gc-author">' + esc(r.author) + '</span>' + (roleLabel(r.role) ? '<span class="ds-badge" data-tone="' + roleTone(r.role) + '">' + roleLabel(r.role) + "</span>" : "") +
+            '<time class="gc-time">' + ago(r.at) + "</time>" +
+            (r.cid === me.cid ? '<button type="button" class="ds-link gc-mini" data-act="delete" data-id="' + esc(r.id) + '">삭제</button>' : "") +
             '</div><div class="gc-text-body">' + richText(r.text) + "</div></div>";
         }).join("") + "</div>" +
         '<form class="gc-reply" data-id="' + esc(c.id) + '">' + (me.name ? "" : whoHTML()) + '<textarea class="ds-textarea" data-size="medium" rows="2" maxlength="2000" placeholder="답글 (Ctrl+Enter)"></textarea>' +
@@ -664,13 +656,14 @@
     var open = list.filter(function (c) { return c.status !== "resolved"; });
     var done = list.filter(function (c) { return c.status === "resolved"; });
     var html = "";
-    if (loadError) html += '<p class="gc-notice" data-bad="true">' + esc(loadError) + "</p>";
+    if (loadError) html += '<div class="ds-callout" data-tone="critical"><i class="ds-icon ds-icon--circle-alert-solid" aria-hidden="true"></i><p class="ds-callout__content">' + esc(loadError) + "</p></div>";
     if (!layer && it && it.page && !frame.hidden && location.protocol === "file:")
-      html += '<p class="gc-notice">파일(file://)로 열면 화면 위에 핀을 찍을 수 없어요. 배포 주소나 로컬 서버로 열어 주세요.</p>';
-    if (!list.length) html += '<div class="gc-empty"><p>이 화면에 남긴 코멘트가 없어요.</p><p>[코멘트 남기기]를 누르고 화면에서 위치를 고르세요.</p></div>';
+      html += '<div class="ds-callout" data-tone="informative"><i class="ds-icon ds-icon--info-solid" aria-hidden="true"></i><p class="ds-callout__content">파일(file://)로 열면 화면 위에 핀을 찍을 수 없어요. 배포 주소나 로컬 서버로 열어 주세요.</p></div>';
+    if (!list.length) html += '<div class="ds-empty" data-size="small"><span class="ds-empty__media"><i class="ds-icon ds-icon--message-circle" aria-hidden="true"></i></span>' +
+      '<p class="ds-empty__title">이 화면에 남긴 코멘트가 없어요</p><p class="ds-empty__desc">[코멘트 남기기]를 누르고 화면에서 위치를 고르세요.</p></div>';
     html += open.map(threadHTML).join("");
     if (done.length) {
-      html += '<button type="button" class="gc-resolved-toggle" data-act="resolved-toggle" aria-expanded="' + showResolved + '">해결된 코멘트 ' + done.length + "개 " + (showResolved ? "숨기기" : "보기") + "</button>";
+      html += '<button type="button" class="ds-link gc-resolved-toggle" data-act="resolved-toggle" aria-expanded="' + showResolved + '">해결된 코멘트 ' + done.length + "개 " + (showResolved ? "숨기기" : "보기") + "</button>";
       if (showResolved) html += done.map(threadHTML).join("");
     }
     pbody.innerHTML = html;
