@@ -109,16 +109,16 @@ body.guide { --gc-panel-width: 360px; }
 /* 답글 입력 — 한 줄로 시작해 내용만큼 늘어나는 입력칸 + [등록] */
 .gc-reply { display: grid; gap: var(--ybm-space-x2); padding-top: var(--ybm-space-x1); }
 .gc-reply__box { display: flex; align-items: flex-end; gap: var(--ybm-space-x2); }
-.gc-reply__text.ds-textarea {
-  --ds-textarea-min-height: var(--ybm-space-x9);
-  --ds-textarea-padding: var(--ybm-space-x2) var(--ybm-space-x3);
+body.guide .gc-reply__text.ds-textarea {   /* guide.css 의 body.guide .ds-textarea(16) 보다 우선 */
+  --ds-textarea-min-height: 40px;                                   /* DS outline medium 입력칸 = 40 */
+  --ds-textarea-padding: calc((40px - var(--ybm-line-height-t04)) / 2) var(--ybm-space-x3_5);
   --ds-textarea-font-size: var(--ybm-font-size-t04);
   --ds-textarea-line-height: var(--ybm-line-height-t04);
   flex: 1 1 auto; min-width: 0; max-height: 160px;
   background: var(--ybm-color-bg-layer-default);
   field-sizing: content;
 }
-.gc-reply__box > .ds-btn { flex: none; min-height: var(--ybm-space-x9); }
+.gc-reply__box > .ds-btn { flex: none; }                          /* DS 버튼 기본 크기 = 40 — 입력칸과 같은 높이 */
 /* 해결된 코멘트 보기 — 작은 텍스트 버튼 */
 .gc-mini, .gc-resolved-toggle { font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
 .gc-resolved-toggle { align-self: flex-start; padding-block: var(--ybm-space-x2); text-decoration: none; }
@@ -216,4 +216,13 @@ body.guide { --gc-panel-width: 360px; }
 .gc-mention-menu { position: absolute; z-index: var(--ybm-z-tooltip); left: 0; right: 0; min-width: 0; max-height: 280px; overflow-y: auto; }
 .gc-mention-menu[hidden] { display: none; }
 .gc-mention-menu .ds-menu-item[aria-selected="true"] { background: var(--ybm-color-bg-neutral-weak-alpha); }
-.gc-mention-menu .ds-badge { min-width: var(--ybm-space-x6); }
+/* 멘션 후보 아바타 — DS Avatar 24 · 원시 팔레트 (사용자 요청 2026-10-22) */
+.gc-avatar { font-size: var(--ybm-font-size-t02); }
+.gc-avatar[data-color="brand"]  { --ds-avatar-bg: var(--ybm-color-palette-brand-600); }
+.gc-avatar[data-color="blue"]   { --ds-avatar-bg: var(--ybm-color-palette-blue-600); }
+.gc-avatar[data-color="green"]  { --ds-avatar-bg: var(--ybm-color-palette-green-700); }
+.gc-avatar[data-color="orange"] { --ds-avatar-bg: var(--ybm-color-palette-orange-600); }
+.gc-avatar[data-color="purple"] { --ds-avatar-bg: var(--ybm-color-palette-purple-600); }
+.gc-avatar[data-color="red"]    { --ds-avatar-bg: var(--ybm-color-palette-red-600); }
+.gc-avatar[data-color="yellow"] { --ds-avatar-bg: var(--ybm-color-palette-yellow-700); }
+.gc-avatar { color: var(--ybm-color-palette-static-white); }

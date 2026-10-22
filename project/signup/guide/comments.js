@@ -702,7 +702,7 @@
           }).join("") + "</div>" +
           '<form class="gc-reply" data-id="' + esc(c.id) + '">' + (me.name ? "" : whoHTML()) +
             '<div class="gc-reply__box"><textarea class="ds-textarea gc-reply__text" data-size="medium" rows="1" maxlength="2000" placeholder="답글 · @로 멘션" aria-label="답글"></textarea>' +
-            '<button type="submit" class="ds-btn" data-variant="neutralWeak" data-size="xsmall">등록</button></div></form>'
+            '<button type="submit" class="ds-btn" data-variant="neutralWeak">등록</button></div></form>'
         : "") +
       "</div>" +
     "</article>";
@@ -790,10 +790,16 @@
     return m ? { start: before.length - m[2].length - 1, q: m[2] } : null;
   }
   function closeMention() { mstate = null; mmenu.hidden = true; }
+  // DS Avatar(원형 24) — 원시 팔레트 색을 이름으로 골라 사람마다 다르게(같은 사람은 늘 같은 색)
+  var AVATAR_COLORS = ["brand", "blue", "green", "orange", "purple", "red", "yellow"];
+  function avatarHTML(name) {
+    var h = 0; for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+    return '<span class="ds-avatar gc-avatar" data-size="24" data-color="' + AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length] + '" aria-hidden="true">' + esc(name.slice(0, 1)) + "</span>";
+  }
   function paintMention() {
     mmenu.innerHTML = mstate.list.map(function (m, i) {
       return '<button type="button" class="ds-menu-item" role="option" data-i="' + i + '" aria-selected="' + (i === mstate.idx) + '">' +
-        '<span class="ds-badge" data-variant="solid" data-tone="brand">' + esc(m.name.slice(0, 1)) + "</span>" + esc(m.name) + "</button>";
+        avatarHTML(m.name) + esc(m.name) + "</button>";
     }).join("");
   }
   function openMention(ta) {

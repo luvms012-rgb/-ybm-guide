@@ -99,6 +99,7 @@ body.guide {
   padding: var(--ybm-space-x2) var(--ybm-space-x3);
   border-radius: var(--ybm-radius-r2);
   color: var(--ybm-color-fg-neutral-muted);
+  font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04);   /* 왼쪽 메뉴 14 (2026-10-22) */
   text-decoration: none;
 }
 .g-item:hover { background: var(--ybm-color-bg-neutral-muted); }
@@ -296,5 +297,6 @@ body.guide .ds-btn { --ds-btn-font-size: var(--ybm-font-size-t05); --ds-btn-line
 body.guide .ds-btn[data-size="xsmall"] { --ds-btn-font-size: var(--ybm-font-size-t04); --ds-btn-line-height: var(--ybm-line-height-t04); }
 body.guide .ds-input { --ds-input-font-size: var(--ybm-font-size-t05); --ds-input-line-height: var(--ybm-line-height-t05); }
 body.guide .ds-textarea { --ds-textarea-font-size: var(--ybm-font-size-t05); --ds-textarea-line-height: var(--ybm-line-height-t05); }
-body.guide :is(.ds-callout, .ds-menu-item, .ds-snackbar, .ds-empty__desc) { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+body.guide :is(.ds-callout, .ds-menu-item, .ds-snackbar) { font-size: var(--ybm-font-size-t05); line-height: var(--ybm-line-height-t05); }
+body.guide .ds-empty .ds-empty__desc { font-size: var(--ybm-font-size-t04); line-height: var(--ybm-line-height-t04); }   /* 빈 상태 안내 14 (2026-10-22) */
 body.guide .ds-empty__title { font-size: var(--ybm-font-size-t07); line-height: var(--ybm-line-height-t07); }
