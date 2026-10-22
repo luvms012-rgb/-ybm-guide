@@ -3,7 +3,8 @@
    --------------------------------------------------------------------------
    UI 는 YBM-DS 컴포넌트로만 조립한다. 이 파일은 "배치"만 담당 — 색·글자·간격·그림자는 전부 DS 토큰.
      코멘트 창 머리      .ds-btn(neutralSolid · small) + .ds-icon--message-circle · 개수 .ds-badge
-     코멘트 목록        .ds-card[data-size=small] · 번호 .ds-badge[solid] 원형 · 액션은 회색 텍스트
+     코멘트 목록        .ds-card[data-size=small] · 번호 .ds-badge[solid] 원형 · 액션은 회색 텍스트 · 파트 .ds-badge
+     파트 고르기 · 필터  .ds-chip[small] (작성창은 outlineWeak)
      작성창             .ds-card[elevated] + .ds-input[outline · medium] + .ds-textarea + .ds-btn
      빈 상태 · 안내      .ds-empty[small] · .ds-callout
      알림               .ds-snackbar (YBM.snackbar — ybm-ds.js)
@@ -77,6 +78,9 @@ body.guide { --gc-panel-width: 360px; }
 .gc-thread__main { display: flex; flex-direction: column; gap: var(--ybm-space-x2); min-width: 0; }
 
 .gc-thread__head { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+/* 이름 + 파트 배지(.ds-badge) 한 줄 */
+.gc-name-row { display: flex; align-items: center; gap: var(--ybm-space-x1_5); min-width: 0; }
+body.guide .gc-part.ds-badge { font-size: var(--ybm-font-size-t02); line-height: var(--ybm-line-height-t02); }
 .gc-author {
   min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
   color: var(--ybm-color-fg-neutral);
@@ -123,6 +127,20 @@ body.guide .gc-reply__text.ds-textarea {   /* guide.css 의 body.guide .ds-texta
 .gc-mini, .gc-resolved-toggle { font-size: var(--ybm-font-size-t03); line-height: var(--ybm-line-height-t03); }
 .gc-resolved-toggle { align-self: flex-start; padding-block: var(--ybm-space-x2); text-decoration: none; }
 .gc-panel__body > .gc-resolved-toggle { margin-inline: var(--ybm-space-x4); }
+
+/* ---- 파트 필터 (.ds-chip small) — 코멘트 창 머리 바로 아래 (2026-10-22) ---- */
+.gc-filter {
+  display: flex; flex-wrap: wrap; gap: var(--ybm-space-x1_5);
+  padding: var(--ybm-space-x3) var(--ybm-space-x4);
+  border-bottom: 1px solid var(--ybm-color-stroke-neutral-weak);
+}
+.gc-filter[hidden] { display: none; }
+.gc-filter .ds-chip { min-width: 0; gap: var(--ybm-space-x1); }
+.gc-filter__n { opacity: 0.6; font-variant-numeric: tabular-nums; }
+
+/* ---- 작성창 파트 칩 (.ds-chip small · outlineWeak) — 입력칸 위 작은 카드 ---- */
+.gc-composer__parts { flex-direction: row; flex-wrap: wrap; gap: var(--ybm-space-x1_5); padding: var(--ybm-space-x2); align-self: flex-start; }
+.gc-composer__parts .ds-chip { min-width: 0; }
 
 /* ---- 이름 (작성창과 첫 답글에서 공용) ---------------------------- */
 .gc-who { display: grid; gap: var(--ybm-space-x2); }
@@ -191,7 +209,7 @@ body.guide .gc-reply__text.ds-textarea {   /* guide.css 의 body.guide .ds-texta
     box-shadow: var(--ybm-elevation-overlay);
   }
   .gc-panel__head { border-bottom: 0; padding-bottom: calc(var(--ybm-space-x1) + env(safe-area-inset-bottom)); }
-  .guide:not([data-gc-sheet="open"]) .gc-panel__body { display: none; }
+  .guide:not([data-gc-sheet="open"]) :is(.gc-panel__body, .gc-filter) { display: none; }
   .guide[data-gc-sheet="open"] .gc-panel__head { border-bottom: 1px solid var(--ybm-color-stroke-neutral-weak); padding-bottom: var(--ybm-space-x1); }
   .gc-panel__title { cursor: pointer; }
   .gc-panel__title::after { content: ""; display: inline-block; width: var(--ybm-space-x4); height: var(--ybm-space-x4); background: currentColor; -webkit-mask: var(--ds-icon-chevron-up) center / contain no-repeat; mask: var(--ds-icon-chevron-up) center / contain no-repeat; }
