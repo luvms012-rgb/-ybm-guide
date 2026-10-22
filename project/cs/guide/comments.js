@@ -50,6 +50,11 @@
     if (!me.name) return false;
     return [me.name, roleLabel(me.role)].some(function (n) { return n && new RegExp("@" + n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\w가-힣])").test(text || ""); });
   }
+  // 파트(기획·디자인·개발) — 코멘트마다 고른다 (2026-10-22). 시트의 role 칸에 이름 그대로 저장
+  //   예전 role 값(plan 등)과 겹치지 않게 id = 표시 이름. 표시는 DS Badge · 고르기/필터는 DS Chip
+  var PARTS = [{ id: "기획", tone: "warning" }, { id: "디자인", tone: "positive" }, { id: "개발", tone: "informative" }];
+  function partOf(c) { for (var i = 0; i < PARTS.length; i++) if (PARTS[i].id === c.role) return PARTS[i]; return null; }
+  function partBadge(c) { var p = partOf(c); return p ? '<span class="ds-badge gc-part" data-tone="' + p.tone + '">' + p.id + "</span>" : ""; }
   function roleLabel(id) { for (var i = 0; i < ROLES.length; i++) if (ROLES[i].id === id) return ROLES[i].label; return ""; }
 
   var body = document.body;
@@ -86,6 +91,8 @@
   /* ---- 나 (비로그인 — 이 브라우저를 구분하는 임의 id + 이름) -------------- */
   var me = { cid: store("cid"), name: store("name") || "", role: store("role") || "plan" };
   me.role = "";
+  var draftPart = store("part") || "";
+  var partFilter = store("filter") || "";   // "" = 전체
   if (!me.cid) { me.cid = uid(); store("cid", me.cid); }
 
   /* ======================================================================
@@ -347,7 +354,7 @@
     var html = "";
     threadsHere().forEach(function (c, i) {
       c._n = i + 1;
-      if (c.status === "resolved" && !showResolved && c.id !== selected) { c._placed = !!place(c); return; }
+      if ((c.status === "resolved" && !showResolved && c.id !== selected) || !matchFilter(c)) { c._placed = !!place(c); return; }
       var p = place(c); c._placed = !!p;
       if (!p) return;
       html += '<button type="button" class="pin" data-id="' + esc(c.id) + '" data-role="' + esc(c.role) + '" data-status="' + esc(c.status) + '"' +
@@ -375,10 +382,19 @@
         '<button type="button" class="gc-panel__title" aria-expanded="false">코멘트<span class="ds-badge gc-count" hidden></span></button>' +
         '<button type="button" class="ds-btn gc-add" data-variant="neutralSolid" data-size="small" aria-pressed="false" title="코멘트 남기기 (C)"><i class="ds-icon ds-icon--message-circle" aria-hidden="true"></i><span>코멘트 남기기</span></button>' +
       "</div>" +
+      '<div class="gc-filter" role="group" aria-label="파트 필터" hidden></div>' +
       '<div class="gc-panel__body"></div>' +
     "</aside>");
   content.appendChild(panel);
   var pbody = panel.querySelector(".gc-panel__body");
+  var filterBar = panel.querySelector(".gc-filter");
+  filterBar.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-filter]"); if (!b) return;
+    partFilter = b.getAttribute("data-filter"); store("filter", partFilter);
+    if (selected && !matchFilter(find(selected))) selected = null;
+    renderAll();
+  });
+  function matchFilter(c) { return !partFilter || (c && c.role === partFilter); }
   var addBtn = panel.querySelector(".gc-add");
   var titleBtn = panel.querySelector(".gc-panel__title");
 
@@ -386,6 +402,9 @@
     // 피그마식 작성창 — 핀 바로 옆 한 줄 입력 + 보내기(↑). 처음 한 번만 이름 카드가 위에 붙는다
     '<form class="gc-composer" hidden>' +
       '<div class="ds-card gc-composer__who" data-variant="elevated" data-size="small">' + whoHTML() + "</div>" +
+      '<div class="ds-card gc-composer__parts" data-variant="elevated" data-size="small" role="group" aria-label="파트">' +
+        PARTS.map(function (p) { return '<button type="button" class="ds-chip" data-size="small" data-variant="outlineWeak" aria-pressed="false" data-part="' + p.id + '">' + p.id + "</button>"; }).join("") +
+      "</div>" +
       '<div class="ds-input gc-bubble" data-variant="outline" data-size="medium">' +
         '<textarea class="ds-input__control gc-text" name="text" rows="1" maxlength="2000" placeholder="@로 멘션" aria-label="코멘트"></textarea>' +
         '<button type="submit" class="ds-btn gc-send" data-variant="neutralSolid" data-size="xsmall" data-layout="iconOnly" aria-label="등록" disabled><i class="ds-icon ds-icon--arrow-up" aria-hidden="true"></i></button>' +
@@ -456,6 +475,7 @@
     nameInput.value = me.name;
     textInput.value = ""; growText(); sendBtn.disabled = true;
     paintWho(!me.name);
+    paintParts();
       composer.hidden = false;
     paintHint();
     composer.setAttribute("data-floating", anchor && layer ? "true" : "false");
@@ -464,6 +484,17 @@
     setTimeout(function () { (me.name ? textInput : nameInput).focus({ preventScroll: true }); placeComposer(); }, 0);
   }
   var sendBtn = composer.querySelector(".gc-send");
+  var partBox = composer.querySelector(".gc-composer__parts");
+  function paintParts() {
+    [].forEach.call(partBox.querySelectorAll("[data-part]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-part") === draftPart)); });
+  }
+  // 하나만 고른다 · 다시 누르면 해제
+  partBox.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-part]"); if (!b) return;
+    var p = b.getAttribute("data-part");
+    draftPart = draftPart === p ? "" : p; store("part", draftPart);
+    paintParts(); textInput.focus({ preventScroll: true });
+  });
   var whoBox = composer.querySelector(".gc-composer__who");
   var whoEdit = composer.querySelector(".gc-whoedit");
   // 이름을 이미 아는 사람은 입력칸만 — 아래 작은 링크로 이름을 바꿀 수 있다
@@ -527,7 +558,7 @@
       id: uid(), project: PROJECT, screen: screenOfState(st), state: st, device: G.device(),
       sel: a.sel || "", ox: a.ox == null ? "" : a.ox, oy: a.oy == null ? "" : a.oy,
       x: a.x == null ? "" : a.x, y: a.y == null ? "" : a.y, vw: a.vw || "",
-      author: name, role: me.role, text: text, parent: "", status: "open",
+      author: name, role: draftPart, text: text, parent: "", status: "open",
       cid: me.cid, at: new Date().toISOString(), up: ""
     };
     // 등록 직후에는 선택하지 않는다 — 목록에 배경 없이 그냥 추가 (2026-10-21)
@@ -682,7 +713,7 @@
     return '<article class="ds-card gc-thread" data-size="small" data-thread="' + esc(c.id) + '" data-status="' + esc(c.status) + '"' + (open ? ' aria-current="true"' : "") + ">" +
       '<span class="ds-badge gc-num" data-variant="solid" data-tone="' + (c.status === "resolved" ? "" : "critical") + '">' + (c._n || "·") + "</span>" +
       '<div class="gc-thread__main">' +
-        '<div class="gc-thread__head"><span class="gc-author">' + esc(c.author) + "</span>" + subHTML(c) + "</div>" +
+        '<div class="gc-thread__head"><span class="gc-name-row"><span class="gc-author">' + esc(c.author) + "</span>" + partBadge(c) + "</span>" + subHTML(c) + "</div>" +
         '<div class="gc-text-body">' + richText(c.text) + "</div>" +
         whereNote +
         ((rs.length && !open) || mentioned ? '<div class="gc-meta">' +
@@ -708,6 +739,18 @@
     "</article>";
   }
 
+  // 필터 — DS Chip(small). 진행 중 코멘트 수를 함께 보여 준다
+  function paintFilter(list) {
+    filterBar.hidden = !list.length;
+    if (!list.length) return;
+    var n = function (id) { return list.filter(function (c) { return c.status !== "resolved" && (!id || c.role === id); }).length; };
+    var chip = function (id, label) {
+      var k = n(id);
+      return '<button type="button" class="ds-chip" data-size="small" aria-pressed="' + (partFilter === id) + '" data-filter="' + id + '">' + label + (k ? '<span class="gc-filter__n">' + k + "</span>" : "") + "</button>";
+    };
+    var html = chip("", "전체") + PARTS.map(function (p) { return chip(p.id, p.id); }).join("");
+    if (filterBar.innerHTML !== html) filterBar.innerHTML = html;
+  }
   function renderPanel() {
     var it = G.current();
     var ae = document.activeElement;
@@ -715,12 +758,16 @@
 
     var list = threadsHere();
     list.forEach(function (c, i) { c._n = i + 1; if (layer && c._placed === undefined) c._placed = !!place(c); });
-    var open = list.filter(function (c) { return c.status !== "resolved"; });
-    var done = list.filter(function (c) { return c.status === "resolved"; });
+    paintFilter(list);
+    var shown = list.filter(matchFilter);
+    var open = shown.filter(function (c) { return c.status !== "resolved"; });
+    var done = shown.filter(function (c) { return c.status === "resolved"; });
     var html = "";
     if (loadError) html += '<div class="ds-callout" data-tone="critical"><i class="ds-icon ds-icon--circle-alert-solid" aria-hidden="true"></i><p class="ds-callout__content">' + esc(loadError) + "</p></div>";
     if (!layer && it && it.page && !frame.hidden && location.protocol === "file:")
       html += '<div class="ds-callout" data-tone="informative"><i class="ds-icon ds-icon--info-solid" aria-hidden="true"></i><p class="ds-callout__content">파일(file://)로 열면 화면 위에 핀을 찍을 수 없어요. 배포 주소나 로컬 서버로 열어 주세요.</p></div>';
+    if (list.length && !shown.length) html += '<div class="ds-empty" data-size="small"><span class="ds-empty__media"><i class="ds-icon ds-icon--message-circle" aria-hidden="true"></i></span>' +
+      '<p class="ds-empty__title">' + esc(partFilter) + ' 코멘트가 없어요</p><p class="ds-empty__desc">다른 파트를 고르거나 [전체]로 보세요.</p></div>';
     if (!list.length) html += '<div class="ds-empty" data-size="small"><span class="ds-empty__media"><i class="ds-icon ds-icon--message-circle" aria-hidden="true"></i></span>' +
       '<p class="ds-empty__title">이 화면에 남긴 코멘트가 없어요</p><p class="ds-empty__desc">[코멘트 남기기]를 누르고 화면에서 위치를 고르세요.</p></div>';
     html += open.map(threadHTML).join("");
